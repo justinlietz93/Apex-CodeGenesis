@@ -13,8 +13,6 @@ To add custom instructions:
 3. Find the "Custom Instructions" field
 4. Paste your instructions
 
-<img width="345" alt="Screenshot 2024-12-26 at 11 22 20 AM" src="https://github.com/user-attachments/assets/00ae689b-d99f-4811-b2f4-fffe1e12f2ff" />
-
 Custom instructions are powerful for:
 
 -   Enforcing Coding Style and Best Practices: Ensure Apex always adheres to your team's coding conventions, naming conventions, and best practices.
@@ -120,7 +118,7 @@ your-project/
 └── ...
 ```
 
-Apex's system prompt, on the other hand, is not user-editable ([here's where you can find it](https://github.com/apex/apex/blob/main/src/core/prompts/system.ts)). For a broader look at prompt engineering best practices, check out [this resource](https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview).
+Apex's system prompt, on the other hand, is not user-editable. For a broader look at prompt engineering best practices, check out [this resource](https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview).
 
 ### Tips for Writing Effective Custom Instructions
 
