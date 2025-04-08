@@ -33,7 +33,7 @@ Welcome to the Apex documentation - your comprehensive guide to using and extend
 
 ## Additional Resources
 
--   **Apex GitHub Repository:** [https://github.com/apex/apex](https://github.com/apex/apex)
+-   **Apex GitHub Repository:** [https://github.com/justinlietz93/Apex-CodeGenesis-VSCode](https://github.com/justinlietz93/Apex-CodeGenesis-VSCode)
 -   **MCP Documentation:** [https://modelcontextprotocol.org/docs](https://modelcontextprotocol.org/docs)
 
 We're always looking to improve this documentation. If you have suggestions or find areas that could be enhanced, please let us know. Your feedback helps make Apex better for everyone.
