@@ -57,14 +57,13 @@
 
 ## Overview
 
-Apex is an advanced **autonomous software engineering agent** designed to adapt to your exact needs, empowering your VS Code environment. It integrates powerful AI reasoning with practical development tools to assist with complex coding tasks, aiming for **high reliability** and **resilience**. This project originated as a fork of the [Cline agent](https://github.com/cline/cline) and incorporates concepts and tools from several other experimental AI projects focused on robust agentic workflows.
+Apex is an advanced **autonomous software engineering agent** designed to adapt to your exact needs, empowering your VS Code environment. It integrates powerful AI reasoning with practical development tools to assist with complex coding tasks, aiming for **high reliability**, **resilience**, and adherence to **rigorous software engineering standards**. This project originated as a fork of the [Cline agent](https://github.com/cline/cline) and incorporates concepts and tools from several other experimental AI projects focused on robust agentic workflows and high-quality, verifiable outputs according to the defined [Apex Software Compliance Standards](./workbench/STANDARDS_REPOSITORY/apex/STANDARDS.md).
 
 ## Installation
 
-Install Apex from your preferred marketplace:
+*(Coming Soon to Marketplaces!)*
 
-- [**Visual Studio Marketplace**](https://marketplace.visualstudio.com/items?itemName=justinlietz93.apex-ide-codegenesis)
-- [**Open VSX Registry**](https://open-vsx.org/extension/justinlietz93/apex-ide-codegenesis)
+Currently, installation requires building from source (see [Local Development Instructions](#local-development-instructions)). Marketplace availability is planned for the first official release.
 
 ## Key Features
 
@@ -76,7 +75,7 @@ Apex offers a powerful combination of advanced AI techniques and practical devel
     *   Integrates a **[council-of-critics](https://github.com/justinlietz93/critique_council)** mechanism for self-critique and plan refinement.
 *   **True Autonomy & Resilience:**
     *   Offers **`turnBased`**, **`stepLimited`**, and **`full`** autonomy modes.
-    *   In **`full`** autonomy, aims for end-to-end task completion with minimal intervention.
+    *   The **`full`** autonomy mode provides true end-to-end task completion capability.
     *   Features **automated failure recovery** and **resilience against loops** (via hierarchical planning).
     *   Can **autonomously browse the web** and **look up documentation** to overcome obstacles.
 *   **Persistent Memory ([Neuroca](https://github.com/Modern-Prometheus-AI/Neuroca)):**
