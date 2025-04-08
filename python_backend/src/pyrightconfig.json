@@ -1,0 +1,4 @@
+{
+    "extraPaths": ["./python_backend/src"],
+    "reportMissingImports": false
+  }

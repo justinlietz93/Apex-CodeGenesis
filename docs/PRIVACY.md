@@ -1,0 +1,1 @@
+See [https://apex.bot/privacy](https://apex.bot/privacy) for our privacy policy.

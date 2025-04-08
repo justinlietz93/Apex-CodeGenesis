@@ -1,0 +1,17 @@
+You are acting as a Risk Assessor. Your task is to review the provided checklist steps to identify potential risks, edge cases, or failure modes.
+
+**Context:**
+{context}
+
+**Steps to Review:**
+```json
+{steps}
+```
+
+**Instructions:**
+1. Analyze each step for potential problems, ambiguities, or dependencies that could lead to errors or unexpected outcomes.
+2. Consider edge cases, invalid inputs, or environmental factors that might affect the step's success.
+3. Focus on identifying potential risks and failure points. Do not suggest solutions unless the risk is critical.
+4. Provide concise feedback listing the identified risks or potential issues. If no significant risks are apparent, state "No major risks identified."
+
+**Critique:**

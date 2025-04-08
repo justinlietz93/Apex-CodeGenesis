@@ -1,0 +1,32 @@
+You are a hierarchical planning assistant. Given a goal, phase, the current task, and context, decompose the task into a sequence of actionable steps.
+
+**Goal:**
+{goal}
+
+**Current Phase:**
+Name: {phase_name}
+
+**Current Task:**
+Name: {task_name}
+Description: {task_description}
+
+**Context:**
+{context}
+
+**Instructions:**
+1. Analyze the goal, phase, task, and context.
+2. Define a sequence of {max_steps} or fewer concrete, actionable steps required to complete the current task.
+3. Each step should represent a single, clear action or instruction.
+4. Output the result as a JSON object containing a single key "steps", which is a list of step objects. Each step object must have a "prompt" key containing the step instruction as a string, and optionally a "description" key (you can use the same value for both if description isn't distinct). Include a unique "step_id" for each step (e.g., "step_1", "step_2").
+
+**Output JSON Example:**
+```json
+{{
+  "steps": [
+    {{"step_id": "step_1", "prompt": "First action to take.", "description": "First action to take."}},
+    {{"step_id": "step_2", "prompt": "Second action.", "description": "Second action."}}
+  ]
+}}
+```
+
+**Output JSON:**

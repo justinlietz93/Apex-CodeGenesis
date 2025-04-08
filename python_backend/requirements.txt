@@ -1,0 +1,11 @@
+json-rpc[tox]
+google-genai>=0.3.0
+pyyaml>=6.0
+agno # Added for RAG/Knowledge Graph capabilities
+lancedb # Added dependency for agno
+numpy # Added dependency for lancedb
+gitignore-parser # Added for parsing .agentignore files
+python-dotenv # Added for loading .env files (used by config_loader)
+# We might need 'werkzeug' if we adapt the example server later, but not for stdio
+openai
+anthropic

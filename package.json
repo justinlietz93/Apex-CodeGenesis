@@ -1,0 +1,470 @@
+{
+	"name": "apex-ide-codegenesis",
+	"displayName": "Apex",
+	"description": "Apex: An advanced autonomous coding agent for VS Code featuring total autonomy modes, recursive chain-of-thought reasoning, council-of-critics self-critique, persistent memory, dynamic personas, and extensive tool use capabilities.",
+	"version": "1.0.0",
+	"icon": "assets/icons/icon.png",
+	"engines": {
+		"vscode": "^1.99.0"
+	},
+	"author": {
+		"name": "Justin Lietz"
+	},
+	"license": "Apache-2.0",
+	"publisher": "justinlietz93",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/justinlietz93/Apex-CodeGenesis"
+	},
+	"categories": [
+		"AI",
+		"Chat",
+		"Programming Languages",
+		"Education",
+		"Snippets",
+		"Testing"
+	],
+	"keywords": [
+		"apex",
+		"dev",
+		"mcp",
+		"coding",
+		"agent",
+		"autonomous",
+		"ai",
+		"full autonomy",
+		"persistent memory",
+		"dynamic personas",
+		"recursive chain of thought",
+		"council of critics",
+		"self-critique",
+		"openrouter",
+		"anthropic",
+		"openai",
+		"google gemini",
+		"aws bedrock",
+		"azure",
+		"gcp vertex",
+		"ollama"
+	],
+	"extensionDependencies": [
+		"GitHub.copilot"
+	],
+	"activationEvents": [
+		"onStartupFinished"
+	],
+	"main": "./dist/extension.js",
+	"contributes": {
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "apex-activitybar",
+					"title": "Apex",
+					"icon": "./assets/icons/icon.svg"
+				}
+			]
+		},
+		"views": {
+			"apex-activitybar": [
+				{
+					"icon": "./assets/icons/icon.svg",
+					"iconDark": "./assets/icons/icon-dark.svg",
+					"type": "webview",
+					"id": "apex-ide-codegenesis.SidebarProvider",
+					"name": "Apex",
+					"when": "true"
+				}
+			]
+		},
+		"commands": [
+			{
+				"command": "apex.plusButtonClicked",
+				"title": "New Task",
+				"icon": "$(add)"
+			},
+			{
+				"command": "apex.mcpButtonClicked",
+				"title": "MCP Servers",
+				"icon": "$(server)"
+			},
+			{
+				"command": "apex.historyButtonClicked",
+				"title": "History",
+				"icon": "$(history)"
+			},
+			{
+				"command": "apex.popoutButtonClicked",
+				"title": "Open in Editor",
+				"icon": "$(link-external)"
+			},
+			{
+				"command": "apex.accountButtonClicked",
+				"title": "Account",
+				"icon": "$(account)"
+			},
+			{
+				"command": "apex.settingsButtonClicked",
+				"title": "Settings",
+				"icon": "$(settings-gear)"
+			},
+			{
+				"command": "apex.openInNewTab",
+				"title": "Open In New Tab",
+				"category": "Apex"
+			},
+			{
+				"command": "apex.dev.createTestTasks",
+				"title": "Create Test Tasks",
+				"category": "Apex",
+				"when": "apex.isDevMode"
+			},
+			{
+				"command": "apex.addToChat",
+				"title": "Add to Apex",
+				"category": "Apex"
+			},
+			{
+				"command": "apex.addTerminalOutputToChat",
+				"title": "Add to Apex",
+				"category": "Apex"
+			},
+			{
+				"command": "apex.fixWithApex",
+				"title": "Fix with Apex",
+				"category": "Apex"
+			}
+		],
+		"menus": {
+			"view/title": [
+				{
+					"command": "apex.plusButtonClicked",
+					"group": "navigation@1",
+					"when": "view == apex-ide-codegenesis.SidebarProvider"
+				},
+				{
+					"command": "apex.historyButtonClicked",
+					"group": "navigation@3",
+					"when": "view == apex-ide-codegenesis.SidebarProvider"
+				},
+				{
+					"command": "apex.popoutButtonClicked",
+					"group": "navigation@4",
+					"when": "view == apex-ide-codegenesis.SidebarProvider"
+				},
+				{
+					"command": "apex.accountButtonClicked",
+					"group": "navigation@5",
+					"when": "view == apex-ide-codegenesis.SidebarProvider"
+				},
+				{
+					"command": "apex.settingsButtonClicked",
+					"group": "navigation@6",
+					"when": "view == apex-ide-codegenesis.SidebarProvider"
+				}
+			],
+			"editor/title": [
+				{
+					"command": "apex.plusButtonClicked",
+					"group": "navigation@1",
+					"when": "activeWebviewPanelId == apex-ide-codegenesis.TabPanelProvider"
+				},
+				{
+					"command": "apex.historyButtonClicked",
+					"group": "navigation@3",
+					"when": "activeWebviewPanelId == apex-ide-codegenesis.TabPanelProvider"
+				},
+				{
+					"command": "apex.popoutButtonClicked",
+					"group": "navigation@4",
+					"when": "activeWebviewPanelId == apex-ide-codegenesis.TabPanelProvider"
+				},
+				{
+					"command": "apex.accountButtonClicked",
+					"group": "navigation@5",
+					"when": "activeWebviewPanelId == apex-ide-codegenesis.TabPanelProvider"
+				},
+				{
+					"command": "apex.settingsButtonClicked",
+					"group": "navigation@6",
+					"when": "activeWebviewPanelId == apex-ide-codegenesis.TabPanelProvider"
+				}
+			],
+			"editor/context": [
+				{
+					"command": "apex.addToChat",
+					"group": "navigation",
+					"when": "editorHasSelection"
+				}
+			],
+			"terminal/context": [
+				{
+					"command": "apex.addTerminalOutputToChat",
+					"group": "navigation"
+				}
+			]
+		},
+		"configuration": {
+			"title": "Apex",
+			"properties": {
+				"apex.vsCodeLmModelSelector": {
+					"type": "object",
+					"properties": {
+						"vendor": {
+							"type": "string",
+							"description": "The vendor of the language model (e.g. copilot)"
+						},
+						"family": {
+							"type": "string",
+							"description": "The family of the language model (e.g. gpt-4)"
+						}
+					},
+					"description": "Settings for VSCode Language Model API"
+				},
+				"apex.mcp.mode": {
+					"type": "string",
+					"enum": [
+						"full",
+						"server-use-only",
+						"off"
+					],
+					"enumDescriptions": [
+						"Enable all MCP functionality (server use and build instructions)",
+						"Enable MCP server use only (excludes instructions about building MCP servers)",
+						"Disable all MCP functionality"
+					],
+					"default": "full",
+					"description": "Controls MCP inclusion in prompts, reduces token usage if you only need access to certain functionality."
+				},
+				"apex.enableCheckpoints": {
+					"type": "boolean",
+					"default": true,
+					"description": "Enables extension to save checkpoints of workspace throughout the task. Uses git under the hood which may not work well with large workspaces."
+				},
+				"apex.disableBrowserTool": {
+					"type": "boolean",
+					"default": false,
+					"description": "Disables extension from spawning browser session."
+				},
+				"apex.modelSettings.o3Mini.reasoningEffort": {
+					"type": "string",
+					"enum": [
+						"low",
+						"medium",
+						"high"
+					],
+					"default": "medium",
+					"description": "Controls the reasoning effort when using the o3-mini model. Higher values may result in more thorough but slower responses."
+				},
+				"apex.chromeExecutablePath": {
+					"type": "string",
+					"default": null,
+					"description": "Path to Chrome executable for browser use functionality. If not set, the extension will attempt to find or download it automatically."
+				},
+				"apex.preferredLanguage": {
+					"type": "string",
+					"enum": [
+						"English",
+						"Arabic - العربية",
+						"Portuguese - Português (Brasil)",
+						"Czech - Čeština",
+						"French - Français",
+						"German - Deutsch",
+						"Hindi - हिन्दी",
+						"Hungarian - Magyar",
+						"Italian - Italiano",
+						"Japanese - 日本語",
+						"Korean - 한국어",
+						"Polish - Polski",
+						"Portuguese - Português (Portugal)",
+						"Russian - Русский",
+						"Simplified Chinese - 简体中文",
+						"Spanish - Español",
+						"Traditional Chinese - 繁體中文",
+						"Turkish - Türkçe"
+					],
+					"default": "English",
+					"description": "The language that Apex Agent should use for communication."
+				},
+				"apex.mcpMarketplace.enabled": {
+					"type": "boolean",
+					"default": true,
+					"description": "Controls whether the MCP Marketplace is enabled."
+				},
+				"apex.agent.autonomyMode": {
+					"type": "string",
+					"enum": [
+						"turnBased",
+						"stepLimited",
+						"full"
+					],
+					"enumDescriptions": [
+						"Agent pauses after each LLM response or tool execution, awaiting user input.",
+						"Agent runs autonomously for a configured number of steps before pausing.",
+						"Agent runs fully autonomously until task completion or unrecoverable error."
+					],
+					"default": "turnBased",
+					"description": "Controls the level of autonomy the agent operates with."
+				},
+				"apex.agent.maxAutonomousSteps": {
+					"type": "number",
+					"default": 5,
+					"minimum": 1,
+					"description": "Maximum number of consecutive steps (LLM calls or tool uses) the agent can take in 'stepLimited' autonomy mode before pausing for user confirmation."
+				},
+				"apex.agent.dynamicPersonaMode": {
+					"type": "string",
+					"enum": [
+						"off",
+						"initial",
+						"threshold"
+					],
+					"enumDescriptions": [
+						"Persona is not dynamically selected or switched.",
+						"Persona is selected based on the initial task prompt only.",
+						"Persona is selected initially and may be switched during the task based on context analysis and a threshold."
+					],
+					"default": "initial",
+					"description": "Controls how the agent's persona is selected and potentially switched during a task."
+				},
+				"apex.agent.dynamicPersonaThreshold": {
+					"type": "number",
+					"default": 0.7,
+					"minimum": 0,
+					"maximum": 1,
+					"description": "Optional: Similarity threshold (e.g., score between 0 and 1) for switching personas in 'threshold' mode. Higher values require a stronger match for the new persona suggestion."
+				},
+				"apex.agent.dynamicPersonaCheckFrequency": {
+					"type": "number",
+					"default": 5,
+					"minimum": 1,
+					"description": "Optional: How often (in number of agent turns) to check if the persona should be switched in 'threshold' mode."
+				},
+				"apex.agent.maxTaskTokens": {
+					"type": [
+						"number",
+						"null"
+					],
+					"default": null,
+					"minimum": 1000,
+					"description": "Optional: Maximum estimated total tokens (input + output) allowed for a single task run before pausing. Set to null to disable. Helps prevent unexpected high costs during long autonomous runs."
+				},
+				"apex.backend.pythonPath": {
+					"type": ["string", "null"],
+					"default": null,
+					"description": "Optional: Path to the Python executable to use for the Apex backend. If null or empty, uses 'python' from PATH.",
+					"scope": "machine-overridable"
+				  }
+			}
+		}
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run package",
+		"compile": "npm run check-types && npm run lint && node esbuild.js",
+		"watch": "npm-run-all -p watch:*",
+		"watch:esbuild": "node esbuild.js --watch",
+		"watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
+		"package": "npm run build:webview && npm run check-types && npm run lint && node esbuild.js --production",
+		"compile-tests": "tsc -p ./tsconfig.test.json --outDir out",
+		"watch-tests": "tsc -p . -w --outDir out",
+		"pretest": "npm run compile-tests && npm run compile && npm run lint",
+		"check-types": "tsc --noEmit",
+		"lint": "eslint src --ext ts && eslint webview-ui/src --ext ts",
+		"format": "prettier . --check",
+		"format:fix": "prettier . --write",
+		"test": "vscode-test",
+		"test:ci": "node scripts/test-ci.js",
+		"test:coverage": "vscode-test --coverage",
+		"install:all": "npm install && cd webview-ui && npm install",
+		"dev:webview": "cd webview-ui && npm run dev",
+		"build:webview": "cd webview-ui && npm run build",
+		"test:webview": "cd webview-ui && npm run test",
+		"publish:marketplace": "vsce publish && ovsx publish",
+		"publish:marketplace:prerelease": "vsce publish --pre-release && ovsx publish --pre-release",
+		"prepare": "husky",
+		"changeset": "changeset",
+		"version-packages": "changeset version"
+	},
+	"devDependencies": {
+		"@changesets/cli": "^2.27.12",
+		"@types/chai": "^5.0.1",
+		"@types/clone-deep": "^4.0.4",
+		"@types/diff": "^5.2.1",
+		"@types/get-folder-size": "^3.0.4",
+		"@types/jsdom": "^21.1.7",
+		"@types/mocha": "^10.0.7",
+		"@types/node": "20.x",
+		"@types/pdf-parse": "^1.1.4",
+		"@types/react": "^19.1.0",
+		"@types/should": "^11.2.0",
+		"@types/sinon": "^17.0.4",
+		"@types/turndown": "^5.0.5",
+		"@types/vscode": "^1.84.0",
+		"@typescript-eslint/eslint-plugin": "^7.14.1",
+		"@typescript-eslint/parser": "^7.11.0",
+		"@vscode/test-cli": "^0.0.9",
+		"@vscode/test-electron": "^2.4.0",
+		"chai": "^4.3.10",
+		"esbuild": "^0.25.0",
+		"eslint": "^8.57.0",
+		"husky": "^9.1.7",
+		"jsdom": "^26.0.0",
+		"npm-run-all": "^4.1.5",
+		"prettier": "^3.3.3",
+		"sharp": "^0.34.0",
+		"should": "^13.2.3",
+		"sinon": "^19.0.2",
+		"typescript": "^5.4.5"
+	},
+	"dependencies": {
+		"@anthropic-ai/bedrock-sdk": "^0.12.4",
+		"@anthropic-ai/sdk": "^0.37.0",
+		"@anthropic-ai/vertex-sdk": "^0.6.4",
+		"@aws-sdk/client-bedrock-runtime": "^3.758.0",
+		"@google-cloud/vertexai": "^1.9.3",
+		"@google/generative-ai": "^0.18.0",
+		"@mistralai/mistralai": "^1.5.0",
+		"@modelcontextprotocol/sdk": "^1.7.0",
+		"@opentelemetry/api": "^1.4.1",
+		"@opentelemetry/exporter-trace-otlp-http": "^0.39.1",
+		"@opentelemetry/resources": "^1.30.1",
+		"@opentelemetry/sdk-node": "^0.39.1",
+		"@opentelemetry/sdk-trace-node": "^1.30.1",
+		"@opentelemetry/semantic-conventions": "^1.30.0",
+		"@vscode/codicons": "^0.0.36",
+		"axios": "^1.8.2",
+		"cheerio": "^1.0.0",
+		"chokidar": "^4.0.1",
+		"clone-deep": "^4.0.1",
+		"default-shell": "^2.2.0",
+		"diff": "^5.2.0",
+		"execa": "^9.5.2",
+		"fast-deep-equal": "^3.1.3",
+		"firebase": "^11.2.0",
+		"get-folder-size": "^5.0.0",
+		"globby": "^14.0.2",
+		"ignore": "^7.0.3",
+		"isbinaryfile": "^5.0.2",
+		"mammoth": "^1.8.0",
+		"monaco-vscode-textmate-theme-converter": "^0.1.7",
+		"ollama": "^0.5.13",
+		"open-graph-scraper": "^6.9.0",
+		"openai": "^4.83.0",
+		"os-name": "^6.0.0",
+		"p-timeout": "^6.1.4",
+		"p-wait-for": "^5.0.2",
+		"pdf-parse": "^1.1.1",
+		"posthog-node": "^4.8.1",
+		"puppeteer-chromium-resolver": "^23.0.0",
+		"puppeteer-core": "^23.4.0",
+		"react": "^19.1.0",
+		"react-use": "^17.6.0",
+		"serialize-error": "^11.0.3",
+		"simple-git": "^3.27.0",
+		"strip-ansi": "^7.1.0",
+		"tree-sitter-wasms": "^0.1.11",
+		"turndown": "^7.2.0",
+		"vscode-jsonrpc": "^8.2.1",
+		"web-tree-sitter": "^0.22.6",
+		"zod": "^3.24.2"
+	}
+}

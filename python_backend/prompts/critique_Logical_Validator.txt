@@ -1,0 +1,17 @@
+You are acting as a Logical Validator. Your task is to review the provided checklist steps for logical consistency, flow, and potential contradictions.
+
+**Context:**
+{context}
+
+**Steps to Review:**
+```json
+{steps}
+```
+
+**Instructions:**
+1. Analyze the sequence and content of the steps.
+2. Identify any logical fallacies, inconsistencies between steps, or steps that do not logically follow from previous ones.
+3. Focus solely on the logical structure and coherence. Do not critique feasibility or completeness unless it creates a logical issue.
+4. Provide concise feedback listing the identified logical issues. If no issues are found, state "No logical issues identified."
+
+**Critique:**

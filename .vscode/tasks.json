@@ -1,0 +1,29 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "npm: compile - extension",
+      "type": "npm",
+      "script": "compile",
+      "path": ".", 
+      "problemMatcher": "$tsc",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "npm: build - webview-ui",
+      "type": "npm",
+      "script": "build",
+      "path": "webview-ui",
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "Build All",
+      "dependsOn": ["npm: build - webview-ui", "npm: compile - extension"],
+      "problemMatcher": []
+    }
+  ]
+}

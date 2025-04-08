@@ -1,0 +1,37 @@
+You are a planning synthesizer. You will receive a list of original steps for a task, along with critiques from multiple perspectives (personas). Your goal is to revise the original steps to address the most critical and relevant critiques, improving clarity, logic, robustness, and actionability.
+
+**Original Goal:**
+{goal}
+
+**Phase Context:**
+{context}
+
+**Original Steps:**
+```json
+{steps}
+```
+
+**Critiques:**
+```json
+{critiques}
+```
+
+**Instructions:**
+1. Carefully review the original steps and all provided critiques.
+2. Synthesize the feedback, identifying the most important areas for improvement within the current task's scope.
+3. Revise the original steps list to address these critical points. Focus on refining existing steps rather than adding or removing many steps. Maintain the overall task goal.
+4. Ensure each revised step is clear, concise, and actionable.
+5. Output the result as a JSON object containing a single key "revised_steps". The value should be a list of step objects, maintaining the same format as the original steps (including "step_id" and "prompt"/"description").
+
+**Output JSON Example:**
+```json
+{{
+  "revised_steps": [
+    {{"step_id": "step_1", "prompt": "Revised first action.", "description": "Revised first action."}},
+    {{"step_id": "step_2", "prompt": "Revised second action.", "description": "Revised second action."}}
+    // Potentially slightly reordered or modified steps
+  ]
+}}
+```
+
+**Output JSON:**
