@@ -57,7 +57,7 @@
 
 ## Overview
 
-Apex is an advanced **autonomous software engineering agent** designed to adapt to your exact needs, empowering your VS Code environment. It integrates powerful AI reasoning with practical development tools to assist with complex coding tasks, aiming for **high reliability**, **resilience**, and adherence to **rigorous software engineering standards**. This project originated as a fork of the [Cline agent](https://github.com/cline/cline) and incorporates concepts and tools from several other experimental AI projects focused on robust agentic workflows and high-quality, verifiable outputs according to the defined [Apex Software Compliance Standards](./workbench/STANDARDS_REPOSITORY/apex/STANDARDS.md).
+Apex is an advanced **autonomous software engineering agent** designed to adapt to your exact needs, empowering your VS Code environment. It integrates powerful AI reasoning with practical development tools to assist with complex coding tasks, aiming for **high reliability**, **resilience**, and adherence to **rigorous software engineering standards**. This project builds upon the foundation of the [Cline agent](https://github.com/cline/cline), integrating several sophisticated experimental AI systems developed by the author (including those linked in the Key Features section) focused on robust agentic workflows and high-quality, verifiable outputs according to the defined [Apex Software Compliance Standards](./workbench/STANDARDS_REPOSITORY/apex/STANDARDS.md).
 
 ## Installation
 
@@ -70,38 +70,39 @@ Currently, installation requires building from source (see [Local Development In
 Apex offers a powerful combination of advanced AI techniques and practical development tools:
 
 *   **Sophisticated Reasoning:**
-    *   Employs **[recursive chain-of-thought](https://github.com/justinlietz93/RCoT)** for complex problem-solving.
-    *   Uses **[hierarchical planning](https://github.com/justinlietz93/hierarchical_reasoning_generator)** to break down large tasks into manageable steps.
-    *   Integrates a **[council-of-critics](https://github.com/justinlietz93/critique_council)** mechanism for self-critique and plan refinement.
+    *   Integrates **[hierarchical objective reasoning](https://github.com/justinlietz93/hierarchical_reasoning_generator)**, combining **[recursive chain-of-thought](https://github.com/justinlietz93/RCoT)**, detailed **hierarchical planning**, and a **[council-of-critics](https://github.com/justinlietz93/critique_council)** self-critique mechanism. This structured approach enables robust decomposition and execution of complex tasks, enhancing resilience against errors and loops.
 *   **True Autonomy & Resilience:**
     *   Offers **`turnBased`**, **`stepLimited`**, and **`full`** autonomy modes.
-    *   The **`full`** autonomy mode provides true end-to-end task completion capability.
-    *   Features **automated failure recovery** and **resilience against loops** (via hierarchical planning).
+    *   The **`full`** autonomy mode provides true end-to-end task completion capability, leveraging the reasoning framework for **automated failure recovery**.
     *   Can **autonomously browse the web** and **look up documentation** to overcome obstacles.
 *   **Persistent Memory ([Neuroca](https://github.com/Modern-Prometheus-AI/Neuroca)):**
-    *   Utilizes a biologically inspired **Neuro-Cognitive Agentic** architecture.
-    *   Builds context understanding, retains information across sessions, and simulates learning.
+    *   Utilizes a biologically inspired **Neuro-Cognitive Agentic** architecture to build deep contextual understanding.
+    *   Retains information across interactions and sessions, simulating learning and informing the reasoning process for more effective, context-aware actions, especially crucial for long-running autonomous tasks.
 *   **[Dynamic Personas](https://github.com/justinlietz93/hierarchical_reasoning_generator/tree/main/hierarchical_planner/persona_builder):**
-    *   Automatically selects the best **expert persona** (e.g., "Senior Dev", "UI/UX Expert") for the task.
-    *   Can **dynamically switch personas** mid-task if needed (configurable).
+    *   Synergizes with Neuroca's context and the reasoning framework by automatically selecting the best **expert persona** for the current task or sub-task.
+    *   Can **dynamically switch personas** mid-task (configurable), ensuring the most relevant expertise guides the agent's sophisticated reasoning and actions.
 *   **End-to-End Project Workflow:**
     *   Capable of managing **full software cycles**: planning, architecture, implementation, testing, debugging.
-*   **Extensive Tool Suite:**
-    *   **File System:** Create, read, edit, explore; proactive lint/compile error fixing.
-    *   **Terminal:** Execute commands, monitor output, manage long-running processes.
-    *   **Web Browser:** Navigate, interact (click, type, scroll), analyze content autonomously for research or testing.
-    *   **Context:** Fetch URL content (`@url`), use workspace problems (`@problems`), include files (`@file`) / folders (`@folder`).
-    *   **Math:** Perform advanced calculations.
-*   **Extensibility ([MCP](https://github.com/modelcontextprotocol)):** Supports the Model Context Protocol for adding custom tools via local servers.
+*   **Unparalleled Tooling & Computer Control:** Goes far beyond typical agent capabilities:
+    *   **Full File System Access:** Create, read, edit, delete, and explore files/directories anywhere on the system (respecting permissions). Includes proactive lint/compile error fixing during edits.
+    *   **Complete Terminal Control:** Execute arbitrary shell commands, monitor output streams (stdout/stderr), manage long-running processes, and react to results.
+    *   **Autonomous Web Browsing & Interaction:** Navigate websites, fill forms, click buttons, scroll, analyze DOM content, and extract information for research, testing, or automation.
+    *   **Advanced Mathematics & AI Research Tools:** Includes capabilities extending into complex domains like quantum mechanics, topological data analysis, and neuromorphic computing simulation.
+    *   **Script Deployment:** Possesses a library of powerful scripts deployable as tool calls for complex, reusable operations.
+    *   **Rich Context Gathering:** Fetch and process content from URLs (`@url`), incorporate workspace diagnostics (`@problems`), and directly include file (`@file`) or folder (`@folder`) contents.
+*   **Extensibility ([MCP](https://github.com/modelcontextprotocol)):** Supports the Model Context Protocol for adding even more custom tools and capabilities via local servers.
 *   **Safety & Control:** Provides a **human-in-the-loop GUI** for oversight, alongside full autonomous operation.
 *   **Standards-Driven:** Operates according to the rigorous **[Apex Software Compliance Standards](./workbench/STANDARDS_REPOSITORY/apex/STANDARDS.md)**.
+*   **Local-First Operation:** No mandatory online account or sign-up required to use core features with local models or self-hosted APIs.
+*   **Profile Management:** Create and switch between local profiles to manage different configurations, API keys, and custom instructions for various projects or tasks.
+*   **Custom Prompt Library:** Save, manage, and easily apply your own custom system prompts and instructions.
 
 ## What to Expect (User Interaction)
 
 Interacting with Apex involves a dynamic workflow that adapts based on your chosen autonomy settings:
 
 1.  **Task Initiation:** Provide Apex with a goal (text prompt, optionally with images) via the chat interface. Add context using **`@file`**, **`@folder`**, **`@url`**, **`@problems`**, or context menu actions ("Add to Apex", "Fix with Apex").
-2.  **Agent Processing:** Apex analyzes the task and context, leveraging its reasoning (**RCoT**, **council-of-critics**, **hierarchical planning**) and selected **Dynamic Persona** to formulate a detailed, sequential plan adhering to internal standards.
+2.  **Agent Processing:** Apex analyzes the task and context, leveraging its reasoning (**[RCoT](https://github.com/justinlietz93/RCoT)**, **[council-of-critics](https://github.com/justinlietz93/critique_council)**, **[hierarchical planning](https://github.com/justinlietz93/hierarchical_reasoning_generator)**) and selected **[Dynamic Persona](https://github.com/justinlietz93/hierarchical_reasoning_generator/tree/main/hierarchical_planner/persona_builder)** to formulate a detailed, sequential plan adhering to internal standards.
 3.  **Execution Loop & Interaction:**
     *   **Transparency:** Apex streams its thoughts, step-by-step plans, and generated code/text directly to the chat interface.
     *   **Tool Use:** When Apex needs to interact with your system (e.g., edit files, run commands, use the browser), it requests permission via a **Tool Use** card.
@@ -112,7 +113,7 @@ Interacting with Apex involves a dynamic workflow that adapts based on your chos
         *   **`turnBased`:** Pauses after *every* significant step (LLM response or tool execution), presenting an **Ask prompt** requiring your input.
         *   **`stepLimited`:** Runs autonomously for N steps, then pauses with an **Ask prompt**.
         *   **`full`:** Runs continuously, attempting **automated error recovery**. Pauses only if recovery fails repeatedly or requires user clarification via an **Ask prompt**.
-    *   **Neuroca Memory:** Throughout the process, the **Neuroca** architecture helps Apex maintain context, recalling previous steps and information to inform decisions and prevent repetitive errors.
+    *   **[Neuroca](https://github.com/Modern-Prometheus-AI/Neuroca) Memory:** Throughout the process, the **Neuroca** architecture helps Apex maintain context, recalling previous steps and information to inform decisions and prevent repetitive errors.
 4.  **Completion & Verification:** Once the task goal is achieved (often signaled by a completion tool), Apex presents the final result. Internally, it relies on verification steps tied to its plan execution.
 
 This interactive model, combined with configurable autonomy and a focus on **resilient execution**, allows you to tailor Apex's operation from a closely supervised assistant to a highly **autonomous software engineering agent**.
@@ -131,15 +132,22 @@ This interactive model, combined with configurable autonomy and a focus on **res
 
 ### Use any API and Model
 
-Apex supports API providers like OpenRouter, Anthropic, OpenAI, Google Gemini, AWS Bedrock, Azure, and GCP Vertex. You can also configure any OpenAI compatible API, or use a local model through LM Studio/Ollama. If you're using OpenRouter, the extension fetches their latest model list, allowing you to use the newest models as soon as they're available.
+Apex offers unparalleled flexibility, supporting a wide array of the latest AI models through numerous providers and local setups:
 
-Apex has been thoughtfully crafted to support the best of any model, focusing on the strengths of each provider and allowing them to have full utility of their own native tools and structured output when possible. Models without native tool calling are still fully supported thanks to the Apex universal agent system.
+*   **Cloud Providers:** OpenRouter, Anthropic (Claude), OpenAI (GPT models, including latest releases), Google (Gemini models), AWS Bedrock, Azure OpenAI, GCP Vertex AI, Mistral AI, DeepSeek, Qwen (Alibaba). *(Provider list based on current dependencies/configuration options)*.
+*   **Local Models:** Ollama, LM Studio.
+*   **OpenAI-Compatible APIs:** Connect to any API endpoint adhering to the OpenAI standard (e.g., LiteLLM, custom endpoints).
+*   **VS Code Language Model API:** Integrates with models provided directly by VS Code itself (e.g., Copilot).
+
+Apex stays current: If you're using OpenRouter, the extension automatically fetches their dynamic model list, giving you immediate access to the newest models as they become available.
+
+Apex has been thoughtfully crafted to bring out the best of each provider model, leveraging native features like **structured output** and **tool calling** when available. For models lacking native tool support, Apex provides a **high-quality universal tool system**, ensuring broad compatibility and powerful capabilities across all supported models.
 
 The extension also keeps track of total tokens and API usage cost for the entire task loop and individual requests, keeping you informed of spend every step of the way.
 
 ### Dynamic Persona Switching & Autonomy
 
-Leveraging its **Neuroca** persistent memory to maintain task context, Apex offers fine-grained control over its operational style and autonomy level:
+Leveraging its **[Neuroca](https://github.com/Modern-Prometheus-AI/Neuroca)** persistent memory to maintain task context, Apex offers fine-grained control over its operational style and autonomy level:
 
 -   **`apex.agent.dynamicPersonaMode`**:
     -   `off`: No dynamic persona is used. Relies solely on static custom instructions.
