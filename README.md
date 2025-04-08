@@ -1,4 +1,14 @@
+<div align="center">
+  <img src="./assets/icons/icon-black.png" alt="Apex IDE Logo" width="250"/>
+</div>
+
+<div align="center">
+
 # Apex: CodeGenesis
+
+*Completely autonomous engineering agent with biologically inspired persistent memory*
+
+</div>
 
 <div align="center">
 <table>
@@ -16,17 +26,70 @@
 </table>
 </div>
 
-Apex is an advanced autonomous coding agent designed to adapt to your exact needs, empowering your VS Code environment.
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](./LICENSE)
+<!-- Add Build Status badge here once workflow is set up -->
+<!-- Add Marketplace badges here once published -->
 
-Apex leverages sophisticated reasoning techniques like recursive chain-of-thought and a council-of-critics self-critique mechanism. It offers various autonomy modes, persistent memory across sessions with biologically inspired Neuro-Cognitive Agentic (Neuroca) architecture, and dynamic persona switching. With a wide library of sophisticated tools enabling file creation/editing, project exploration, browser interaction, advanced mathematics, access to the latest documentation, and terminal command execution (with your approval), it assists with complex software development tasks. It can also utilize the Model Context Protocol (MCP) to dynamically extend its capabilities, although you likely won't need it thanks to Apex's expansive capabilities. This extension provides a human-in-the-loop GUI for safety and control over agent actions. However, you can let Apex go totally autonomous and the agent will run tests, fix bugs, plan deeply with its dynamic persona switching, hierarchical reasoning, Neuroca, and council of critics mental framework.
+---
+
+**Table of Contents**
+
+- [Overview](#overview)
+- [Installation](#installation)
+- [Key Features](#key-features)
+- [Workflow](#workflow)
+- [Use any API and Model](#use-any-api-and-model)
+- [Dynamic Persona Switching & Autonomy](#dynamic-persona-switching--autonomy)
+- [Run Commands in Terminal](#run-commands-in-terminal)
+- [Create and Edit Files](#create-and-edit-files)
+- [Use the Browser](#use-the-browser)
+- ["add a tool that..."](#add-a-tool-that)
+- [Add Context](#add-context)
+- [Checkpoints: Compare and Restore](#checkpoints-compare-and-restore)
+- [Contributing](#contributing)
+- [License](#license)
+
+---
+
+## Overview
+
+Apex is an advanced autonomous coding agent designed to adapt to your exact needs, empowering your VS Code environment. It integrates powerful AI reasoning with practical development tools to assist with complex coding tasks.
+
+## Installation
+
+Install Apex from your preferred marketplace:
+
+- [**Visual Studio Marketplace**](https://marketplace.visualstudio.com/items?itemName=justinlietz93.apex-ide-codegenesis)
+- [**Open VSX Registry**](https://open-vsx.org/extension/justinlietz93/apex-ide-codegenesis)
+
+## Key Features
+
+Apex leverages sophisticated reasoning techniques and offers a wide range of capabilities:
+
+*   **Advanced Reasoning:** Utilizes [recursive chain-of-thought](https://github.com/justinlietz93/RCoT) and a [council-of-critics](https://github.com/justinlietz93/critique_council) self-critique mechanism for robust planning and execution.
+*   **Flexible Autonomy:** Choose from `turnBased` (step-by-step confirmation), `stepLimited` (bursts of N steps), or `full` autonomy modes.
+*   **Persistent Memory (Neuroca):** Employs a biologically inspired [Neuro-Cognitive Agentic](https://github.com/Modern-Prometheus-AI/Neuroca) architecture, allowing Apex to retain context and learn across multiple sessions within a task.
+*   **[Dynamic Personas](https://github.com/justinlietz93/hierarchical_reasoning_generator/tree/main/hierarchical_planner/persona_builder):** Automatically selects the most suitable expert persona for your task and can adapt mid-task if the context shifts (configurable).
+*   **Extensive Tool Use:** Features a comprehensive suite of built-in tools enabling:
+    *   **File System Operations:** Create, read, edit files, and explore project structure. Includes proactive monitoring and fixing of linter/compiler errors during edits.
+    *   Terminal command execution with output monitoring.
+    *   Browser interaction (clicking, typing, scrolling) for testing and debugging.
+    *   Accessing web content via URL fetching.
+    *   Advanced mathematics.
+*   **Model Context Protocol (MCP):** Supports dynamic capability extension via MCP servers (though often unnecessary due to built-in tools).
+*   **Safety & Control:** Provides a human-in-the-loop GUI alongside full autonomous capabilities.
+*   **Comprehensive Task Handling:** Can run tests, fix bugs, and plan complex tasks using its integrated mental framework (including [hierarchical reasoning](https://github.com/justinlietz93/hierarchical_reasoning_generator)).
+
+## Workflow
 
 1.  Enter your task, optionally adding images for UI generation or bug fixing.
 2.  Apex analyzes your project structure, source code, and relevant files to gain context.
-3.  It can then:
-    *   Create and edit files, monitoring and fixing linter/compiler errors proactively.
-    *   Execute terminal commands, observing output to react to build or runtime issues.
-    *   Interact with web applications via a headless browser for testing and debugging.
+3.  It performs actions using its tools (file edits, commands, browser interaction).
 4.  Upon completion, Apex presents the results, often with a command to view or run the outcome.
+
+<div align="center">
+  <img src="./assets/docs/demo.gif" alt="Apex Demo GIF"/>
+</div>
 
 > [!TIP]
 > Use `CMD/CTRL + Shift + P` and search for "Apex: Open In New Tab" to open the agent in an editor tab for a side-by-side view of its work.
