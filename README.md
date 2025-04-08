@@ -30,6 +30,9 @@
 <!-- Add Build Status badge here once workflow is set up -->
 <!-- Add Marketplace badges here once published -->
 
+> [!NOTE]
+> **Status:** First release is ~95% ready to launch! Actively seeking feedback and testers.
+
 ---
 
 **Table of Contents**
@@ -37,6 +40,7 @@
 - [Overview](#overview)
 - [Installation](#installation)
 - [Key Features](#key-features)
+- [What to Expect (User Interaction)](#what-to-expect-user-interaction)
 - [Workflow](#workflow)
 - [Use any API and Model](#use-any-api-and-model)
 - [Dynamic Persona Switching & Autonomy](#dynamic-persona-switching--autonomy)
@@ -53,7 +57,7 @@
 
 ## Overview
 
-Apex is an advanced autonomous coding agent designed to adapt to your exact needs, empowering your VS Code environment. It integrates powerful AI reasoning with practical development tools to assist with complex coding tasks.
+Apex is an advanced **autonomous software engineering agent** designed to adapt to your exact needs, empowering your VS Code environment. It integrates powerful AI reasoning with practical development tools to assist with complex coding tasks, aiming for **high reliability** and **resilience**. This project originated as a fork of the [Cline agent](https://github.com/cline/cline) and incorporates concepts and tools from several other experimental AI projects focused on robust agentic workflows.
 
 ## Installation
 
@@ -64,21 +68,55 @@ Install Apex from your preferred marketplace:
 
 ## Key Features
 
-Apex leverages sophisticated reasoning techniques and offers a wide range of capabilities:
+Apex offers a powerful combination of advanced AI techniques and practical development tools:
 
-*   **Advanced Reasoning:** Utilizes [recursive chain-of-thought](https://github.com/justinlietz93/RCoT) and a [council-of-critics](https://github.com/justinlietz93/critique_council) self-critique mechanism for robust planning and execution.
-*   **Flexible Autonomy:** Choose from `turnBased` (step-by-step confirmation), `stepLimited` (bursts of N steps), or `full` autonomy modes.
-*   **Persistent Memory (Neuroca):** Employs a biologically inspired [Neuro-Cognitive Agentic](https://github.com/Modern-Prometheus-AI/Neuroca) architecture, allowing Apex to retain context and learn across multiple sessions within a task.
-*   **[Dynamic Personas](https://github.com/justinlietz93/hierarchical_reasoning_generator/tree/main/hierarchical_planner/persona_builder):** Automatically selects the most suitable expert persona for your task and can adapt mid-task if the context shifts (configurable).
-*   **Extensive Tool Use:** Features a comprehensive suite of built-in tools enabling:
-    *   **File System Operations:** Create, read, edit files, and explore project structure. Includes proactive monitoring and fixing of linter/compiler errors during edits.
-    *   Terminal command execution with output monitoring.
-    *   Browser interaction (clicking, typing, scrolling) for testing and debugging.
-    *   Accessing web content via URL fetching.
-    *   Advanced mathematics.
-*   **Model Context Protocol (MCP):** Supports dynamic capability extension via MCP servers (though often unnecessary due to built-in tools).
-*   **Safety & Control:** Provides a human-in-the-loop GUI alongside full autonomous capabilities.
-*   **Comprehensive Task Handling:** Can run tests, fix bugs, and plan complex tasks using its integrated mental framework (including [hierarchical reasoning](https://github.com/justinlietz93/hierarchical_reasoning_generator)).
+*   **Sophisticated Reasoning:**
+    *   Employs **[recursive chain-of-thought](https://github.com/justinlietz93/RCoT)** for complex problem-solving.
+    *   Uses **[hierarchical planning](https://github.com/justinlietz93/hierarchical_reasoning_generator)** to break down large tasks into manageable steps.
+    *   Integrates a **[council-of-critics](https://github.com/justinlietz93/critique_council)** mechanism for self-critique and plan refinement.
+*   **True Autonomy & Resilience:**
+    *   Offers **`turnBased`**, **`stepLimited`**, and **`full`** autonomy modes.
+    *   In **`full`** autonomy, aims for end-to-end task completion with minimal intervention.
+    *   Features **automated failure recovery** and **resilience against loops** (via hierarchical planning).
+    *   Can **autonomously browse the web** and **look up documentation** to overcome obstacles.
+*   **Persistent Memory ([Neuroca](https://github.com/Modern-Prometheus-AI/Neuroca)):**
+    *   Utilizes a biologically inspired **Neuro-Cognitive Agentic** architecture.
+    *   Builds context understanding, retains information across sessions, and simulates learning.
+*   **[Dynamic Personas](https://github.com/justinlietz93/hierarchical_reasoning_generator/tree/main/hierarchical_planner/persona_builder):**
+    *   Automatically selects the best **expert persona** (e.g., "Senior Dev", "UI/UX Expert") for the task.
+    *   Can **dynamically switch personas** mid-task if needed (configurable).
+*   **End-to-End Project Workflow:**
+    *   Capable of managing **full software cycles**: planning, architecture, implementation, testing, debugging.
+*   **Extensive Tool Suite:**
+    *   **File System:** Create, read, edit, explore; proactive lint/compile error fixing.
+    *   **Terminal:** Execute commands, monitor output, manage long-running processes.
+    *   **Web Browser:** Navigate, interact (click, type, scroll), analyze content autonomously for research or testing.
+    *   **Context:** Fetch URL content (`@url`), use workspace problems (`@problems`), include files (`@file`) / folders (`@folder`).
+    *   **Math:** Perform advanced calculations.
+*   **Extensibility ([MCP](https://github.com/modelcontextprotocol)):** Supports the Model Context Protocol for adding custom tools via local servers.
+*   **Safety & Control:** Provides a **human-in-the-loop GUI** for oversight, alongside full autonomous operation.
+*   **Standards-Driven:** Operates according to the rigorous **[Apex Software Compliance Standards](./workbench/STANDARDS_REPOSITORY/apex/STANDARDS.md)**.
+
+## What to Expect (User Interaction)
+
+Interacting with Apex involves a dynamic workflow that adapts based on your chosen autonomy settings:
+
+1.  **Task Initiation:** Provide Apex with a goal (text prompt, optionally with images) via the chat interface. Add context using **`@file`**, **`@folder`**, **`@url`**, **`@problems`**, or context menu actions ("Add to Apex", "Fix with Apex").
+2.  **Agent Processing:** Apex analyzes the task and context, leveraging its reasoning (**RCoT**, **council-of-critics**, **hierarchical planning**) and selected **Dynamic Persona** to formulate a detailed, sequential plan adhering to internal standards.
+3.  **Execution Loop & Interaction:**
+    *   **Transparency:** Apex streams its thoughts, step-by-step plans, and generated code/text directly to the chat interface.
+    *   **Tool Use:** When Apex needs to interact with your system (e.g., edit files, run commands, use the browser), it requests permission via a **Tool Use** card.
+        *   **Approval:** Based on your **Auto-Approval Settings**, you may be prompted to "Allow" or "Deny". Denying prompts Apex to reconsider. Auto-approved actions execute immediately.
+        *   **File Edits:** Changes are presented in a **diff view** for review, editing, or acceptance.
+        *   **Terminal Commands:** Commands run in the integrated terminal, with output streamed back to Apex. Long-running commands can proceed in the background.
+    *   **Autonomy Modes & Pausing:**
+        *   **`turnBased`:** Pauses after *every* significant step (LLM response or tool execution), presenting an **Ask prompt** requiring your input.
+        *   **`stepLimited`:** Runs autonomously for N steps, then pauses with an **Ask prompt**.
+        *   **`full`:** Runs continuously, attempting **automated error recovery**. Pauses only if recovery fails repeatedly or requires user clarification via an **Ask prompt**.
+    *   **Neuroca Memory:** Throughout the process, the **Neuroca** architecture helps Apex maintain context, recalling previous steps and information to inform decisions and prevent repetitive errors.
+4.  **Completion & Verification:** Once the task goal is achieved (often signaled by a completion tool), Apex presents the final result. Internally, it relies on verification steps tied to its plan execution.
+
+This interactive model, combined with configurable autonomy and a focus on **resilient execution**, allows you to tailor Apex's operation from a closely supervised assistant to a highly **autonomous software engineering agent**.
 
 ## Workflow
 
@@ -86,10 +124,6 @@ Apex leverages sophisticated reasoning techniques and offers a wide range of cap
 2.  Apex analyzes your project structure, source code, and relevant files to gain context.
 3.  It performs actions using its tools (file edits, commands, browser interaction).
 4.  Upon completion, Apex presents the results, often with a command to view or run the outcome.
-
-<div align="center">
-  <img src="./assets/docs/demo.gif" alt="Apex Demo GIF"/>
-</div>
 
 > [!TIP]
 > Use `CMD/CTRL + Shift + P` and search for "Apex: Open In New Tab" to open the agent in an editor tab for a side-by-side view of its work.
@@ -106,7 +140,7 @@ The extension also keeps track of total tokens and API usage cost for the entire
 
 ### Dynamic Persona Switching & Autonomy
 
-Control how Apex operates:
+Leveraging its **Neuroca** persistent memory to maintain task context, Apex offers fine-grained control over its operational style and autonomy level:
 
 -   **`apex.agent.dynamicPersonaMode`**:
     -   `off`: No dynamic persona is used. Relies solely on static custom instructions.
@@ -114,7 +148,7 @@ Control how Apex operates:
     -   `threshold`: Selects an initial persona and periodically re-evaluates the conversation context. If the context suggests a different persona is more suitable (based on a similarity threshold), Apex will switch personas mid-task.
 -   **`apex.agent.dynamicPersonaThreshold`** (Optional, used with `threshold` mode): A number between 0 and 1 (default 0.7) representing the similarity score required to trigger a persona switch. Higher values mean the suggested persona must be a very strong match to the current context. *(Note: Similarity scoring is planned for future implementation)*.
 -   **`apex.agent.dynamicPersonaCheckFrequency`** (Optional, used with `threshold` mode): A number (default 5) indicating how many agent turns should pass before checking if a persona switch is needed.
--   **`apex.agent.autonomyMode`**: Choose between `turnBased` (user confirms each step), `stepLimited` (runs N steps autonomously), or `full` (runs until completion or error).
+-   **`apex.agent.autonomyMode`**: Choose between `turnBased` (user confirms each step), `stepLimited` (runs N steps autonomously before pausing), or `full` (runs until completion or error, attempting self-recovery). These modes directly influence the interaction flow described in the ["What to Expect"](#what-to-expect-user-interaction) section.
 
 ### Run Commands in Terminal
 
