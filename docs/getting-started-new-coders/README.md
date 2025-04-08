@@ -21,7 +21,6 @@ Before you begin, make sure you have the following:
         -   Example: `Documents/Apex/portfolio-website` for your portfolio
 -   **Apex Extension in VS Code:** The Apex extension installed in VS Code.
 
--   Here's a [tutorial](https://www.youtube.com/watch?v=N4td-fKhsOQ) on everything you need to get started.
 
 ## Step-by-Step Setup
 
