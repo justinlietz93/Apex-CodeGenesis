@@ -19,8 +19,6 @@
     3. Find the "Custom Instructions" field
     4. Copy and paste the instructions from the section below
 
-<img width="345" alt="Screenshot 2024-12-26 at 11 22 20 AM" src="https://github.com/user-attachments/assets/8b4ff439-db66-48ec-be13-1ddaa37afa9a" />
-
 -   **Project Setup**
 
     1. Create an empty `apex_docs` folder in your project root (i.e. YOUR-PROJECT-FOLDER/apex_docs)
@@ -39,10 +37,9 @@
 ### 3. Author & Contributors
 
 -   **Author**
-    -   nickbaumann98
+    -   justinlietz93
 -   **Contributors**
-    -   Contributors (Discord: [Apex's #prompts](https://discord.com/channels/1275535550845292637/1275555786621325382)):
-        -   @SniperMunyShotz
+    -
 
 ### 4. Custom Instructions
 
