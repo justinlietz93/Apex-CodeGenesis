@@ -69,6 +69,8 @@ Currently, installation requires building from source (see [Local Development In
 
 Apex offers a powerful combination of advanced AI techniques and practical development tools:
 
+(a few may not be implemented yet, but the modules and components themselves are fully completed and awaiting implementation)
+
 *   **Sophisticated Reasoning:**
     *   Integrates **[hierarchical objective reasoning](https://github.com/justinlietz93/hierarchical_reasoning_generator)**, combining **[recursive chain-of-thought](https://github.com/justinlietz93/RCoT)**, detailed **hierarchical planning**, and a **[council-of-critics](https://github.com/justinlietz93/critique_council)** self-critique mechanism. This structured approach enables robust decomposition and execution of complex tasks, enhancing resilience against errors and loops.
 *   **True Autonomy & Resilience:**
