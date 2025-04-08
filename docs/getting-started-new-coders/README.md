@@ -43,7 +43,6 @@ Follow these steps to get Apex up and running:
     - **Troubleshooting:** If you don't see the Apex icon, try restarting VS Code.
     - **What You'll See:** You should see the Apex chat window appear in your VS Code editor.
 
-![gettingStartedVsCodeApex](https://github.com/user-attachments/assets/622b4bb7-859b-4c2e-b87b-c12e3eabefb8)
 
 ## Setting up OpenRouter API Key
 
@@ -82,11 +81,3 @@ Hey Apex! Could you help me create a new project folder called "hello-world" in 
 
 -   **What is the Terminal?** The terminal is a text-based interface for interacting with your computer. It allows you to run commands to perform various tasks, such as installing packages, running scripts, and managing files. Apex uses the terminal to execute commands and interact with your development environment.
 -   **How Does the Codebase Work?** (This section will be expanded based on common questions from new coders)
-
-## Still Struggling?
-
-Feel free to contact me, and I'll help you get started with Apex.
-
-nick | 608-558-2410
-
-Join our Discord community: [https://discord.gg/apex](https://discord.gg/apex)
