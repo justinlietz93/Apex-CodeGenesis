@@ -55,7 +55,6 @@ Apex is your AI assistant that can:
 
 ## Available Tools
 
-For the most up-to-date implementation details, you can view the full source code in the [Apex repository](https://github.com/apex/apex/blob/main/src/core/Apex.ts).
 
 Apex has access to the following tools for various tasks:
 
@@ -133,6 +132,5 @@ Each tool has specific parameters and usage patterns. Here are some examples:
 
 ## Getting Help
 
--   [Join the Discord community](https://discord.gg/apex)
 -   Check the documentation
 -   Provide feedback to improve Apex
