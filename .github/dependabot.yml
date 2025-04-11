@@ -4,7 +4,7 @@ updates:
     - package-ecosystem: "npm"
       directory: "/"
       schedule:
-          interval: "weekly"
+          interval: "daily"
       # Group all updates into a single PR
       groups:
           all-dependencies:
@@ -22,7 +22,7 @@ updates:
     - package-ecosystem: "npm"
       directory: "/webview-ui"
       schedule:
-          interval: "weekly"
+          interval: "daily"
       groups:
           all-dependencies:
               patterns:
