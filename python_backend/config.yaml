@@ -10,7 +10,7 @@ llm:
   max_output_tokens: 8192
   #host: http://127.0.0.1
   #port: 11434
-  #api_key: # Alternatively, set GEMINI_API_KEY in .env
+  #api_key: YOUR_API_KEY_HERE # Alternatively, set GEMINI_API_KEY in .env
   # safety_settings: # Optional safety settings if needed
   #   - category: HARM_CATEGORY_HARASSMENT
   #     threshold: BLOCK_MEDIUM_AND_ABOVE
