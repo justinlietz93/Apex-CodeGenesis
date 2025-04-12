@@ -3,6 +3,7 @@ import styled from "styled-components"
 import { McpMarketplaceItem, McpServer } from "../../../../../src/shared/mcp"
 import { vscode } from "../../../utils/vscode"
 import { useEvent } from "react-use"
+import DOMPurify from "dompurify"
 
 interface McpMarketplaceCardProps {
 	item: McpMarketplaceItem
@@ -38,6 +39,10 @@ const McpMarketplaceCard = ({ item, installedServers }: McpMarketplaceCardProps)
 		return item.githubUrl
 	}, [item.githubUrl])
 
+	// Sanitize URLs to prevent XSS
+	const sanitizedGithubUrl = useMemo(() => DOMPurify.sanitize(item.githubUrl), [item.githubUrl])
+	const sanitizedAuthorUrl = useMemo(() => DOMPurify.sanitize(githubAuthorUrl), [githubAuthorUrl])
+
 	return (
 		<>
 			<style>
@@ -55,7 +60,7 @@ const McpMarketplaceCard = ({ item, installedServers }: McpMarketplaceCardProps)
 				`}
 			</style>
 			<a
-				href={item.githubUrl}
+				href={sanitizedGithubUrl}
 				className="mcp-card"
 				style={{
 					padding: "14px 16px",
@@ -71,7 +76,7 @@ const McpMarketplaceCard = ({ item, installedServers }: McpMarketplaceCardProps)
 					{/* Logo */}
 					{item.logoUrl && (
 						<img
-							src={item.logoUrl}
+							src={DOMPurify.sanitize(item.logoUrl)}
 							alt={`${item.name} logo`}
 							style={{
 								width: 42,
@@ -138,7 +143,7 @@ const McpMarketplaceCard = ({ item, installedServers }: McpMarketplaceCardProps)
 								rowGap: 0,
 							}}>
 							<a
-								href={githubAuthorUrl}
+								href={sanitizedAuthorUrl}
 								style={{
 									display: "flex",
 									alignItems: "center",
