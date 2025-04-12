@@ -1,5 +1,21 @@
 {
 	// See http://go.microsoft.com/fwlink/?LinkId=827846
 	// for the documentation about the extensions.json format
-	"recommendations": ["dbaeumer.vscode-eslint", "connor4312.esbuild-problem-matchers", "ms-vscode.extension-test-runner"]
+	"recommendations": [
+		// Essential extension development
+		"dbaeumer.vscode-eslint",
+		"esbenp.prettier-vscode",
+		"connor4312.esbuild-problem-matchers",
+		"ms-vscode.extension-test-runner",
+
+		// TypeScript/JavaScript
+		"ms-vscode.vscode-typescript-next",
+		"orta.vscode-jest",
+
+		// Python backend
+		"ms-python.python",
+
+		// Documentation
+		"bierner.markdown-mermaid"
+	]
 }
