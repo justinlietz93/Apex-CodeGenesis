@@ -9,3 +9,4 @@ python_backend/personas/
 python_backend/prompts/
 *_persona.json
 *_persona.yaml
+reports/dependency-report.html

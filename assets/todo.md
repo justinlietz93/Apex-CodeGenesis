@@ -1,1 +1,0 @@
-TODO: [] Need to update the gif and icons to C:\git\CodeGen_IDE\codegenesis\assets\icons\ApexLogoWhite.png and a custom gif

@@ -62,7 +62,7 @@ http://0.0.0.0:8025/img.png
 https://localhost:8080/img.jpg
 http://localhost:8080/
 https://localhost/
-http://httpbin.org/#/ 
+http://httpbin.org/#/
 https://snthonstcrgrfonhenth.com/nthshtf
 http://domain/.well-known/acme-challenge/token
 https://<strong>dextools</strong>.apiable.io/(Only
@@ -177,7 +177,6 @@ https://<strong>dextools</strong>.apiable.io/(Only
 106. https://www.example.com/path/to/file.html?param=<svg><animate onbegin="alert('XSS')" attributeName="x" />
 107. https://www.example.com/path/to/file.html?param=<svg><animate onbegin="alert('XSS')" attributeName="x" />
 108. https://www.example.com/path/to/file.html?param=<svg><animate onbegin="alert('XSS')" attributeName="x" />
-
 
 ## Popular URLs by Popularity Test Case
 
@@ -680,4 +679,4 @@ https://<strong>dextools</strong>.apiable.io/(Only
 497. https://intel.com
 498. https://bp0.blogger.com
 499. https://box.com
-499. https://nhk.or.jp
+500. https://nhk.or.jp

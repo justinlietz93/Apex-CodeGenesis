@@ -10,7 +10,9 @@ import { ApiHandler } from "../index"
 import { convertToOpenAiMessages } from "../transform/openai-format"
 import { ApiStream } from "../transform/stream"
 import { convertToR1Format } from "../transform/r1-format"
-import { ChatCompletionReasoningEffort } from "openai/resources/chat/completions.mjs"
+
+// Define type for ChatCompletionReasoningEffort as it's causing import issues
+type ChatCompletionReasoningEffort = "low" | "medium" | "high" | "auto"
 
 // Define OpenAI Tool Schemas
 const openAiTools: ChatCompletionTool[] = [
@@ -249,7 +251,6 @@ export class OpenAiHandler implements ApiHandler {
 			...convertToOpenAiMessages(messages),
 		]
 		let temperature: number | undefined = this.options.openAiModelInfo?.temperature ?? openAiModelInfoSaneDefaults.temperature
-		let reasoningEffort: ChatCompletionReasoningEffort | undefined = undefined
 		let maxTokens: number | undefined
 
 		if (this.options.openAiModelInfo?.maxTokens && this.options.openAiModelInfo.maxTokens > 0) {
@@ -262,24 +263,33 @@ export class OpenAiHandler implements ApiHandler {
 			openAiMessages = convertToR1Format([{ role: "user", content: systemPrompt }, ...messages])
 		}
 
-		if (isO3Mini) {
-			openAiMessages = [{ role: "developer", content: systemPrompt }, ...convertToOpenAiMessages(messages)]
-			temperature = undefined // does not support temperature
-			reasoningEffort = (this.options.o3MiniReasoningEffort as ChatCompletionReasoningEffort) || "medium"
-		}
-
-		const stream = await this.client.chat.completions.create({
+		// Create params object to safely add optional properties
+		const params: any = {
 			model: modelId,
 			messages: openAiMessages,
 			temperature,
 			max_tokens: maxTokens,
-			reasoning_effort: reasoningEffort,
 			tools: openAiTools, // Pass defined tool schemas
 			tool_choice: "auto", // Let the model decide when to call tools
 			stream: true,
 			stream_options: { include_usage: true },
-		})
-		for await (const chunk of stream) {
+		}
+
+		if (isO3Mini) {
+			params.messages = [{ role: "developer", content: systemPrompt }, ...convertToOpenAiMessages(messages)]
+			params.temperature = undefined // does not support temperature
+
+			// Add reasoning_effort if available
+			if (this.options.o3MiniReasoningEffort) {
+				params.reasoning_effort = this.options.o3MiniReasoningEffort
+			} else {
+				params.reasoning_effort = "medium"
+			}
+		}
+
+		const stream = await this.client.chat.completions.create(params)
+
+		for await (const chunk of params.stream) {
 			const delta = chunk.choices[0]?.delta
 
 			// Check for tool calls in the delta
@@ -289,7 +299,7 @@ export class OpenAiHandler implements ApiHandler {
 				// A more robust implementation would handle partial tool call chunks if the API sends them.
 
 				// Transform OpenAI tool calls to the standardized FunctionCall format
-				const transformedCalls: FunctionCall[] = delta.tool_calls.flatMap((tc) => {
+				const transformedCalls: FunctionCall[] = delta.tool_calls.flatMap((tc: ChatCompletionMessageToolCall) => {
 					// Ensure function name and arguments exist
 					if (tc.function?.name && tc.function?.arguments) {
 						const name = tc.function.name
