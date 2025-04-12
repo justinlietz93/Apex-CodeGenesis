@@ -1,12 +1,12 @@
 """
 Utility for loading and managing configuration settings.
 """
-
+import sys
 import os
 import yaml
 from dotenv import load_dotenv
 # Adjust import path for the new location
-from ..exceptions import ConfigError
+from exceptions import ConfigError
 
 
 class ConfigLoader:

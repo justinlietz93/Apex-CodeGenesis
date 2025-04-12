@@ -2,12 +2,15 @@
 
 # LLM Settings (Ensure API key is set via .env or here)
 llm:
-  model: "gemini-1.5-flash-latest" # Or specify another preferred model like gemini-1.5-pro-latest
+  provider: "google"
+  model: "gemini-1.5-pro-latest" # Or specify another preferred model like gemini-1.5-pro-latest
   temperature: 0.7
   top_p: 0.95
   top_k: 40
   max_output_tokens: 8192
-  # api_key: YOUR_API_KEY_HERE # Alternatively, set GEMINI_API_KEY in .env
+  #host: http://127.0.0.1
+  #port: 11434
+  #api_key: YOUR_API_KEY_HERE # Alternatively, set GEMINI_API_KEY in .env
   # safety_settings: # Optional safety settings if needed
   #   - category: HARM_CATEGORY_HARASSMENT
   #     threshold: BLOCK_MEDIUM_AND_ABOVE

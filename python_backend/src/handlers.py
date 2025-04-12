@@ -17,7 +17,7 @@ from protocol_types import ExecuteTaskParams, ExecuteTaskResult, EditorContext
 from utils.config_loader import ConfigLoader
 from utils.prompt_manager import PromptManager
 from core.checklist_generator import ChecklistGenerator
-from google import genai # Need genai for the LLM call in select_persona
+from llm_client import LLMClient
 from council.council_critique import CouncilCritiqueModule
 from knowledge_manager import KnowledgeManager # Added KnowledgeManager import
 from exceptions import ChecklistGeneratorError, LLMError, ConfigError, PromptError, QAValidationError, CouncilCritiqueError # Import relevant exceptions
@@ -55,20 +55,19 @@ def initialize_reasoning_components():
         config_loader = ConfigLoader() # Loads config.yaml and .env
         REASONING_COMPONENTS["config_loader"] = config_loader
 
+        llm_config = config_loader.get_llm_config()
+        provider=llm_config.get("provider")
         # Configure Gemini globally (required by components)
+
         api_key = config_loader.get_api_key()
-        if not api_key:
-             raise ConfigError("GEMINI_API_KEY not found in environment or config.")
-        from google import genai
-        genai.configure(api_key=api_key)
-        logger.info("Gemini API configured.")
+        if not api_key and provider == "google":
+            raise ConfigError("API_KEY not found in environment or config.")
 
         prompt_manager = PromptManager() # Assumes prompts dir in python_backend root
         REASONING_COMPONENTS["prompt_manager"] = prompt_manager
 
         # Initialize Checklist Generator (ReasoningTree is internal to it)
         # Pass relevant config sections
-        llm_config = config_loader.get_llm_config()
         decomposition_config = config_loader.get_decomposition_config()
         reasoning_tree_config = config_loader.get_reasoning_tree_config() # Needed for ChecklistGenerator init
         generator_config = {**llm_config, **decomposition_config, **reasoning_tree_config} # Merge configs
@@ -129,6 +128,8 @@ def initialize_reasoning_components():
         logger.critical(f"Failed to initialize reasoning components: {e}", exc_info=True)
         REASONING_COMPONENTS["initialized"] = False
         # Optionally re-raise
+
+    return REASONING_COMPONENTS
 
 # Call initialization eagerly when the module loads.
 # Consider lazy initialization or initialization via a dedicated RPC call if preferred.
@@ -436,7 +437,7 @@ async def handle_knowledge_search(params: Dict[str, Any]) -> Dict[str, Any]:
 
 async def _call_llm_for_persona(prompt: str) -> str:
     """Helper function to call LLM specifically for persona selection."""
-    # This assumes the LLM client (genai) is configured globally
+    # This assumes the LLM client is configured globally
     # and uses a potentially simpler/faster model if configured.
     # TODO: Consider using a dedicated model/config for this simple selection task.
     global REASONING_COMPONENTS
@@ -449,8 +450,8 @@ async def _call_llm_for_persona(prompt: str) -> str:
     logger.debug(f"Using model {model_name} for persona selection.")
 
     try:
-        model = genai.GenerativeModel(model_name)
-        response = await model.generate_content_async(prompt)
+        client = LLMClient()
+        response = await client.generate(prompt)
         if not response.text:
              block_reason = response.prompt_feedback.block_reason if response.prompt_feedback else 'Unknown'
              logger.warning(f"LLM response for persona selection was empty/blocked: {block_reason}")
@@ -473,9 +474,9 @@ async def _call_llm_for_analysis(prompt: str, model_name: Optional[str] = None) 
     logger.debug(f"Using model {effective_model_name} for analysis.")
 
     try:
-        model = genai.GenerativeModel(effective_model_name)
+        client = LLMClient()
         # Consider adding safety settings if needed for analysis prompts
-        response = await model.generate_content_async(prompt)
+        response = await client.generate(prompt)
         if not response.text:
              block_reason = response.prompt_feedback.block_reason if response.prompt_feedback else 'Unknown'
              logger.warning(f"LLM response for analysis was empty/blocked: {block_reason}")

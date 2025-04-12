@@ -6,11 +6,11 @@ import asyncio
 import json
 import logging # Import logging
 from typing import List, Dict, Any
-import google.generativeai as genai
+from llm_client import LLMClient
 
 # Adjust import paths
-from ..exceptions import CouncilCritiqueError, LLMError
-from ..utils.prompt_manager import PromptManager
+from exceptions import CouncilCritiqueError, LLMError
+from utils.prompt_manager import PromptManager
 
 
 class CouncilCritiqueModule:
@@ -25,12 +25,11 @@ class CouncilCritiqueModule:
         Args:
             config (dict): Council critique configuration (should include LLM settings).
             prompt_manager (PromptManager): Prompt manager instance.
-            llm_client: LLM client instance (Note: Redundant if genai configured globally).
+            llm_client: LLM client instance (Note: Redundant if client configured globally).
             logger (logging.Logger, optional): Logger instance.
         """
         self.config = config
         self.prompt_manager = prompt_manager
-        # self.llm_client = llm_client or genai # Rely on global genai
         self.logger = logger or logging.getLogger(self.__class__.__name__) # Get logger
         self.enabled = config.get("enabled", True) # Control if council logic is active
 
@@ -42,26 +41,8 @@ class CouncilCritiqueModule:
              self.enabled = False # Disable if no personas are active
 
         # Initialize LLM model - Use model name from config
-        model_name = self.config.get("model")
-        if not model_name:
-             raise CouncilCritiqueError("LLM model name not found in council configuration.")
-
-        self.logger.info("Initializing CouncilCritiqueModule LLM with model: %s", model_name)
-        try:
-             # Assumes genai is configured globally
-            self.model = genai.GenerativeModel(
-                model_name=model_name,
-                generation_config={
-                    "temperature": self.config.get("temperature", 0.7),
-                    "top_p": self.config.get("top_p", 0.95),
-                    "top_k": self.config.get("top_k", 40), # Use config or default
-                    "max_output_tokens": self.config.get("max_output_tokens", 8192), # Use config or default
-                }
-            )
-        except Exception as e:
-             self.logger.error("Failed to initialize GenerativeModel for CouncilCritique: %s", e, exc_info=True)
-             raise CouncilCritiqueError(f"Failed to initialize LLM model '{model_name}' for CouncilCritique: {e}")
-
+        if llm_client == None:
+            self.llm_client = LLMClient()
 
     async def review_and_refine(self, steps, context):
         """
@@ -230,25 +211,7 @@ class CouncilCritiqueModule:
         """
         Call the LLM with the given prompt using the class's model instance.
         """
-        if not hasattr(self, 'model') or not self.model:
-             raise LLMError("CouncilCritique LLM model is not initialized.")
-        try:
-            self.logger.debug("Calling LLM (CouncilCritique)...")
-            # Add safety settings if needed from config
-            safety_settings = self.config.get("safety_settings", None)
-            response = await self.model.generate_content_async(
-                 prompt,
-                 safety_settings=safety_settings
-            )
-            self.logger.debug("LLM call successful (CouncilCritique).")
-            if not response.text:
-                 block_reason = response.prompt_feedback.block_reason if response.prompt_feedback else 'Unknown'
-                 self.logger.warning(f"LLM response (CouncilCritique) was empty or blocked. Reason: {block_reason}")
-                 raise LLMError(f"LLM response (CouncilCritique) was empty or blocked (Reason: {block_reason}). Prompt: {prompt[:100]}...")
-            return response.text
-        except Exception as e:
-            self.logger.error("LLM call failed (CouncilCritique): %s", str(e), exc_info=True)
-            raise LLMError(f"LLM call failed (CouncilCritique): {str(e)}")
+        return await self.llm_client.generate(prompt)
 
     def _parse_revised_steps(self, response):
         """

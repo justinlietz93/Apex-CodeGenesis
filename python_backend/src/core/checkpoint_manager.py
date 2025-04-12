@@ -9,7 +9,7 @@ import time
 import logging
 from datetime import datetime
 # Adjust import path
-from ..exceptions import CheckpointError
+from exceptions import CheckpointError
 
 
 class CheckpointManager:
