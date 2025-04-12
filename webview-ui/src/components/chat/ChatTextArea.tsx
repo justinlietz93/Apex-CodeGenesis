@@ -17,8 +17,8 @@ import { MAX_IMAGES_PER_MESSAGE } from "./ChatView"
 import ContextMenu from "./ContextMenu"
 import { useContextMentions } from "./ChatTextArea/useContextMentions"
 import { ChatSettings } from "../../../../src/shared/ChatSettings"
-import ImageThumbnails from "./ChatTextArea/ImageThumbnails";
-import ChatControls from "./ChatTextArea/ChatControls"; // Import ChatControls
+import ImageThumbnails from "./ChatTextArea/ImageThumbnails"
+import ChatControls from "./ChatTextArea/ChatControls" // Import ChatControls
 
 interface ChatTextAreaProps {
 	inputValue: string
@@ -96,15 +96,15 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 					onSend()
 				}
 			},
-			[handleMentionKeyDown, onSend, showContextMenu]
+			[handleMentionKeyDown, onSend, showContextMenu],
 		)
 
 		const handleInputChange = useCallback(
 			(e: React.ChangeEvent<HTMLTextAreaElement>) => {
 				handleMentionInputChange(e)
-				updateHighlights();
+				updateHighlights()
 			},
-			[handleMentionInputChange /* updateHighlights dependency added below */]
+			[handleMentionInputChange /* updateHighlights dependency added below */],
 		)
 
 		const handleBlur = useCallback(() => {
@@ -127,11 +127,19 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 						const imagePromises = imageItems.map((item) => {
 							return new Promise<string | null>((resolve) => {
 								const blob = item.getAsFile()
-								if (!blob) { resolve(null); return }
+								if (!blob) {
+									resolve(null)
+									return
+								}
 								const reader = new FileReader()
 								reader.onloadend = () => {
-									if (reader.error) { console.error("Error reading file:", reader.error); resolve(null); }
-									else { const result = reader.result; resolve(typeof result === "string" ? result : null); }
+									if (reader.error) {
+										console.error("Error reading file:", reader.error)
+										resolve(null)
+									} else {
+										const result = reader.result
+										resolve(typeof result === "string" ? result : null)
+									}
 								}
 								reader.readAsDataURL(blob)
 							})
@@ -146,14 +154,14 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 					}
 				}
 			},
-			[handleMentionPaste, shouldDisableImages, setSelectedImages]
+			[handleMentionPaste, shouldDisableImages, setSelectedImages],
 		)
 
 		const handleKeyUp = useCallback(
 			(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
 				handleMentionKeyUp(e)
 			},
-			[handleMentionKeyUp]
+			[handleMentionKeyUp],
 		)
 		// --- End Combined Event Handlers ---
 
@@ -178,7 +186,8 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 
 		// --- Model Selector Logic (Moved to ModelSelector.tsx) ---
 		// --- Mode Switch Logic (Moved to ModeSwitch.tsx) ---
-		const submitApiConfig = useCallback(() => { // Keep submitApiConfig for onModeToggle
+		const submitApiConfig = useCallback(() => {
+			// Keep submitApiConfig for onModeToggle
 			const apiValidationResult = validateApiConfiguration(apiConfiguration)
 			const modelIdValidationResult = validateModelId(apiConfiguration, openRouterModels)
 
@@ -189,7 +198,8 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 			}
 		}, [apiConfiguration, openRouterModels])
 
-		const onModeToggle = useCallback(() => { // Keep onModeToggle for ChatControls
+		const onModeToggle = useCallback(() => {
+			// Keep onModeToggle for ChatControls
 			// Logic involving showModelSelector needs adjustment if state is fully moved
 			// For now, assume submitApiConfig is called correctly within ModelSelector/useClickAway
 			// let changeModeDelay = 0
@@ -198,16 +208,18 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 			// 	changeModeDelay = 250
 			// }
 			// setTimeout(() => {
-				const newMode = chatSettings.mode === "plan" ? "act" : "plan"
-				vscode.postMessage({
-					type: "togglePlanActMode",
-					chatSettings: { mode: newMode },
-					chatContent: {
-						message: inputValue.trim() ? inputValue : undefined,
-						images: selectedImages.length > 0 ? selectedImages : undefined,
-					},
-				})
-				setTimeout(() => { internalTextAreaRef.current?.focus() }, 100)
+			const newMode = chatSettings.mode === "plan" ? "act" : "plan"
+			vscode.postMessage({
+				type: "togglePlanActMode",
+				chatSettings: { mode: newMode },
+				chatContent: {
+					message: inputValue.trim() ? inputValue : undefined,
+					images: selectedImages.length > 0 ? selectedImages : undefined,
+				},
+			})
+			setTimeout(() => {
+				internalTextAreaRef.current?.focus()
+			}, 100)
 			// }, changeModeDelay) // Remove delay logic tied to showModelSelector
 		}, [chatSettings.mode, /* submitApiConfig, */ inputValue, selectedImages]) // Removed submitApiConfig dependency for now
 
@@ -218,39 +230,42 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 		const handleContextButtonClick = useCallback(() => {
 			if (textAreaDisabled) return
 			internalTextAreaRef.current?.focus()
-			const currentVal = internalTextAreaRef.current?.value ?? inputValue;
-			const currentPos = internalTextAreaRef.current?.selectionStart ?? currentVal.length;
+			const currentVal = internalTextAreaRef.current?.value ?? inputValue
+			const currentPos = internalTextAreaRef.current?.selectionStart ?? currentVal.length
 
-			let newValue: string;
-			let newCursorPos: number;
+			let newValue: string
+			let newCursorPos: number
 
 			if (!currentVal.trim() || currentVal.endsWith(" ")) {
-				newValue = currentVal.slice(0, currentPos) + "@" + currentVal.slice(currentPos);
-				newCursorPos = currentPos + 1;
+				newValue = currentVal.slice(0, currentPos) + "@" + currentVal.slice(currentPos)
+				newCursorPos = currentPos + 1
 			} else {
-				newValue = currentVal.slice(0, currentPos) + " @" + currentVal.slice(currentPos);
-				newCursorPos = currentPos + 2;
+				newValue = currentVal.slice(0, currentPos) + " @" + currentVal.slice(currentPos)
+				newCursorPos = currentPos + 2
 			}
 
 			const fakeEvent = {
-				target: { value: newValue, selectionStart: newCursorPos }
-			} as React.ChangeEvent<HTMLTextAreaElement>;
-			handleMentionInputChange(fakeEvent);
-			updateHighlights();
-
+				target: { value: newValue, selectionStart: newCursorPos },
+			} as React.ChangeEvent<HTMLTextAreaElement>
+			handleMentionInputChange(fakeEvent)
+			updateHighlights()
 		}, [inputValue, textAreaDisabled, handleMentionInputChange, updateHighlights])
 		// --- End Context Button Logic ---
 
-
 		// --- Drag and Drop Logic ---
-		const onDragOver = (e: React.DragEvent) => { e.preventDefault() }
+		const onDragOver = (e: React.DragEvent) => {
+			e.preventDefault()
+		}
 
 		const onDrop = async (e: React.DragEvent) => {
 			e.preventDefault()
 			const files = Array.from(e.dataTransfer.files)
 			const text = e.dataTransfer.getData("text")
 
-			if (text) { handleTextDrop(text); return }
+			if (text) {
+				handleTextDrop(text)
+				return
+			}
 
 			const acceptedTypes = ["png", "jpeg", "webp"]
 			const imageFiles = files.filter((file) => {
@@ -271,15 +286,15 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 		}
 
 		const handleTextDrop = (text: string) => {
-			const currentVal = internalTextAreaRef.current?.value ?? inputValue;
-			const currentPos = internalTextAreaRef.current?.selectionStart ?? currentVal.length;
+			const currentVal = internalTextAreaRef.current?.value ?? inputValue
+			const currentPos = internalTextAreaRef.current?.selectionStart ?? currentVal.length
 			const newValue = currentVal.slice(0, currentPos) + text + currentVal.slice(currentPos)
 			setInputValue(newValue)
 			const newCursorPosition = currentPos + text.length
 			const fakeEvent = {
-				target: { value: newValue, selectionStart: newCursorPosition }
-			} as React.ChangeEvent<HTMLTextAreaElement>;
-			handleMentionInputChange(fakeEvent);
+				target: { value: newValue, selectionStart: newCursorPosition },
+			} as React.ChangeEvent<HTMLTextAreaElement>
+			handleMentionInputChange(fakeEvent)
 		}
 
 		const readImageFiles = (imageFiles: File[]): Promise<(string | null)[]> => {
@@ -289,8 +304,13 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 						new Promise<string | null>((resolve) => {
 							const reader = new FileReader()
 							reader.onloadend = () => {
-								if (reader.error) { console.error("Error reading file:", reader.error); resolve(null) }
-								else { const result = reader.result; resolve(typeof result === "string" ? result : null) }
+								if (reader.error) {
+									console.error("Error reading file:", reader.error)
+									resolve(null)
+								} else {
+									const result = reader.result
+									resolve(typeof result === "string" ? result : null)
+								}
 							}
 							reader.readAsDataURL(file)
 						}),
@@ -363,9 +383,9 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 					<DynamicTextArea
 						data-testid="chat-input"
 						ref={(el) => {
-							if (typeof ref === "function") ref(el);
-							else if (ref) ref.current = el;
-							internalTextAreaRef.current = el;
+							if (typeof ref === "function") ref(el)
+							else if (ref) ref.current = el
+							internalTextAreaRef.current = el
 						}}
 						value={inputValue}
 						disabled={textAreaDisabled}

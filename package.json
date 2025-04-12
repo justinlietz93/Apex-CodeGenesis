@@ -349,11 +349,14 @@
 					"description": "Optional: Maximum estimated total tokens (input + output) allowed for a single task run before pausing. Set to null to disable. Helps prevent unexpected high costs during long autonomous runs."
 				},
 				"apex.backend.pythonPath": {
-					"type": ["string", "null"],
+					"type": [
+						"string",
+						"null"
+					],
 					"default": null,
 					"description": "Optional: Path to the Python executable to use for the Apex backend. If null or empty, uses 'python' from PATH.",
 					"scope": "machine-overridable"
-				  }
+				}
 			}
 		}
 	},

@@ -150,10 +150,7 @@ describe("ApexIgnoreController", () => {
 
 		it("should handle comments in .apexignore", async () => {
 			// Create a new .apexignore with comments
-			await fs.writeFile(
-				path.join(tempDir, ".apexignore"),
-				["# Comment line", "*.secret", "private/", "temp.*"].join("\n"),
-			)
+			await fs.writeFile(path.join(tempDir, ".apexignore"), ["# Comment line", "*.secret", "private/", "temp.*"].join("\n"))
 
 			controller = new ApexIgnoreController(tempDir)
 			await controller.initialize()

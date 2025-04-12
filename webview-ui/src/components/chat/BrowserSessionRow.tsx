@@ -8,11 +8,11 @@ import { BrowserAction, BrowserActionResult, ApexMessage, ApexSayBrowserAction }
 import { useExtensionState } from "../../context/ExtensionStateContext"
 import { vscode } from "../../utils/vscode"
 // Removed unused imports: BrowserSettingsMenu, CheckpointControls, CodeBlock, CODE_BLOCK_BG_COLOR, ChatRowContent, VSCodeButton
-import { CheckpointControls } from "../common/CheckpointControls"; // Keep CheckpointControls if needed for overlay
-import { ProgressIndicator } from "./ChatRow/MessageHeader";
-import BrowserStateDisplay from "./BrowserSessionRow/BrowserStateDisplay";
-import BrowserActionList from "./BrowserSessionRow/BrowserActionList";
-import BrowserPagination from "./BrowserSessionRow/BrowserPagination"; // Import the new component
+import { CheckpointControls } from "../common/CheckpointControls" // Keep CheckpointControls if needed for overlay
+import { ProgressIndicator } from "./ChatRow/MessageHeader"
+import BrowserStateDisplay from "./BrowserSessionRow/BrowserStateDisplay"
+import BrowserActionList from "./BrowserSessionRow/BrowserActionList"
+import BrowserPagination from "./BrowserSessionRow/BrowserPagination" // Import the new component
 
 interface BrowserSessionRowProps {
 	messages: ApexMessage[]
@@ -189,7 +189,7 @@ const BrowserSessionRow = memo((props: BrowserSessionRowProps) => {
 				mousePosition: currentPage?.currentState.mousePosition || defaultMousePosition,
 				consoleLogs: currentPage?.currentState.consoleLogs,
 				screenshot: currentPage?.currentState.screenshot,
-			};
+			}
 
 	// Removed actionContent definition and useSize hook for it
 
@@ -225,7 +225,7 @@ const BrowserSessionRow = memo((props: BrowserSessionRowProps) => {
 	}, [messages])
 
 	// Calculate maxWidth
-	const maxWidth = browserSettings.viewport.width < BROWSER_VIEWPORT_PRESETS["Small Desktop (900x600)"].width ? 200 : undefined;
+	const maxWidth = browserSettings.viewport.width < BROWSER_VIEWPORT_PRESETS["Small Desktop (900x600)"].width ? 200 : undefined
 
 	const [browserSessionRow, { height }] = useSize(
 		<BrowserSessionRowContainer style={{ marginBottom: -10 }}>
@@ -251,7 +251,6 @@ const BrowserSessionRow = memo((props: BrowserSessionRowProps) => {
 					<>{isAutoApproved ? "Apex is using the browser:" : "Apex wants to use the browser:"}</>
 				</span>
 			</div>
-
 			{/* Render BrowserStateDisplay */}
 			<BrowserStateDisplay
 				displayState={displayState}
@@ -262,10 +261,11 @@ const BrowserSessionRow = memo((props: BrowserSessionRowProps) => {
 				maxWidth={maxWidth}
 				shouldShowSettings={shouldShowSettings}
 			/>
-
 			{/* Render BrowserActionList */}
 			{/* Note: minHeight logic needs reconsideration or removal if BrowserActionList handles its own layout */}
-			<div style={{ minHeight: maxActionHeight }}> {/* Keep minHeight wrapper for now */}
+			<div style={{ minHeight: maxActionHeight }}>
+				{" "}
+				{/* Keep minHeight wrapper for now */}
 				<BrowserActionList
 					currentPage={currentPage}
 					isBrowsing={isBrowsing}
@@ -276,7 +276,8 @@ const BrowserSessionRow = memo((props: BrowserSessionRowProps) => {
 					isLast={isLast}
 					setMaxActionHeight={setMaxActionHeight}
 				/>
-			</div> {/* Add missing closing div for the minHeight wrapper */}
+			</div>{" "}
+			{/* Add missing closing div for the minHeight wrapper */}
 			{/* Render BrowserPagination */}
 			<BrowserPagination
 				currentPageIndex={currentPageIndex}
@@ -284,7 +285,6 @@ const BrowserSessionRow = memo((props: BrowserSessionRowProps) => {
 				isBrowsing={isBrowsing}
 				setCurrentPageIndex={setCurrentPageIndex}
 			/>
-
 			{/* Checkpoint overlay logic remains */}
 			{/* {shouldShowCheckpoints && <CheckpointOverlay messageTs={lastCheckpointMessageTs} />} */}
 		</BrowserSessionRowContainer>,
@@ -301,8 +301,8 @@ const BrowserSessionRow = memo((props: BrowserSessionRowProps) => {
 		}
 	}, [height, isLast, onHeightChange])
 
-	return browserSessionRow;
-}, deepEqual); // Keep deepEqual for now as props structure is complex
+	return browserSessionRow
+}, deepEqual) // Keep deepEqual for now as props structure is complex
 
 // Removed BrowserSessionRowContent, BrowserActionBox, BrowserCursor components
 

@@ -1,5 +1,5 @@
-import React from "react"; // Import React
-import apexLogoPNG from './ApexLogoWhite.png'; // Import the local PNG
+import React from "react" // Import React
+import apexLogoPNG from "./ApexLogoWhite.png" // Import the local PNG
 
 // Define props for an img tag instead of SVG
 interface ImgProps extends React.ImgHTMLAttributes<HTMLImageElement> {}

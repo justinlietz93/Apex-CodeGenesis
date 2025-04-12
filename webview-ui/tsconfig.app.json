@@ -18,8 +18,11 @@
 		/* Linting */
 		"strict": true,
 		"noFallthroughCasesInSwitch": true,
-		"noUncheckedSideEffectImports": true
+		"noUncheckedSideEffectImports": true,
+		"types": [
+		"vitest/globals",
+		"testing-library__jest-dom" // Add this to include Jest-DOM types
+		],
 	},
-	"include": ["src"],
-	"exclude": ["src/**/__tests__/**"]
+	"include": ["src"]
 }

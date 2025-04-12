@@ -13,7 +13,6 @@ import { TelemetrySetting } from "../../../src/shared/TelemetrySetting"
 // Import types needed for context
 import { UserProfile, CustomInstructionItem } from "../../../src/shared/ExtensionMessage"
 
-
 interface ExtensionStateContextType extends ExtensionState {
 	didHydrateState: boolean
 	showWelcome: boolean

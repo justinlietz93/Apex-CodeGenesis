@@ -34,7 +34,7 @@ updates:
                 - "version-update:semver-major"
                 - "version-update:semver-minor"
                 - "version-update:semver-patch"
-                
+
     # Python backend dependencies
     - package-ecosystem: "pip"
       directory: "/python_backend"

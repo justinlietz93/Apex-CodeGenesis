@@ -169,7 +169,9 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
 									? "var(--vscode-quickInputList-focusBackground)"
 									: "",
 						}}
-						onMouseEnter={() => isOptionSelectable(option) && setSelectedIndex?.(index)}> {/* Call conditionally */}
+						onMouseEnter={() => isOptionSelectable(option) && setSelectedIndex?.(index)}>
+						{" "}
+						{/* Call conditionally */}
 						<div
 							style={{
 								display: "flex",

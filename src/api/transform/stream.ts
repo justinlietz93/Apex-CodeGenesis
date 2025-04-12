@@ -1,4 +1,4 @@
-import { FunctionCall } from "@google/generative-ai"; // Import FunctionCall type
+import { FunctionCall } from "@google/generative-ai" // Import FunctionCall type
 
 export type ApiStream = AsyncGenerator<ApiStreamChunk>
 export type ApiStreamChunk =

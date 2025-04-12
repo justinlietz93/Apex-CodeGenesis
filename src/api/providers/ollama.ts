@@ -16,7 +16,7 @@ export class OllamaHandler implements ApiHandler {
 
 	// Implement the capability flag
 	supportsNativeFunctionCalling(): boolean {
-		return false; // Ollama does not support native function calling
+		return false // Ollama does not support native function calling
 	}
 
 	async *createMessage(systemPrompt: string, messages: Anthropic.Messages.MessageParam[]): ApiStream {

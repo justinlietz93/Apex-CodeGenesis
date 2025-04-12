@@ -1,29 +1,29 @@
 // Removed unused imports: VSCodeBadge, VSCodeProgressRing, deepEqual, ApexAskQuestion, ApexAskUseMcpServer, ApexPlanModeResponse, COMMAND_REQ_APP_STRING, findMatchingResourceOrTemplate, getMcpServerDisplayName, CodeAccordian, cleanPathPrefix, CodeBlock, CODE_BLOCK_BG_COLOR, Thumbnails, McpResourceRow, McpToolRow, McpResponseDisplay, CreditLimitError, OptionsButtons, highlightMentions
-import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useEvent, useSize } from "react-use";
-import styled from "styled-components";
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useEvent, useSize } from "react-use"
+import styled from "styled-components"
 import {
 	ApexApiReqInfo,
 	ApexMessage,
 	ApexSayTool,
 	COMPLETION_RESULT_CHANGES_FLAG,
 	ExtensionMessage,
-} from "../../../../src/shared/ExtensionMessage";
-import { COMMAND_OUTPUT_STRING } from "../../../../src/shared/combineCommandSequences";
-import { useExtensionState } from "../../context/ExtensionStateContext";
-import { vscode } from "../../utils/vscode";
-import { CheckmarkControl } from "../common/CheckmarkControl";
-import { CheckpointControls, CheckpointOverlay } from "../common/CheckpointControls";
-import MarkdownBlock from "../common/MarkdownBlock"; // Re-add MarkdownBlock import
-import SuccessButton from "../common/SuccessButton"; // Keep for completion_result
-import TaskFeedbackButtons from "./TaskFeedbackButtons"; // Keep for completion_result
-import MessageHeader from "./ChatRow/MessageHeader"; // Keep for completion_result header
-import ToolCallRenderer from "./ChatRow/ToolCallRenderer";
-import CommandRenderer from "./ChatRow/CommandRenderer";
-import ApiRequestRenderer from "./ChatRow/ApiRequestRenderer";
-import McpRenderer from "./ChatRow/McpRenderer";
-import FeedbackRenderer from "./ChatRow/FeedbackRenderer";
-import DefaultMessageRenderer from "./ChatRow/DefaultMessageRenderer";
+} from "../../../../src/shared/ExtensionMessage"
+import { COMMAND_OUTPUT_STRING } from "../../../../src/shared/combineCommandSequences"
+import { useExtensionState } from "../../context/ExtensionStateContext"
+import { vscode } from "../../utils/vscode"
+import { CheckmarkControl } from "../common/CheckmarkControl"
+import { CheckpointControls, CheckpointOverlay } from "../common/CheckpointControls"
+import MarkdownBlock from "../common/MarkdownBlock" // Re-add MarkdownBlock import
+import SuccessButton from "../common/SuccessButton" // Keep for completion_result
+import TaskFeedbackButtons from "./TaskFeedbackButtons" // Keep for completion_result
+import MessageHeader from "./ChatRow/MessageHeader" // Keep for completion_result header
+import ToolCallRenderer from "./ChatRow/ToolCallRenderer"
+import CommandRenderer from "./ChatRow/CommandRenderer"
+import ApiRequestRenderer from "./ChatRow/ApiRequestRenderer"
+import McpRenderer from "./ChatRow/McpRenderer"
+import FeedbackRenderer from "./ChatRow/FeedbackRenderer"
+import DefaultMessageRenderer from "./ChatRow/DefaultMessageRenderer"
 
 const ChatRowContainer = styled.div`
 	padding: 10px 6px 10px 15px;
@@ -40,7 +40,7 @@ interface ChatRowProps {
 	onToggleExpand: () => void
 	lastModifiedMessage?: ApexMessage
 	isLast: boolean
-	onHeightChange: (isTaller: boolean) => void;
+	onHeightChange: (isTaller: boolean) => void
 }
 
 interface ChatRowContentProps extends Omit<ChatRowProps, "onHeightChange"> {}
@@ -57,12 +57,12 @@ const Markdown = memo(({ markdown }: { markdown?: string }) => {
 			}}>
 			<MarkdownBlock markdown={markdown} />
 		</div>
-	);
-});
+	)
+})
 
 const ChatRow = memo(
 	(props: ChatRowProps) => {
-		const { isLast, onHeightChange, message, lastModifiedMessage } = props;
+		const { isLast, onHeightChange, message, lastModifiedMessage } = props
 		// Store the previous height to compare with the current height
 		// This allows us to detect changes without causing re-renders
 		const prevHeightRef = useRef(0)
@@ -105,42 +105,40 @@ const ChatRow = memo(
 		}, [height, isLast, onHeightChange, message])
 
 		// we cannot return null as virtuoso does not support it so we use a separate visibleMessages array to filter out messages that should not be rendered
-		return chatrow;
+		return chatrow
 	}, // Use shallow comparison for memo
-);
+)
 
-export default ChatRow;
+export default ChatRow
 
 // Simplified ChatRowContent acting as a dispatcher
 export const ChatRowContent = ({ message, isExpanded, onToggleExpand, lastModifiedMessage, isLast }: ChatRowContentProps) => {
-	const { mcpServers, mcpMarketplaceCatalog } = useExtensionState();
-	const [seeNewChangesDisabled, setSeeNewChangesDisabled] = useState(false);
+	const { mcpServers, mcpMarketplaceCatalog } = useExtensionState()
+	const [seeNewChangesDisabled, setSeeNewChangesDisabled] = useState(false)
 
 	// Calculate props needed by specific renderers
 	const [cost, apiReqCancelReason, apiReqStreamingFailedMessage] = useMemo(() => {
 		if (message.text != null && message.say === "api_req_started") {
 			try {
-				const info: ApexApiReqInfo = JSON.parse(message.text);
-				return [info.cost, info.cancelReason, info.streamingFailedMessage];
+				const info: ApexApiReqInfo = JSON.parse(message.text)
+				return [info.cost, info.cancelReason, info.streamingFailedMessage]
 			} catch (e) {
-				console.error("Failed to parse API request info:", message.text, e);
-				return [undefined, undefined, undefined];
+				console.error("Failed to parse API request info:", message.text, e)
+				return [undefined, undefined, undefined]
 			}
 		}
-		return [undefined, undefined, undefined];
-	}, [message.text, message.say]);
+		return [undefined, undefined, undefined]
+	}, [message.text, message.say])
 
 	const apiRequestFailedMessage =
-		isLast && lastModifiedMessage?.ask === "api_req_failed"
-			? lastModifiedMessage?.text
-			: undefined;
+		isLast && lastModifiedMessage?.ask === "api_req_failed" ? lastModifiedMessage?.text : undefined
 
 	const isCommandExecuting =
 		isLast &&
 		(lastModifiedMessage?.ask === "command" || lastModifiedMessage?.say === "command") &&
-		lastModifiedMessage?.text?.includes(COMMAND_OUTPUT_STRING);
+		lastModifiedMessage?.text?.includes(COMMAND_OUTPUT_STRING)
 
-	const isMcpServerResponding = isLast && lastModifiedMessage?.say === "mcp_server_request_started";
+	const isMcpServerResponding = isLast && lastModifiedMessage?.say === "mcp_server_request_started"
 
 	// --- Message Type Dispatching ---
 
@@ -148,17 +146,17 @@ export const ChatRowContent = ({ message, isExpanded, onToggleExpand, lastModifi
 	const tool = useMemo(() => {
 		if (message.ask === "tool" || message.say === "tool") {
 			try {
-				return JSON.parse(message.text || "{}") as ApexSayTool;
+				return JSON.parse(message.text || "{}") as ApexSayTool
 			} catch (e) {
-				console.error("Failed to parse tool message:", message.text, e);
-				return null;
+				console.error("Failed to parse tool message:", message.text, e)
+				return null
 			}
 		}
-		return null;
-	}, [message.ask, message.say, message.text]);
+		return null
+	}, [message.ask, message.say, message.text])
 
 	if (tool) {
-		return <ToolCallRenderer tool={tool} message={message} isExpanded={isExpanded} onToggleExpand={onToggleExpand} />;
+		return <ToolCallRenderer tool={tool} message={message} isExpanded={isExpanded} onToggleExpand={onToggleExpand} />
 	}
 
 	// 2. Command Messages
@@ -170,7 +168,7 @@ export const ChatRowContent = ({ message, isExpanded, onToggleExpand, lastModifi
 				onToggleExpand={onToggleExpand}
 				isCommandExecuting={isCommandExecuting}
 			/>
-		);
+		)
 	}
 
 	// 3. MCP Messages
@@ -184,7 +182,7 @@ export const ChatRowContent = ({ message, isExpanded, onToggleExpand, lastModifi
 				onToggleExpand={onToggleExpand}
 				isMcpServerResponding={isMcpServerResponding}
 			/>
-		);
+		)
 	}
 
 	// 4. Specific 'say' types handled by dedicated renderers or directly
@@ -201,26 +199,24 @@ export const ChatRowContent = ({ message, isExpanded, onToggleExpand, lastModifi
 						apiReqStreamingFailedMessage={apiReqStreamingFailedMessage}
 						apiReqCancelReason={apiReqCancelReason}
 					/>
-				);
+				)
 			case "user_feedback":
 			case "user_feedback_diff":
-				return (
-					<FeedbackRenderer
-						message={message}
-						isExpanded={isExpanded}
-						onToggleExpand={onToggleExpand}
-					/>
-				);
+				return <FeedbackRenderer message={message} isExpanded={isExpanded} onToggleExpand={onToggleExpand} />
 			case "completion_result":
-				const hasChanges = message.text?.endsWith(COMPLETION_RESULT_CHANGES_FLAG) ?? false;
-				const text = hasChanges ? message.text?.slice(0, -COMPLETION_RESULT_CHANGES_FLAG.length) : message.text;
+				const hasChanges = message.text?.endsWith(COMPLETION_RESULT_CHANGES_FLAG) ?? false
+				const text = hasChanges ? message.text?.slice(0, -COMPLETION_RESULT_CHANGES_FLAG.length) : message.text
 				return (
 					<>
 						<div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "10px" }}>
 							<MessageHeader message={message} />
 							<TaskFeedbackButtons
 								messageTs={message.ts}
-								isFromHistory={!isLast || lastModifiedMessage?.ask === "resume_completed_task" || lastModifiedMessage?.ask === "resume_task"}
+								isFromHistory={
+									!isLast ||
+									lastModifiedMessage?.ask === "resume_completed_task" ||
+									lastModifiedMessage?.ask === "resume_task"
+								}
 								style={{ marginLeft: "auto" }}
 							/>
 						</div>
@@ -233,8 +229,8 @@ export const ChatRowContent = ({ message, isExpanded, onToggleExpand, lastModifi
 								<SuccessButton
 									disabled={seeNewChangesDisabled}
 									onClick={() => {
-										setSeeNewChangesDisabled(true);
-										vscode.postMessage({ type: "taskCompletionViewChanges", number: message.ts });
+										setSeeNewChangesDisabled(true)
+										vscode.postMessage({ type: "taskCompletionViewChanges", number: message.ts })
 									}}
 									style={{ cursor: seeNewChangesDisabled ? "wait" : "pointer", width: "100%" }}>
 									<i className="codicon codicon-new-file" style={{ marginRight: 6 }} />
@@ -243,9 +239,9 @@ export const ChatRowContent = ({ message, isExpanded, onToggleExpand, lastModifi
 							</div>
 						)}
 					</>
-				);
+				)
 			case "checkpoint_created":
-				return <CheckmarkControl messageTs={message.ts} isCheckpointCheckedOut={message.isCheckpointCheckedOut} />;
+				return <CheckmarkControl messageTs={message.ts} isCheckpointCheckedOut={message.isCheckpointCheckedOut} />
 			// Other 'say' types fall through to DefaultMessageRenderer below
 		}
 	}
@@ -255,15 +251,19 @@ export const ChatRowContent = ({ message, isExpanded, onToggleExpand, lastModifi
 		switch (message.ask) {
 			case "completion_result":
 				if (message.text) {
-					const hasChanges = message.text.endsWith(COMPLETION_RESULT_CHANGES_FLAG) ?? false;
-					const text = hasChanges ? message.text.slice(0, -COMPLETION_RESULT_CHANGES_FLAG.length) : message.text;
+					const hasChanges = message.text.endsWith(COMPLETION_RESULT_CHANGES_FLAG) ?? false
+					const text = hasChanges ? message.text.slice(0, -COMPLETION_RESULT_CHANGES_FLAG.length) : message.text
 					return (
 						<div>
 							<div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "10px" }}>
 								<MessageHeader message={message} />
 								<TaskFeedbackButtons
 									messageTs={message.ts}
-									isFromHistory={!isLast || lastModifiedMessage?.ask === "resume_completed_task" || lastModifiedMessage?.ask === "resume_task"}
+									isFromHistory={
+										!isLast ||
+										lastModifiedMessage?.ask === "resume_completed_task" ||
+										lastModifiedMessage?.ask === "resume_task"
+									}
 									style={{ marginLeft: "auto" }}
 								/>
 							</div>
@@ -276,19 +276,22 @@ export const ChatRowContent = ({ message, isExpanded, onToggleExpand, lastModifi
 											appearance="secondary"
 											disabled={seeNewChangesDisabled}
 											onClick={() => {
-												setSeeNewChangesDisabled(true);
-												vscode.postMessage({ type: "taskCompletionViewChanges", number: message.ts });
+												setSeeNewChangesDisabled(true)
+												vscode.postMessage({ type: "taskCompletionViewChanges", number: message.ts })
 											}}>
-											<i className="codicon codicon-new-file" style={{ marginRight: 6, cursor: seeNewChangesDisabled ? "wait" : "pointer" }} />
+											<i
+												className="codicon codicon-new-file"
+												style={{ marginRight: 6, cursor: seeNewChangesDisabled ? "wait" : "pointer" }}
+											/>
 											See new changes
 										</SuccessButton>
 									</div>
 								)}
 							</div>
 						</div>
-					);
+					)
 				} else {
-					return null; // Don't render ask completion_result without text
+					return null // Don't render ask completion_result without text
 				}
 			// Other 'ask' types fall through to DefaultMessageRenderer below
 		}
@@ -303,5 +306,5 @@ export const ChatRowContent = ({ message, isExpanded, onToggleExpand, lastModifi
 			isExpanded={isExpanded}
 			onToggleExpand={onToggleExpand}
 		/>
-	);
-};
+	)
+}

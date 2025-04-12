@@ -1,39 +1,43 @@
-import { McpHub } from "../../../services/mcp/McpHub";
+import { McpHub } from "../../../services/mcp/McpHub"
 
 export const getMcpPrompt = async (mcpHub: McpHub): Promise<string> => {
-    if (mcpHub.getMode() === "off") {return "";}
+	if (mcpHub.getMode() === "off") {
+		return ""
+	}
 
-    const servers = mcpHub.getServers().filter((server) => server.status === "connected");
-    const serverDetails = servers.map((server) => {
-        const tools = server.tools
-            ?.map((tool) => {
-                const schemaStr = tool.inputSchema
-                    ? `    Input Schema:\n    ${JSON.stringify(tool.inputSchema, null, 2).split("\n").join("\n    ")}`
-                    : "";
-                return `- ${tool.name}: ${tool.description}\n${schemaStr}`;
-            })
-            .join("\n\n");
+	const servers = mcpHub.getServers().filter((server) => server.status === "connected")
+	const serverDetails = servers
+		.map((server) => {
+			const tools = server.tools
+				?.map((tool) => {
+					const schemaStr = tool.inputSchema
+						? `    Input Schema:\n    ${JSON.stringify(tool.inputSchema, null, 2).split("\n").join("\n    ")}`
+						: ""
+					return `- ${tool.name}: ${tool.description}\n${schemaStr}`
+				})
+				.join("\n\n")
 
-        const templates = server.resourceTemplates
-            ?.map((template) => `- ${template.uriTemplate} (${template.name}): ${template.description}`)
-            .join("\n");
+			const templates = server.resourceTemplates
+				?.map((template) => `- ${template.uriTemplate} (${template.name}): ${template.description}`)
+				.join("\n")
 
-        const resources = server.resources
-            ?.map((resource) => `- ${resource.uri} (${resource.name}): ${resource.description}`)
-            .join("\n");
+			const resources = server.resources
+				?.map((resource) => `- ${resource.uri} (${resource.name}): ${resource.description}`)
+				.join("\n")
 
-        const config = JSON.parse(server.config);
-        const commandString = `${config.command}${config.args && Array.isArray(config.args) ? ` ${config.args.join(" ")}` : ""}`;
+			const config = JSON.parse(server.config)
+			const commandString = `${config.command}${config.args && Array.isArray(config.args) ? ` ${config.args.join(" ")}` : ""}`
 
-        return (
-            `## ${server.name} (\`${commandString}\`)` +
-            (tools ? `\n\n### Available Tools\n${tools}` : "") +
-            (templates ? `\n\n### Resource Templates\n${templates}` : "") +
-            (resources ? `\n\n### Direct Resources\n${resources}` : "")
-        );
-    }).join("\n\n");
+			return (
+				`## ${server.name} (\`${commandString}\`)` +
+				(tools ? `\n\n### Available Tools\n${tools}` : "") +
+				(templates ? `\n\n### Resource Templates\n${templates}` : "") +
+				(resources ? `\n\n### Direct Resources\n${resources}` : "")
+			)
+		})
+		.join("\n\n")
 
-    let mcpPrompt = `
+	let mcpPrompt = `
 ====
 
 MCP SERVERS
@@ -44,10 +48,10 @@ The Model Context Protocol (MCP) enables communication between the system and lo
 
 When a server is connected, you can use the server's tools via the \`use_mcp_tool\` tool, and access the server's resources via the \`access_mcp_resource\` tool.
 
-${servers.length > 0 ? serverDetails : "(No MCP servers currently connected)"}`;
+${servers.length > 0 ? serverDetails : "(No MCP servers currently connected)"}`
 
-    if (mcpHub.getMode() === "full") {
-        mcpPrompt += `
+	if (mcpHub.getMode() === "full") {
+		mcpPrompt += `
 
 ## Creating an MCP Server
 
@@ -394,12 +398,12 @@ IMPORTANT: Regardless of what else you see in the MCP settings file, you must de
 ## Editing MCP Servers
 
 The user may ask to add tools or resources that may make sense to add to an existing MCP server (listed under 'Connected MCP Servers' below: ${
-				mcpHub
-					.getServers()
-					.filter((server) => server.status === "connected")
-					.map((server) => server.name)
-					.join(", ") || "(None running currently)"
-			}, e.g. if it would use the same API. This would be possible if you can locate the MCP server repository on the user's system by looking at the server arguments for a filepath. You might then use list_files and read_file to explore the files in the repository, and use replace_in_file to make changes to the files.
+			mcpHub
+				.getServers()
+				.filter((server) => server.status === "connected")
+				.map((server) => server.name)
+				.join(", ") || "(None running currently)"
+		}, e.g. if it would use the same API. This would be possible if you can locate the MCP server repository on the user's system by looking at the server arguments for a filepath. You might then use list_files and read_file to explore the files in the repository, and use replace_in_file to make changes to the files.
 
 However some MCP servers may be running from installed packages rather than a local repository, in which case it may make more sense to create a new MCP server.
 
@@ -408,8 +412,8 @@ However some MCP servers may be running from installed packages rather than a lo
 The user may not always request the use or creation of MCP servers. Instead, they might provide tasks that can be completed with existing tools. While using the MCP SDK to extend your capabilities can be useful, it's important to understand that this is just one specialized type of task you can accomplish. You should only implement MCP servers when the user explicitly requests it (e.g., "add a tool that...").
 
 Remember: The MCP documentation and example provided above are to help you understand and work with existing MCP servers or create new ones when requested by the user. You already have access to tools and capabilities that can be used to accomplish a wide range of tasks.
-`;
-    }
+`
+	}
 
-    return mcpPrompt;
-};
+	return mcpPrompt
+}

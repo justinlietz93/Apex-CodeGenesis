@@ -1,16 +1,16 @@
-import { Anthropic } from "@anthropic-ai/sdk";
-import OpenAI, { AzureOpenAI } from "openai";
+import { Anthropic } from "@anthropic-ai/sdk"
+import OpenAI, { AzureOpenAI } from "openai"
 // Import necessary types for OpenAI tool calling
-import { ChatCompletionTool, ChatCompletionMessageToolCall } from "openai/resources/chat/completions";
+import { ChatCompletionTool, ChatCompletionMessageToolCall } from "openai/resources/chat/completions"
 // Import FunctionCall type for standardized stream chunk
-import { FunctionCall } from "@google/generative-ai";
-import { withRetry } from "../retry";
-import { ApiHandlerOptions, azureOpenAiDefaultApiVersion, ModelInfo, openAiModelInfoSaneDefaults } from "../../shared/api";
-import { ApiHandler } from "../index";
+import { FunctionCall } from "@google/generative-ai"
+import { withRetry } from "../retry"
+import { ApiHandlerOptions, azureOpenAiDefaultApiVersion, ModelInfo, openAiModelInfoSaneDefaults } from "../../shared/api"
+import { ApiHandler } from "../index"
 import { convertToOpenAiMessages } from "../transform/openai-format"
 import { ApiStream } from "../transform/stream"
-import { convertToR1Format } from "../transform/r1-format";
-import { ChatCompletionReasoningEffort } from "openai/resources/chat/completions.mjs";
+import { convertToR1Format } from "../transform/r1-format"
+import { ChatCompletionReasoningEffort } from "openai/resources/chat/completions.mjs"
 
 // Define OpenAI Tool Schemas
 const openAiTools: ChatCompletionTool[] = [
@@ -22,11 +22,11 @@ const openAiTools: ChatCompletionTool[] = [
 			parameters: {
 				type: "object",
 				properties: {
-					path: { type: "string", description: "The relative path to the file within the workspace." }
+					path: { type: "string", description: "The relative path to the file within the workspace." },
 				},
-				required: ["path"]
-			}
-		}
+				required: ["path"],
+			},
+		},
 	},
 	{
 		type: "function",
@@ -37,11 +37,11 @@ const openAiTools: ChatCompletionTool[] = [
 				type: "object",
 				properties: {
 					path: { type: "string", description: "The relative path to the directory. Defaults to '.'." },
-					recursive: { type: "boolean", description: "List recursively? Defaults to false if omitted." }
+					recursive: { type: "boolean", description: "List recursively? Defaults to false if omitted." },
 				},
-				required: ["path"]
-			}
-		}
+				required: ["path"],
+			},
+		},
 	},
 	{
 		type: "function",
@@ -52,26 +52,31 @@ const openAiTools: ChatCompletionTool[] = [
 				type: "object",
 				properties: {
 					command: { type: "string", description: "The command line command to execute." },
-					requires_approval: { type: "boolean", description: "Set to true if the command requires explicit user approval (e.g., installs, file deletions). Defaults to false." }
+					requires_approval: {
+						type: "boolean",
+						description:
+							"Set to true if the command requires explicit user approval (e.g., installs, file deletions). Defaults to false.",
+					},
 				},
-				required: ["command"]
-			}
-		}
+				required: ["command"],
+			},
+		},
 	},
 	{
 		type: "function",
 		function: {
 			name: "write_to_file",
-			description: "Writes content to a file at the specified path relative to the workspace root. Overwrites if exists, creates if not.",
+			description:
+				"Writes content to a file at the specified path relative to the workspace root. Overwrites if exists, creates if not.",
 			parameters: {
 				type: "object",
 				properties: {
 					path: { type: "string", description: "The relative path to the file." },
-					content: { type: "string", description: "The complete content to write." }
+					content: { type: "string", description: "The complete content to write." },
 				},
-				required: ["path", "content"]
-			}
-		}
+				required: ["path", "content"],
+			},
+		},
 	},
 	{
 		type: "function",
@@ -82,11 +87,11 @@ const openAiTools: ChatCompletionTool[] = [
 				type: "object",
 				properties: {
 					path: { type: "string", description: "The relative path to the file." },
-					diff: { type: "string", description: "One or more SEARCH/REPLACE blocks defining exact changes." }
+					diff: { type: "string", description: "One or more SEARCH/REPLACE blocks defining exact changes." },
 				},
-				required: ["path", "diff"]
-			}
-		}
+				required: ["path", "diff"],
+			},
+		},
 	},
 	{
 		type: "function",
@@ -98,25 +103,26 @@ const openAiTools: ChatCompletionTool[] = [
 				properties: {
 					path: { type: "string", description: "The relative path to the directory to search." },
 					regex: { type: "string", description: "The Rust regex pattern to search for." },
-					file_pattern: { type: "string", description: "Optional glob pattern to filter files (e.g., '*.ts')." }
+					file_pattern: { type: "string", description: "Optional glob pattern to filter files (e.g., '*.ts')." },
 				},
-				required: ["path", "regex"]
-			}
-		}
+				required: ["path", "regex"],
+			},
+		},
 	},
 	{
 		type: "function",
 		function: {
 			name: "list_code_definition_names",
-			description: "Lists definition names (classes, functions, etc.) in source code files at the top level of the specified directory relative to the workspace root.",
+			description:
+				"Lists definition names (classes, functions, etc.) in source code files at the top level of the specified directory relative to the workspace root.",
 			parameters: {
 				type: "object",
 				properties: {
-					path: { type: "string", description: "The relative path to the directory." }
+					path: { type: "string", description: "The relative path to the directory." },
 				},
-				required: ["path"]
-			}
-		}
+				required: ["path"],
+			},
+		},
 	},
 	{
 		type: "function",
@@ -130,12 +136,12 @@ const openAiTools: ChatCompletionTool[] = [
 					options: {
 						type: "array",
 						items: { type: "string" },
-						description: "Optional array of 2-5 options for the user to choose from."
-					}
+						description: "Optional array of 2-5 options for the user to choose from.",
+					},
 				},
-				required: ["question"]
-			}
-		}
+				required: ["question"],
+			},
+		},
 	},
 	{
 		type: "function",
@@ -149,12 +155,12 @@ const openAiTools: ChatCompletionTool[] = [
 					options: {
 						type: "array",
 						items: { type: "string" },
-						description: "Optional array of 2-5 options for the user to choose from."
-					}
+						description: "Optional array of 2-5 options for the user to choose from.",
+					},
 				},
-				required: ["response"]
-			}
-		}
+				required: ["response"],
+			},
+		},
 	},
 	{
 		type: "function",
@@ -165,11 +171,11 @@ const openAiTools: ChatCompletionTool[] = [
 				type: "object",
 				properties: {
 					result: { type: "string", description: "The final result description." },
-					command: { type: "string", description: "Optional CLI command to demonstrate the result." }
+					command: { type: "string", description: "Optional CLI command to demonstrate the result." },
 				},
-				required: ["result"]
-			}
-		}
+				required: ["result"],
+			},
+		},
 	},
 	{
 		type: "function",
@@ -181,11 +187,11 @@ const openAiTools: ChatCompletionTool[] = [
 				properties: {
 					server_name: { type: "string", description: "The name of the MCP server." },
 					tool_name: { type: "string", description: "The name of the tool to execute." },
-					arguments: { type: "object", description: "JSON object containing the tool's input parameters." }
+					arguments: { type: "object", description: "JSON object containing the tool's input parameters." },
 				},
-				required: ["server_name", "tool_name", "arguments"]
-			}
-		}
+				required: ["server_name", "tool_name", "arguments"],
+			},
+		},
 	},
 	{
 		type: "function",
@@ -196,18 +202,17 @@ const openAiTools: ChatCompletionTool[] = [
 				type: "object",
 				properties: {
 					server_name: { type: "string", description: "The name of the MCP server." },
-					uri: { type: "string", description: "The URI identifying the specific resource." }
+					uri: { type: "string", description: "The URI identifying the specific resource." },
 				},
-				required: ["server_name", "uri"]
-			}
-		}
-	}
-];
-
+				required: ["server_name", "uri"],
+			},
+		},
+	},
+]
 
 export class OpenAiHandler implements ApiHandler {
-	private options: ApiHandlerOptions;
-	private client: OpenAI;
+	private options: ApiHandlerOptions
+	private client: OpenAI
 
 	constructor(options: ApiHandlerOptions) {
 		this.options = options
@@ -229,7 +234,7 @@ export class OpenAiHandler implements ApiHandler {
 
 	// Implement the capability flag
 	supportsNativeFunctionCalling(): boolean {
-		return true; // OpenAI supports native tool calling
+		return true // OpenAI supports native tool calling
 	}
 
 	@withRetry()
@@ -275,7 +280,7 @@ export class OpenAiHandler implements ApiHandler {
 			stream_options: { include_usage: true },
 		})
 		for await (const chunk of stream) {
-			const delta = chunk.choices[0]?.delta;
+			const delta = chunk.choices[0]?.delta
 
 			// Check for tool calls in the delta
 			if (delta?.tool_calls && delta.tool_calls.length > 0) {
@@ -284,31 +289,31 @@ export class OpenAiHandler implements ApiHandler {
 				// A more robust implementation would handle partial tool call chunks if the API sends them.
 
 				// Transform OpenAI tool calls to the standardized FunctionCall format
-				const transformedCalls: FunctionCall[] = delta.tool_calls.flatMap(tc => {
+				const transformedCalls: FunctionCall[] = delta.tool_calls.flatMap((tc) => {
 					// Ensure function name and arguments exist
 					if (tc.function?.name && tc.function?.arguments) {
-						const name = tc.function.name;
-						const argsString = tc.function.arguments;
-						let args = {};
+						const name = tc.function.name
+						const argsString = tc.function.arguments
+						let args = {}
 						try {
 							// Attempt to parse the arguments string
-							args = JSON.parse(argsString);
+							args = JSON.parse(argsString)
 						} catch (e) {
-							console.error(`[OpenAiHandler] Failed to parse tool arguments JSON: ${argsString}`, e);
-							return []; // Skip this tool call if arguments are not valid JSON
+							console.error(`[OpenAiHandler] Failed to parse tool arguments JSON: ${argsString}`, e)
+							return [] // Skip this tool call if arguments are not valid JSON
 						}
 						// Return the transformed call in the expected format
-						return [{ name, args }];
+						return [{ name, args }]
 					}
 					// Skip this tool call if essential parts are missing
-					return [];
-				});
+					return []
+				})
 
 				// Only yield if there are valid transformed calls
 				if (transformedCalls.length > 0) {
-					console.log(`[OpenAiHandler] Yielding function_calls chunk:`, transformedCalls);
-					yield { type: 'function_calls', calls: transformedCalls }; // Use standardized type and format
-					continue; // Skip processing text/reasoning if tool calls are present
+					console.log(`[OpenAiHandler] Yielding function_calls chunk:`, transformedCalls)
+					yield { type: "function_calls", calls: transformedCalls } // Use standardized type and format
+					continue // Skip processing text/reasoning if tool calls are present
 				}
 			}
 

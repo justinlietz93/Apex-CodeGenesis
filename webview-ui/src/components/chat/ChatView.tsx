@@ -189,7 +189,6 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 		return result
 	}, [visibleMessages])
 
-
 	// Scroll logic moved to useChatScrollManager hook
 	const {
 		virtuosoRef, // Get ref from hook
@@ -528,13 +527,13 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 					<>
 						<TaskHeader
 							task={task}
-					tokensIn={apiMetrics.totalTokensIn}
-					tokensOut={apiMetrics.totalTokensOut}
-					doesModelSupportPromptCache={selectedModelInfo.supportsPromptCache}
-					cacheWrites={apiMetrics.totalCacheWrites}
-					cacheReads={apiMetrics.totalCacheReads}
-					totalCost={apiMetrics.totalCost}
-					lastApiReqTotalTokens={lastApiReqTotalTokens}
+							tokensIn={apiMetrics.totalTokensIn}
+							tokensOut={apiMetrics.totalTokensOut}
+							doesModelSupportPromptCache={selectedModelInfo.supportsPromptCache}
+							cacheWrites={apiMetrics.totalCacheWrites}
+							cacheReads={apiMetrics.totalCacheReads}
+							totalCost={apiMetrics.totalCost}
+							lastApiReqTotalTokens={lastApiReqTotalTokens}
 							onClose={handleTaskCloseButtonClick}
 						/>
 						{/* Message List Container - only shown when task is active */}
@@ -594,38 +593,41 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 
 			{/* Always visible Input Area */}
 			{/* Note: AutoApproveMenu is handled internally by ChatInputArea when task is active */}
-			<div style={{ flexShrink: 0 }}> {/* Wrapper to prevent shrinking */}
+			<div style={{ flexShrink: 0 }}>
+				{" "}
+				{/* Wrapper to prevent shrinking */}
 				<ChatInputArea
 					// Pass task status to ChatInputArea if it needs to conditionally render AutoApproveMenu
 					// Assuming ChatInputArea handles this internally based on other props or context
 					isTaskActive={!!task} // Example prop, adjust if needed based on ChatInputArea implementation
 					textAreaRef={textAreaRef} // Pass ref
 					inputValue={inputValue}
-						setInputValue={setInputValue}
-						textAreaDisabled={textAreaDisabled}
-						placeholderText={placeholderText}
-						selectedImages={selectedImages}
-						setSelectedImages={setSelectedImages}
-						onSend={() => handleSendMessage(inputValue, selectedImages)}
-						onSelectImages={selectImages}
-						shouldDisableImages={shouldDisableImages}
-						onHeightChange={() => { // Pass the height change handler
-							if (isAtBottom) {
-								scrollToBottomAuto()
-							}
-						}}
-						// Button related props
-						showScrollToBottom={showScrollToBottom}
-						scrollToBottomSmooth={scrollToBottomSmooth}
-						disableAutoScrollRef={disableAutoScrollRef}
-						primaryButtonText={primaryButtonText}
-						secondaryButtonText={secondaryButtonText}
-						isStreaming={isStreaming}
-						enableButtons={enableButtons}
-						didClickCancel={didClickCancel}
-						handlePrimaryButtonClick={handlePrimaryButtonClick}
-						handleSecondaryButtonClick={handleSecondaryButtonClick}
-					/>
+					setInputValue={setInputValue}
+					textAreaDisabled={textAreaDisabled}
+					placeholderText={placeholderText}
+					selectedImages={selectedImages}
+					setSelectedImages={setSelectedImages}
+					onSend={() => handleSendMessage(inputValue, selectedImages)}
+					onSelectImages={selectImages}
+					shouldDisableImages={shouldDisableImages}
+					onHeightChange={() => {
+						// Pass the height change handler
+						if (isAtBottom) {
+							scrollToBottomAuto()
+						}
+					}}
+					// Button related props
+					showScrollToBottom={showScrollToBottom}
+					scrollToBottomSmooth={scrollToBottomSmooth}
+					disableAutoScrollRef={disableAutoScrollRef}
+					primaryButtonText={primaryButtonText}
+					secondaryButtonText={secondaryButtonText}
+					isStreaming={isStreaming}
+					enableButtons={enableButtons}
+					didClickCancel={didClickCancel}
+					handlePrimaryButtonClick={handlePrimaryButtonClick}
+					handleSecondaryButtonClick={handleSecondaryButtonClick}
+				/>
 				{/* Previous conditional rendering of buttons moved inside ChatInputArea */}
 				{/* {showScrollToBottom ? (
 						<div

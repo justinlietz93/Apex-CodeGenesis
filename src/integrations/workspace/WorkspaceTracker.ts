@@ -3,7 +3,7 @@ import * as path from "path"
 import { listFiles } from "../../services/glob/list-files"
 import { Controller } from "../../core/controller"
 // Import necessary function from controller module
-import { postMessageToWebview } from "../../core/controller/modules/webview-handler";
+import { postMessageToWebview } from "../../core/controller/modules/webview-handler"
 
 const cwd = vscode.workspace.workspaceFolders?.map((folder) => folder.uri.fsPath).at(0)
 
@@ -87,15 +87,16 @@ class WorkspaceTracker {
 		if (!cwd) {
 			return
 		}
-		const controller = this.controllerRef.deref();
+		const controller = this.controllerRef.deref()
 		if (controller) {
-			postMessageToWebview(controller.webviewProviderRef, { // Use imported function
+			postMessageToWebview(controller.webviewProviderRef, {
+				// Use imported function
 				type: "workspaceUpdated",
 				filePaths: Array.from(this.filePaths).map((file) => {
 					const relativePath = path.relative(cwd, file).toPosix()
 					return file.endsWith("/") ? relativePath + "/" : relativePath
 				}),
-			});
+			})
 		}
 	}
 	// Removed duplicated lines below

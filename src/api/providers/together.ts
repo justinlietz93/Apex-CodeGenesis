@@ -22,7 +22,7 @@ export class TogetherHandler implements ApiHandler {
 	// Implement the capability flag
 	supportsNativeFunctionCalling(): boolean {
 		// Together uses OpenAI format but hosts various models; assume no standardized native support via the router itself.
-		return false;
+		return false
 	}
 
 	@withRetry()

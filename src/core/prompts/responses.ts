@@ -49,7 +49,7 @@ Otherwise, if you have not completed the task and do not need additional informa
 
 	// Added fileContent formatter
 	fileContent: (filePath: string, content: string): string => {
-		return `File content for ${filePath.toPosix()}:\n\n${content}`;
+		return `File content for ${filePath.toPosix()}:\n\n${content}`
 	},
 
 	formatFilesList: (
@@ -117,76 +117,76 @@ Otherwise, if you have not completed the task and do not need additional informa
 
 	// Added formatRgResults based on ripgrep/index.ts formatResults
 	formatRgResults: (results: any[], cwd: string, maxResults = 300): string => {
-		const groupedResults: { [key: string]: any[] } = {};
-		let output = "";
-		const limitedResults = results.slice(0, maxResults);
+		const groupedResults: { [key: string]: any[] } = {}
+		let output = ""
+		const limitedResults = results.slice(0, maxResults)
 
 		if (results.length >= maxResults) {
-			output += `Showing first ${maxResults} of ${results.length}+ results. Use a more specific search if necessary.\n\n`;
+			output += `Showing first ${maxResults} of ${results.length}+ results. Use a more specific search if necessary.\n\n`
 		} else {
-			output += `Found ${results.length === 1 ? "1 result" : `${results.length.toLocaleString()} results`}.\n\n`;
+			output += `Found ${results.length === 1 ? "1 result" : `${results.length.toLocaleString()} results`}.\n\n`
 		}
 
 		// Group results by file name
 		limitedResults.forEach((result) => {
 			// Assuming result structure from ripgrep/index.ts SearchResult
-			const relativeFilePath = path.relative(cwd, result.filePath).toPosix(); 
+			const relativeFilePath = path.relative(cwd, result.filePath).toPosix()
 			if (!groupedResults[relativeFilePath]) {
-				groupedResults[relativeFilePath] = [];
+				groupedResults[relativeFilePath] = []
 			}
-			groupedResults[relativeFilePath].push(result);
-		});
+			groupedResults[relativeFilePath].push(result)
+		})
 
 		for (const [filePath, fileResults] of Object.entries(groupedResults)) {
-			output += `${filePath}\n│----\n`;
+			output += `${filePath}\n│----\n`
 
 			fileResults.forEach((result, index) => {
-				const allLines = [...result.beforeContext, result.match, ...result.afterContext];
+				const allLines = [...result.beforeContext, result.match, ...result.afterContext]
 				allLines.forEach((line) => {
-					output += `│${line?.trimEnd() ?? ""}\n`;
-				});
+					output += `│${line?.trimEnd() ?? ""}\n`
+				})
 
 				if (index < fileResults.length - 1) {
-					output += "│----\n";
+					output += "│----\n"
 				}
-			});
+			})
 
-			output += "│----\n\n";
+			output += "│----\n\n"
 		}
 
-		return output.trim();
+		return output.trim()
 	},
 
 	// Added formatDefinitions based on tree-sitter/index.ts output
 	formatDefinitions: (definitionsString: string): string => {
 		// The function parseSourceCodeForDefinitionsTopLevel already returns a formatted string
-		return definitionsString;
+		return definitionsString
 	},
 
 	// Added placeholder for browser action result formatter
 	formatBrowserActionResult: (result: any): string => {
 		// TODO: Implement proper formatting based on BrowserSession result structure
-		console.warn("formatBrowserActionResult not fully implemented.");
-		return `Browser action completed. Result:\n${JSON.stringify(result, null, 2)}`;
+		console.warn("formatBrowserActionResult not fully implemented.")
+		return `Browser action completed. Result:\n${JSON.stringify(result, null, 2)}`
 	},
 
 	// Added placeholder for MCP tool result formatter
 	formatMcpToolResult: (result: any): string => {
 		// TODO: Implement proper formatting based on McpHub callTool result structure
-		console.warn("formatMcpToolResult not fully implemented.");
-		return `MCP tool executed. Result:\n${JSON.stringify(result, null, 2)}`;
+		console.warn("formatMcpToolResult not fully implemented.")
+		return `MCP tool executed. Result:\n${JSON.stringify(result, null, 2)}`
 	},
 
 	// Added placeholder for MCP resource result formatter
 	formatMcpResourceResult: (result: any): string => {
 		// TODO: Implement proper formatting based on McpHub readResource result structure
-		console.warn("formatMcpResourceResult not fully implemented.");
-		return `MCP resource accessed. Result:\n${JSON.stringify(result, null, 2)}`;
+		console.warn("formatMcpResourceResult not fully implemented.")
+		return `MCP resource accessed. Result:\n${JSON.stringify(result, null, 2)}`
 	},
 
 	createPrettyPatch: (filename = "file", oldStr?: string, newStr?: string) => {
 		// strings cannot be undefined or diff throws exception
-		const patch = diff.createPatch(filename.toPosix(), oldStr || "", newStr || "");
+		const patch = diff.createPatch(filename.toPosix(), oldStr || "", newStr || "")
 		const lines = patch.split("\n")
 		const prettyPatchLines = lines.slice(4)
 		return prettyPatchLines.join("\n")

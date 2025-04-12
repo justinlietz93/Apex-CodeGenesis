@@ -5,8 +5,8 @@ import { mergePromise, TerminalProcess, TerminalProcessResultPromise } from "./T
 import { TerminalInfo, TerminalRegistry } from "./TerminalRegistry"
 
 // Re-export types needed by consumers
-export type { TerminalInfo }; // Export TerminalInfo from its source
-export type { TerminalProcess, TerminalProcessResultPromise }; // Export TerminalProcess types from its source
+export type { TerminalInfo } // Export TerminalInfo from its source
+export type { TerminalProcess, TerminalProcessResultPromise } // Export TerminalProcess types from its source
 
 /*
 TerminalManager:

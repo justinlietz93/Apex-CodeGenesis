@@ -217,7 +217,7 @@ const ApiOptions = ({ showModelOptions, apiErrorMessage, modelIdErrorMessage, is
 
 			{selectedProvider === "apex" && (
 				<div style={{ marginBottom: 14, marginTop: 4 }}>
-					<ApexAccountInfoCard /> 
+					<ApexAccountInfoCard />
 				</div>
 			)}
 

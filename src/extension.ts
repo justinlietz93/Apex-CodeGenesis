@@ -10,11 +10,11 @@ import assert from "node:assert"
 import { telemetryService } from "./services/telemetry/TelemetryService"
 import { WebviewProvider } from "./core/webview"
 // Import necessary functions from controller modules
-import { clearTask, initApexWithHistoryItem } from "./core/controller/modules/task-lifecycle"; // Added initApexWithHistoryItem just in case, though not seen yet
-import { postStateToWebview } from "./core/controller/modules/state-updater";
-import { postMessageToWebview } from "./core/controller/modules/webview-handler";
-import { handleOpenRouterCallback, validateAuthState, handleAuthCallback } from "./core/controller/modules/auth-handler";
-import { addSelectedCodeToChat, addSelectedTerminalOutputToChat, fixWithApex } from "./core/controller/modules/context-actions";
+import { clearTask, initApexWithHistoryItem } from "./core/controller/modules/task-lifecycle" // Added initApexWithHistoryItem just in case, though not seen yet
+import { postStateToWebview } from "./core/controller/modules/state-updater"
+import { postMessageToWebview } from "./core/controller/modules/webview-handler"
+import { handleOpenRouterCallback, validateAuthState, handleAuthCallback } from "./core/controller/modules/auth-handler"
+import { addSelectedCodeToChat, addSelectedTerminalOutputToChat, fixWithApex } from "./core/controller/modules/context-actions"
 
 /*
 Built using https://github.com/microsoft/vscode-webview-ui-toolkit
@@ -42,7 +42,8 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(
 		// Register the provider for the Apex sidebar view
-		vscode.window.registerWebviewViewProvider("apex-ide-codegenesis.SidebarProvider", sidebarWebview, { // Corrected View ID
+		vscode.window.registerWebviewViewProvider("apex-ide-codegenesis.SidebarProvider", sidebarWebview, {
+			// Corrected View ID
 			webviewOptions: { retainContextWhenHidden: true },
 		}),
 	)
@@ -50,13 +51,16 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.commands.registerCommand("apex.plusButtonClicked", async (webview: any) => {
 			const openChat = async (instance?: WebviewProvider) => {
-				if (!instance) {return;}
-				await clearTask(instance.controller); // Use imported function
-				await postStateToWebview(instance.controller); // Use imported function
-				await postMessageToWebview(instance.controller.webviewProviderRef, { // Use imported function
+				if (!instance) {
+					return
+				}
+				await clearTask(instance.controller) // Use imported function
+				await postStateToWebview(instance.controller) // Use imported function
+				await postMessageToWebview(instance.controller.webviewProviderRef, {
+					// Use imported function
 					type: "action",
 					action: "chatButtonClicked",
-				});
+				})
 			}
 			const isSidebar = !webview
 			if (isSidebar) {
@@ -69,12 +73,16 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(
 		vscode.commands.registerCommand("apex.mcpButtonClicked", (webview: any) => {
-			const openMcp = async (instance?: WebviewProvider) => { // Make async
-				if (!instance) {return;}
-				await postMessageToWebview(instance.controller.webviewProviderRef, { // Use imported function
+			const openMcp = async (instance?: WebviewProvider) => {
+				// Make async
+				if (!instance) {
+					return
+				}
+				await postMessageToWebview(instance.controller.webviewProviderRef, {
+					// Use imported function
 					type: "action",
 					action: "mcpButtonClicked",
-				});
+				})
 			}
 			const isSidebar = !webview
 			if (isSidebar) {
@@ -125,11 +133,14 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.commands.registerCommand("apex.settingsButtonClicked", (webview: any) => {
 			WebviewProvider.getAllInstances().forEach((instance) => {
 				const openSettings = async (instance?: WebviewProvider) => {
-					if (!instance) {return;}
-					await postMessageToWebview(instance.controller.webviewProviderRef, { // Use imported function
+					if (!instance) {
+						return
+					}
+					await postMessageToWebview(instance.controller.webviewProviderRef, {
+						// Use imported function
 						type: "action",
 						action: "settingsButtonClicked",
-					});
+					})
 				}
 				const isSidebar = !webview
 				if (isSidebar) {
@@ -145,11 +156,14 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.commands.registerCommand("apex.historyButtonClicked", (webview: any) => {
 			WebviewProvider.getAllInstances().forEach((instance) => {
 				const openHistory = async (instance?: WebviewProvider) => {
-					if (!instance) {return;}
-					await postMessageToWebview(instance.controller.webviewProviderRef, { // Use imported function
+					if (!instance) {
+						return
+					}
+					await postMessageToWebview(instance.controller.webviewProviderRef, {
+						// Use imported function
 						type: "action",
 						action: "historyButtonClicked",
-					});
+					})
 				}
 				const isSidebar = !webview
 				if (isSidebar) {
@@ -165,11 +179,14 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.commands.registerCommand("apex.accountButtonClicked", (webview: any) => {
 			WebviewProvider.getAllInstances().forEach((instance) => {
 				const openAccount = async (instance?: WebviewProvider) => {
-					if (!instance) {return;}
-					await postMessageToWebview(instance.controller.webviewProviderRef, { // Use imported function
+					if (!instance) {
+						return
+					}
+					await postMessageToWebview(instance.controller.webviewProviderRef, {
+						// Use imported function
 						type: "action",
 						action: "accountButtonClicked",
-					});
+					})
 				}
 				const isSidebar = !webview
 				if (isSidebar) {
@@ -213,29 +230,29 @@ export function activate(context: vscode.ExtensionContext) {
 			case "/openrouter": {
 				// handleOpenRouterCallback expects the full URI
 				if (visibleWebview) {
-					await handleOpenRouterCallback(visibleWebview.controller, uri); // Pass full URI
+					await handleOpenRouterCallback(visibleWebview.controller, uri) // Pass full URI
 				}
 				break
 			}
 			case "/auth": {
 				// handleAuthCallback expects the full URI
 				// validateAuthState only expects the controller
-				const state = query.get("state"); // Keep state for validation check
+				const state = query.get("state") // Keep state for validation check
 
 				console.log("Auth callback received:", {
 					path: uri.path,
 					query: uri.query,
-				});
+				})
 
 				// Validate state parameter - validateAuthState now returns void, remove the check
 				if (!visibleWebview) {
 					vscode.window.showErrorMessage("Cannot validate auth state: No visible webview.")
 					return
 				}
-				await validateAuthState(visibleWebview.controller); // Call validation
+				await validateAuthState(visibleWebview.controller) // Call validation
 
 				// Pass the full URI to handleAuthCallback
-				await handleAuthCallback(visibleWebview.controller, uri); // Pass full URI
+				await handleAuthCallback(visibleWebview.controller, uri) // Pass full URI
 				break
 			}
 			default:
@@ -279,7 +296,7 @@ export function activate(context: vscode.ExtensionContext) {
 			// addSelectedCodeToChat only needs the controller
 			const visibleWebview = WebviewProvider.getVisibleInstance()
 			if (visibleWebview) {
-				await addSelectedCodeToChat(visibleWebview.controller); // Pass only controller
+				await addSelectedCodeToChat(visibleWebview.controller) // Pass only controller
 			}
 		}),
 	)
@@ -327,7 +344,7 @@ export function activate(context: vscode.ExtensionContext) {
 				// addSelectedTerminalOutputToChat only needs the controller
 				const visibleWebview = WebviewProvider.getVisibleInstance()
 				if (visibleWebview) {
-					await addSelectedTerminalOutputToChat(visibleWebview.controller); // Pass only controller
+					await addSelectedTerminalOutputToChat(visibleWebview.controller) // Pass only controller
 				}
 			} catch (error) {
 				// Ensure clipboard is restored even if an error occurs
@@ -399,7 +416,7 @@ export function activate(context: vscode.ExtensionContext) {
 			// fixWithApex only needs the controller
 			const visibleWebview = WebviewProvider.getVisibleInstance()
 			if (visibleWebview) {
-				await fixWithApex(visibleWebview.controller); // Pass only controller
+				await fixWithApex(visibleWebview.controller) // Pass only controller
 			}
 		}),
 	)
@@ -425,7 +442,8 @@ if (IS_DEV && IS_DEV !== "false") {
 	assert(DEV_WORKSPACE_FOLDER, "DEV_WORKSPACE_FOLDER must be set in development")
 	const watcher = vscode.workspace.createFileSystemWatcher(new vscode.RelativePattern(DEV_WORKSPACE_FOLDER, "src/**/*"))
 
-	watcher.onDidChange((uri: vscode.Uri) => { // Add type annotation for the event argument
+	watcher.onDidChange((uri: vscode.Uri) => {
+		// Add type annotation for the event argument
 		console.info(`${uri.scheme} ${uri.path} changed. Reloading VSCode...`) // Use uri properties
 
 		vscode.commands.executeCommand("workbench.action.reloadWindow")

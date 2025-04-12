@@ -7,10 +7,7 @@ import {
 	VSCodePanelTab,
 	VSCodePanelView,
 } from "@vscode/webview-ui-toolkit/react"
-import {
-	VSCodeDropdown,
-	VSCodeOption,
-} from "@vscode/webview-ui-toolkit/react" // Add Dropdown/Option
+import { VSCodeDropdown, VSCodeOption } from "@vscode/webview-ui-toolkit/react" // Add Dropdown/Option
 import { memo, useCallback, useEffect, useState } from "react"
 import { useExtensionState } from "../../context/ExtensionStateContext"
 import { validateApiConfiguration, validateModelId } from "../../utils/validate"
@@ -221,27 +218,42 @@ const SettingsView = ({ onDone }: SettingsViewProps) => {
 				)}
 
 				{/* --- Profile Management --- */}
-				<div style={{ marginBottom: "20px", border: "1px solid var(--vscode-panel-border)", borderRadius: "4px", padding: "10px", background: "var(--vscode-panel-background)" }}>
+				<div
+					style={{
+						marginBottom: "20px",
+						border: "1px solid var(--vscode-panel-border)",
+						borderRadius: "4px",
+						padding: "10px",
+						background: "var(--vscode-panel-background)",
+					}}>
 					<h4 style={{ marginTop: 0, marginBottom: "10px" }}>Profile Management</h4>
 					<div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "10px" }}>
-						<label htmlFor="profile-select" style={{ flexShrink: 0 }}>Active Profile:</label>
+						<label htmlFor="profile-select" style={{ flexShrink: 0 }}>
+							Active Profile:
+						</label>
 						<VSCodeDropdown
 							id="profile-select"
 							value={activeProfileId ?? ""}
 							onChange={(e: any) => setActiveProfile(e.target.value)}
-							style={{ flexGrow: 1 }}
-						>
-							{userProfiles.map((profile: UserProfile) => ( // Added type UserProfile
-								<VSCodeOption key={profile.profileId} value={profile.profileId}>
-									{profile.profileName}
-								</VSCodeOption>
-							))}
+							style={{ flexGrow: 1 }}>
+							{userProfiles.map(
+								(
+									profile: UserProfile, // Added type UserProfile
+								) => (
+									<VSCodeOption key={profile.profileId} value={profile.profileId}>
+										{profile.profileName}
+									</VSCodeOption>
+								),
+							)}
 						</VSCodeDropdown>
 						{/* Add Profile Button */}
-						<VSCodeButton appearance="secondary" onClick={() => {
-							const newName = prompt("Enter new profile name:", `Profile ${userProfiles.length + 1}`);
-							if (newName) createProfile(newName);
-						}} title="Create New Profile">
+						<VSCodeButton
+							appearance="secondary"
+							onClick={() => {
+								const newName = prompt("Enter new profile name:", `Profile ${userProfiles.length + 1}`)
+								if (newName) createProfile(newName)
+							}}
+							title="Create New Profile">
 							<i className="codicon codicon-add"></i>
 						</VSCodeButton>
 						{/* Delete Profile Button (disable if only one profile) */}
@@ -250,40 +262,61 @@ const SettingsView = ({ onDone }: SettingsViewProps) => {
 							disabled={userProfiles.length <= 1 || !activeProfileId}
 							onClick={() => {
 								// Added type UserProfile to find callback parameter
-								if (activeProfileId && confirm(`Are you sure you want to delete profile "${userProfiles.find((p: UserProfile) => p.profileId === activeProfileId)?.profileName}"?`)) {
-									deleteProfile(activeProfileId);
+								if (
+									activeProfileId &&
+									confirm(
+										`Are you sure you want to delete profile "${userProfiles.find((p: UserProfile) => p.profileId === activeProfileId)?.profileName}"?`,
+									)
+								) {
+									deleteProfile(activeProfileId)
 								}
 							}}
-							title="Delete Active Profile"
-						>
+							title="Delete Active Profile">
 							<i className="codicon codicon-trash"></i>
 						</VSCodeButton>
 						{/* TODO: Add Rename Profile Button */}
 					</div>
 				</div>
 
-
 				{/* --- Custom Instruction Library --- */}
-				<div style={{ marginBottom: "20px", border: "1px solid var(--vscode-panel-border)", borderRadius: "4px", padding: "10px", background: "var(--vscode-panel-background)" }}>
+				<div
+					style={{
+						marginBottom: "20px",
+						border: "1px solid var(--vscode-panel-border)",
+						borderRadius: "4px",
+						padding: "10px",
+						background: "var(--vscode-panel-background)",
+					}}>
 					<h4 style={{ marginTop: 0, marginBottom: "10px" }}>Custom Instruction Library</h4>
 					<div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "10px" }}>
-						<label htmlFor="instruction-select" style={{ flexShrink: 0 }}>Active Instruction:</label>
+						<label htmlFor="instruction-select" style={{ flexShrink: 0 }}>
+							Active Instruction:
+						</label>
 						<VSCodeDropdown
 							id="instruction-select"
 							// Added type UserProfile to find callback parameter
-							value={userProfiles.find((p: UserProfile) => p.profileId === activeProfileId)?.activeCustomInstructionId ?? ""}
+							value={
+								userProfiles.find((p: UserProfile) => p.profileId === activeProfileId)
+									?.activeCustomInstructionId ?? ""
+							}
 							onChange={(e: any) => setActiveCustomInstruction(e.target.value || null)} // Send null if empty
-							style={{ flexGrow: 1 }}
-						>
+							style={{ flexGrow: 1 }}>
 							<VSCodeOption value="">-- None --</VSCodeOption>
-							{customInstructionLibrary.map((item: CustomInstructionItem) => ( // Added type CustomInstructionItem
-								<VSCodeOption key={item.id} value={item.id}>
-									{item.name}
-								</VSCodeOption>
-							))}
+							{customInstructionLibrary.map(
+								(
+									item: CustomInstructionItem, // Added type CustomInstructionItem
+								) => (
+									<VSCodeOption key={item.id} value={item.id}>
+										{item.name}
+									</VSCodeOption>
+								),
+							)}
 						</VSCodeDropdown>
 						{/* TODO: Add Create/Edit/Delete buttons for library items */}
-						<VSCodeButton appearance="secondary" onClick={() => alert("Create/Edit/Delete UI not implemented yet.")} title="Manage Instructions">
+						<VSCodeButton
+							appearance="secondary"
+							onClick={() => alert("Create/Edit/Delete UI not implemented yet.")}
+							title="Manage Instructions">
 							Manage...
 						</VSCodeButton>
 					</div>

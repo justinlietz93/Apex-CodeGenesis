@@ -2,8 +2,8 @@ import axios, { AxiosRequestConfig, AxiosResponse } from "axios"
 import { Controller } from "../../core/controller"
 import type { BalanceResponse, PaymentTransaction, UsageTransaction } from "../../shared/ApexAccount"
 // Import necessary functions from controller modules
-import { getStateToPostToWebview } from "../../core/controller/modules/state-updater";
-import { postMessageToWebview } from "../../core/controller/modules/webview-handler";
+import { getStateToPostToWebview } from "../../core/controller/modules/state-updater"
+import { postMessageToWebview } from "../../core/controller/modules/webview-handler"
 
 export class ApexAccountService {
 	private readonly baseUrl = "https://api.apex.bot/v1"
@@ -22,7 +22,7 @@ export class ApexAccountService {
 			return undefined
 		}
 
-		const { apiConfiguration } = await getStateToPostToWebview(provider); // Use imported function
+		const { apiConfiguration } = await getStateToPostToWebview(provider) // Use imported function
 		return apiConfiguration?.apexApiKey
 	}
 
@@ -67,12 +67,13 @@ export class ApexAccountService {
 			const data = await this.authenticatedRequest<BalanceResponse>("/user/credits/balance")
 
 			// Post to webview
-			const controllerForBalance = this.controllerRef.deref();
+			const controllerForBalance = this.controllerRef.deref()
 			if (controllerForBalance) {
-				await postMessageToWebview(controllerForBalance.webviewProviderRef, { // Use imported function
+				await postMessageToWebview(controllerForBalance.webviewProviderRef, {
+					// Use imported function
 					type: "userCreditsBalance",
 					userCreditsBalance: data,
-				});
+				})
 			}
 
 			return data
@@ -90,12 +91,13 @@ export class ApexAccountService {
 			const data = await this.authenticatedRequest<UsageTransaction[]>("/user/credits/usage")
 
 			// Post to webview
-			const controllerForUsage = this.controllerRef.deref();
+			const controllerForUsage = this.controllerRef.deref()
 			if (controllerForUsage) {
-				await postMessageToWebview(controllerForUsage.webviewProviderRef, { // Use imported function
+				await postMessageToWebview(controllerForUsage.webviewProviderRef, {
+					// Use imported function
 					type: "userCreditsUsage",
 					userCreditsUsage: data,
-				});
+				})
 			}
 
 			return data
@@ -113,12 +115,13 @@ export class ApexAccountService {
 			const data = await this.authenticatedRequest<PaymentTransaction[]>("/user/credits/payments")
 
 			// Post to webview
-			const controllerForPayments = this.controllerRef.deref();
+			const controllerForPayments = this.controllerRef.deref()
 			if (controllerForPayments) {
-				await postMessageToWebview(controllerForPayments.webviewProviderRef, { // Use imported function
+				await postMessageToWebview(controllerForPayments.webviewProviderRef, {
+					// Use imported function
 					type: "userCreditsPayments",
 					userCreditsPayments: data,
-				});
+				})
 			}
 
 			return data

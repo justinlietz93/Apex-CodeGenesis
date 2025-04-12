@@ -29,7 +29,7 @@ export class MistralHandler implements ApiHandler {
 	// Implement the capability flag
 	supportsNativeFunctionCalling(): boolean {
 		// Mistral API supports tool calling, but this handler doesn't implement it yet.
-		return false;
+		return false
 	}
 
 	@withRetry()

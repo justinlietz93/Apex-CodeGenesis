@@ -33,7 +33,7 @@ export class QwenHandler implements ApiHandler {
 	// Implement the capability flag
 	supportsNativeFunctionCalling(): boolean {
 		// Qwen's OpenAI-compatible endpoint likely doesn't support standardized function calling.
-		return false;
+		return false
 	}
 
 	getModel(): { id: MainlandQwenModelId | InternationalQwenModelId; info: ModelInfo } {

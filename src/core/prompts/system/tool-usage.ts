@@ -1,6 +1,6 @@
 export const getToolUsagePrompt = (needsXml: boolean): string => {
-  if (needsXml) {
-      return `
+	if (needsXml) {
+		return `
 ====
 
 TOOL USE
@@ -23,20 +23,20 @@ For example:
 <path>src/main.js</path>
 </read_file>
 
-Always adhere to this format for the tool use to ensure proper parsing and execution.`;
-  } else {
-      // Simpler instructions for native function calling
-      return `
+Always adhere to this format for the tool use to ensure proper parsing and execution.`
+	} else {
+		// Simpler instructions for native function calling
+		return `
 ====
 
 TOOL USE
 
-You have access to a set of tools. Use the tools provided to accomplish the user's task step-by-step. You will receive the result of each tool use before proceeding.`;
-  }
-};
+You have access to a set of tools. Use the tools provided to accomplish the user's task step-by-step. You will receive the result of each tool use before proceeding.`
+	}
+}
 
 export const getToolUseGuidelinesPrompt = (): string => {
-  return `
+	return `
 # Tool Use Guidelines
 
 1. In <thinking> tags, assess what information you already have and what information you need to proceed with the task.
@@ -56,16 +56,18 @@ It is crucial to proceed step-by-step, waiting for the user's message after each
 3. Adapt your approach based on new information or unexpected results.
 4. Ensure that each action builds correctly on the previous ones.
 
-By waiting for and carefully considering the user's response after each tool use, you can react accordingly and make informed decisions about how to proceed with the task. This iterative process helps ensure the overall success and accuracy of your work.`;
-};
+By waiting for and carefully considering the user's response after each tool use, you can react accordingly and make informed decisions about how to proceed with the task. This iterative process helps ensure the overall success and accuracy of your work.`
+}
 
 export const getToolExamplesPrompt = (needsXml: boolean, mcpEnabled: boolean): string => {
-  // Note: mcpEnabled flag is not used in this completion as its purpose isn't defined
-  // in the provided snippet. Add logic related to it if needed.
-  if (!needsXml) {return "";} // No XML examples needed for native calling
+	// Note: mcpEnabled flag is not used in this completion as its purpose isn't defined
+	// in the provided snippet. Add logic related to it if needed.
+	if (!needsXml) {
+		return ""
+	} // No XML examples needed for native calling
 
-  // Completing the JSON content and adding closing tags/structure
-  let examples = `
+	// Completing the JSON content and adding closing tags/structure
+	let examples = `
 # Tool Use Examples
 
 ## Example 1: Requesting to execute a command
@@ -108,9 +110,9 @@ export const getToolExamplesPrompt = (needsXml: boolean, mcpEnabled: boolean): s
 <list_files>
 <path>src/components</path>
 </list_files>
-`; // Added examples 3 & 4 for completeness, close template literal
+` // Added examples 3 & 4 for completeness, close template literal
 
-  // Add more examples based on mcpEnabled or other logic here if necessary
+	// Add more examples based on mcpEnabled or other logic here if necessary
 
-  return examples; // Return the completed examples string
-};
+	return examples // Return the completed examples string
+}

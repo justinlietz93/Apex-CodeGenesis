@@ -113,7 +113,9 @@ export const ApexAccountView = () => {
 							</VSCodeButtonLink>
 						</div> */}
 						{/* Keep Logout button */}
-						<VSCodeButton appearance="secondary" onClick={handleLogout} className="w-full"> {/* Make logout full width for now */}
+						<VSCodeButton appearance="secondary" onClick={handleLogout} className="w-full">
+							{" "}
+							{/* Make logout full width for now */}
 							Log out
 						</VSCodeButton>
 					</div>
@@ -158,9 +160,7 @@ export const ApexAccountView = () => {
 				<div className="flex flex-col items-center pr-3">
 					<ApexLogoWhite className="size-16 mb-4" />
 
-					<p style={{}}>
-						Log in to your Apex account to manage settings, view usage, and access exclusive features.
-					</p>
+					<p style={{}}>Log in to your Apex account to manage settings, view usage, and access exclusive features.</p>
 
 					<VSCodeButton onClick={handleLogin} className="w-full mb-4">
 						Log in / Sign up

@@ -6,9 +6,9 @@ import { getTheme } from "../../integrations/theme/getTheme"
 import { Controller } from "../controller"
 import { findLast } from "../../shared/array"
 // Import necessary functions from controller modules
-import { postMessageToWebview } from "../controller/modules/webview-handler";
-import { postStateToWebview } from "../controller/modules/state-updater";
-import { clearTask } from "../controller/modules/task-lifecycle";
+import { postMessageToWebview } from "../controller/modules/webview-handler"
+import { postStateToWebview } from "../controller/modules/state-updater"
+import { clearTask } from "../controller/modules/task-lifecycle"
 /*
 https://github.com/microsoft/vscode-webview-ui-toolkit-samples/blob/main/default/weather-webview/src/providers/WeatherViewProvider.ts
 https://github.com/KumarVariable/vscode-extension-sidebar-html/blob/master/src/customSidebarViewProvider.ts
@@ -18,8 +18,8 @@ export class WebviewProvider implements vscode.WebviewViewProvider {
 	// NOTE: While the comment below suggests these IDs cannot be changed due to caching,
 	// for a fork intended to run alongside the original, changing these IS necessary
 	// to avoid conflicts. Users installing the fork might need to clear cache if issues arise.
-	public static readonly sideBarId = "apex-ide-codegenesis.SidebarProvider";
-	public static readonly tabPanelId = "apex-ide-codegenesis.TabPanelProvider";
+	public static readonly sideBarId = "apex-ide-codegenesis.SidebarProvider"
+	public static readonly tabPanelId = "apex-ide-codegenesis.TabPanelProvider"
 	private static activeInstances: Set<WebviewProvider> = new Set()
 	public view?: vscode.WebviewView | vscode.WebviewPanel
 	private disposables: vscode.Disposable[] = []
@@ -91,13 +91,14 @@ export class WebviewProvider implements vscode.WebviewViewProvider {
 			// WebviewView and WebviewPanel have all the same properties except for this visibility listener
 			// panel
 			webviewView.onDidChangeViewState(
-				async () => { // Make async
+				async () => {
+					// Make async
 					if (this.view?.visible) {
 						// Use imported function, pass webviewProviderRef from controller
 						await postMessageToWebview(this.controller.webviewProviderRef, {
 							type: "action",
 							action: "didBecomeVisible",
-						});
+						})
 					}
 				},
 				null,
@@ -106,13 +107,14 @@ export class WebviewProvider implements vscode.WebviewViewProvider {
 		} else if ("onDidChangeVisibility" in webviewView) {
 			// sidebar
 			webviewView.onDidChangeVisibility(
-				async () => { // Make async
+				async () => {
+					// Make async
 					if (this.view?.visible) {
 						// Use imported function, pass webviewProviderRef from controller
 						await postMessageToWebview(this.controller.webviewProviderRef, {
 							type: "action",
 							action: "didBecomeVisible",
-						});
+						})
 					}
 				},
 				null,
@@ -142,11 +144,11 @@ export class WebviewProvider implements vscode.WebviewViewProvider {
 						await postMessageToWebview(this.controller.webviewProviderRef, {
 							type: "theme",
 							text: JSON.stringify(await getTheme()),
-						});
+						})
 					}
 					if (e && e.affectsConfiguration("apex.mcpMarketplace.enabled")) {
 						// Update state when marketplace tab setting changes
-						await postStateToWebview(this.controller); // Use imported function
+						await postStateToWebview(this.controller) // Use imported function
 					}
 				},
 				null,
@@ -154,7 +156,7 @@ export class WebviewProvider implements vscode.WebviewViewProvider {
 			)
 
 			// if the extension is starting a new session, clear previous task state
-			await clearTask(this.controller); // Use imported function
+			await clearTask(this.controller) // Use imported function
 
 			this.outputChannel.appendLine("Webview view resolved")
 		}
@@ -173,12 +175,11 @@ export class WebviewProvider implements vscode.WebviewViewProvider {
 	 */
 	private getHtmlContent(webview: vscode.Webview): string {
 		// Use the build output paths relative to the webview-ui/build directory
-		const stylesPath = vscode.Uri.joinPath(this.context.extensionUri, "webview-ui", "build", "assets", "index.css");
-		const scriptPath = vscode.Uri.joinPath(this.context.extensionUri, "webview-ui", "build", "assets", "index.js");
+		const stylesPath = vscode.Uri.joinPath(this.context.extensionUri, "webview-ui", "build", "assets", "index.css")
+		const scriptPath = vscode.Uri.joinPath(this.context.extensionUri, "webview-ui", "build", "assets", "index.js")
 
-		const stylesUri = webview.asWebviewUri(stylesPath);
-		const scriptUri = webview.asWebviewUri(scriptPath);
-
+		const stylesUri = webview.asWebviewUri(stylesPath)
+		const scriptUri = webview.asWebviewUri(scriptPath)
 
 		// The codicon font from the React build output
 		// https://github.com/microsoft/vscode-extension-samples/blob/main/webview-codicons-sample/src/extension.ts
@@ -190,8 +191,10 @@ export class WebviewProvider implements vscode.WebviewViewProvider {
 			"codicons",
 			"dist",
 			"codicon.css", // Load the CSS file which references the font
-		]);
-		const codiconsFontUri = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, "node_modules", "@vscode", "codicons", "dist", "codicon.ttf")); // Also get direct font URI for CSP
+		])
+		const codiconsFontUri = webview.asWebviewUri(
+			vscode.Uri.joinPath(this.context.extensionUri, "node_modules", "@vscode", "codicons", "dist", "codicon.ttf"),
+		) // Also get direct font URI for CSP
 
 		// const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "assets", "main.js"))
 
@@ -261,14 +264,17 @@ export class WebviewProvider implements vscode.WebviewViewProvider {
 		const nonce = getNonce()
 		// Don't need build assets in HMR mode, Vite serves them
 		// const stylesUri = getUri(webview, this.context.extensionUri, ["webview-ui", "build", "assets", "index.css"])
-		const codiconsCssUri = getUri(webview, this.context.extensionUri, [ // Still need codicon CSS
+		const codiconsCssUri = getUri(webview, this.context.extensionUri, [
+			// Still need codicon CSS
 			"node_modules",
 			"@vscode",
 			"codicons",
 			"dist",
 			"codicon.css",
-		]);
-		const codiconsFontUri = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, "node_modules", "@vscode", "codicons", "dist", "codicon.ttf")); // Also get direct font URI for CSP
+		])
+		const codiconsFontUri = webview.asWebviewUri(
+			vscode.Uri.joinPath(this.context.extensionUri, "node_modules", "@vscode", "codicons", "dist", "codicon.ttf"),
+		) // Also get direct font URI for CSP
 
 		const scriptEntrypoint = "src/main.tsx"
 		const scriptUri = `http://${localServerUrl}/${scriptEntrypoint}`
@@ -346,7 +352,8 @@ export class WebviewProvider implements vscode.WebviewViewProvider {
 	 */
 	private setWebviewMessageListener(webview: vscode.Webview) {
 		webview.onDidReceiveMessage(
-			(message: any) => { // Add 'any' type temporarily if needed, or import WebviewMessage
+			(message: any) => {
+				// Add 'any' type temporarily if needed, or import WebviewMessage
 				// console.log("<<< HOST received message from WEBVIEW:", message) // Logging removed
 				this.controller.handleWebviewMessage(message)
 			},

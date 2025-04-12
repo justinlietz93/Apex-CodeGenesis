@@ -1,16 +1,16 @@
-import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
-import styled from 'styled-components';
-import { useClickAway, useWindowSize } from 'react-use';
-import { ApiConfiguration, ModelInfo } from '../../../../../src/shared/api'; // Adjust path
-import { CODE_BLOCK_BG_COLOR } from '../../common/CodeBlock'; // Adjust path
-import ApiOptions, { normalizeApiConfiguration } from '../../settings/ApiOptions'; // Adjust path
-import { vscode } from '../../../utils/vscode'; // Adjust path
-import { validateApiConfiguration, validateModelId } from '../../../utils/validate'; // Adjust path
+import React, { useState, useRef, useEffect, useMemo, useCallback } from "react"
+import styled from "styled-components"
+import { useClickAway, useWindowSize } from "react-use"
+import { ApiConfiguration, ModelInfo } from "../../../../../src/shared/api" // Adjust path
+import { CODE_BLOCK_BG_COLOR } from "../../common/CodeBlock" // Adjust path
+import ApiOptions, { normalizeApiConfiguration } from "../../settings/ApiOptions" // Adjust path
+import { vscode } from "../../../utils/vscode" // Adjust path
+import { validateApiConfiguration, validateModelId } from "../../../utils/validate" // Adjust path
 
 // Define props based on moved logic
 interface ModelSelectorProps {
-  apiConfiguration?: ApiConfiguration;
-  openRouterModels?: Record<string, ModelInfo>;
+	apiConfiguration?: ApiConfiguration
+	openRouterModels?: Record<string, ModelInfo>
 }
 
 // Copied styled components from ChatTextArea.tsx
@@ -50,20 +50,20 @@ const ModelSelectorTooltip = styled.div<ModelSelectorTooltipProps>`
 		transform: rotate(45deg);
 		z-index: -1;
 	}
-`;
+`
 
 const ModelContainer = styled.div`
 	position: relative;
 	display: flex;
 	flex: 1;
 	min-width: 0;
-`;
+`
 
 const ModelButtonWrapper = styled.div`
 	display: inline-flex;
 	min-width: 0;
 	max-width: 100%;
-`;
+`
 
 const ModelDisplayButton = styled.a<{ isActive?: boolean; disabled?: boolean }>`
 	padding: 0px 0px;
@@ -97,7 +97,7 @@ const ModelDisplayButton = styled.a<{ isActive?: boolean; disabled?: boolean }>`
 	&:focus-visible {
 		outline: none;
 	}
-`;
+`
 
 const ModelButtonContent = styled.div`
 	width: 100%;
@@ -105,122 +105,126 @@ const ModelButtonContent = styled.div`
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-`;
+`
 
 interface ModelSelectorTooltipProps {
-	arrowPosition: number;
-	menuPosition: number;
+	arrowPosition: number
+	menuPosition: number
 }
 
+const ModelSelector: React.FC<ModelSelectorProps> = ({ apiConfiguration, openRouterModels }) => {
+	// State and refs moved from ChatTextArea
+	const [showModelSelector, setShowModelSelector] = useState(false)
+	const modelSelectorRef = useRef<HTMLDivElement>(null)
+	const { width: viewportWidth, height: viewportHeight } = useWindowSize()
+	const buttonRef = useRef<HTMLDivElement>(null)
+	const [arrowPosition, setArrowPosition] = useState(0)
+	const [menuPosition, setMenuPosition] = useState(0)
+	const prevShowModelSelector = useRef(showModelSelector)
 
-const ModelSelector: React.FC<ModelSelectorProps> = ({
-  apiConfiguration,
-  openRouterModels,
-}) => {
-  // State and refs moved from ChatTextArea
-  const [showModelSelector, setShowModelSelector] = useState(false);
-  const modelSelectorRef = useRef<HTMLDivElement>(null);
-  const { width: viewportWidth, height: viewportHeight } = useWindowSize();
-  const buttonRef = useRef<HTMLDivElement>(null);
-  const [arrowPosition, setArrowPosition] = useState(0);
-  const [menuPosition, setMenuPosition] = useState(0);
-  const prevShowModelSelector = useRef(showModelSelector);
+	// Handlers and Effects moved from ChatTextArea
+	const submitApiConfig = useCallback(() => {
+		const apiValidationResult = validateApiConfiguration(apiConfiguration)
+		const modelIdValidationResult = validateModelId(apiConfiguration, openRouterModels)
 
-  // Handlers and Effects moved from ChatTextArea
-  const submitApiConfig = useCallback(() => {
-    const apiValidationResult = validateApiConfiguration(apiConfiguration)
-    const modelIdValidationResult = validateModelId(apiConfiguration, openRouterModels)
+		if (!apiValidationResult && !modelIdValidationResult) {
+			vscode.postMessage({ type: "apiConfiguration", apiConfiguration })
+		} else {
+			console.warn("API Configuration validation failed on model selector close.")
+		}
+	}, [apiConfiguration, openRouterModels])
 
-    if (!apiValidationResult && !modelIdValidationResult) {
-      vscode.postMessage({ type: "apiConfiguration", apiConfiguration })
-    } else {
-      console.warn("API Configuration validation failed on model selector close.");
-    }
-  }, [apiConfiguration, openRouterModels]);
+	useEffect(() => {
+		if (prevShowModelSelector.current && !showModelSelector) {
+			submitApiConfig()
+		}
+		prevShowModelSelector.current = showModelSelector
+	}, [showModelSelector, submitApiConfig])
 
-  useEffect(() => {
-    if (prevShowModelSelector.current && !showModelSelector) {
-      submitApiConfig()
-    }
-    prevShowModelSelector.current = showModelSelector
-  }, [showModelSelector, submitApiConfig]);
+	const handleModelButtonClick = () => {
+		setShowModelSelector(!showModelSelector)
+	}
 
-  const handleModelButtonClick = () => {
-    setShowModelSelector(!showModelSelector);
-  };
+	useClickAway(modelSelectorRef, () => {
+		if (showModelSelector) {
+			submitApiConfig()
+		}
+		setShowModelSelector(false)
+	})
 
-  useClickAway(modelSelectorRef, () => {
-     if (showModelSelector) {
-        submitApiConfig()
-     }
-    setShowModelSelector(false);
-  });
+	const modelDisplayName = useMemo(() => {
+		const { selectedProvider, selectedModelId } = normalizeApiConfiguration(apiConfiguration)
+		const unknownModel = "unknown"
+		if (!apiConfiguration) return unknownModel
+		switch (selectedProvider) {
+			case "apex":
+				return `${selectedProvider}:${selectedModelId}`
+			case "openai":
+				return `openai-compat:${selectedModelId}`
+			case "vscode-lm":
+				return `vscode-lm:${apiConfiguration.vsCodeLmModelSelector ? `${apiConfiguration.vsCodeLmModelSelector.vendor ?? ""}/${apiConfiguration.vsCodeLmModelSelector.family ?? ""}` : unknownModel}`
+			case "together":
+				return `${selectedProvider}:${apiConfiguration.togetherModelId}`
+			case "lmstudio":
+				return `${selectedProvider}:${apiConfiguration.lmStudioModelId}`
+			case "ollama":
+				return `${selectedProvider}:${apiConfiguration.ollamaModelId}`
+			case "litellm":
+				return `${selectedProvider}:${apiConfiguration.liteLlmModelId}`
+			case "requesty":
+			case "anthropic":
+			case "openrouter":
+			default:
+				return `${selectedProvider}:${selectedModelId}`
+		}
+	}, [apiConfiguration])
 
-  const modelDisplayName = useMemo(() => {
-    const { selectedProvider, selectedModelId } = normalizeApiConfiguration(apiConfiguration)
-    const unknownModel = "unknown"
-    if (!apiConfiguration) return unknownModel
-    switch (selectedProvider) {
-      case "apex": return `${selectedProvider}:${selectedModelId}`
-      case "openai": return `openai-compat:${selectedModelId}`
-      case "vscode-lm": return `vscode-lm:${apiConfiguration.vsCodeLmModelSelector ? `${apiConfiguration.vsCodeLmModelSelector.vendor ?? ""}/${apiConfiguration.vsCodeLmModelSelector.family ?? ""}` : unknownModel}`
-      case "together": return `${selectedProvider}:${apiConfiguration.togetherModelId}`
-      case "lmstudio": return `${selectedProvider}:${apiConfiguration.lmStudioModelId}`
-      case "ollama": return `${selectedProvider}:${apiConfiguration.ollamaModelId}`
-      case "litellm": return `${selectedProvider}:${apiConfiguration.liteLlmModelId}`
-      case "requesty":
-      case "anthropic":
-      case "openrouter":
-      default: return `${selectedProvider}:${selectedModelId}`
-    }
-  }, [apiConfiguration]);
+	useEffect(() => {
+		if (showModelSelector && buttonRef.current) {
+			const buttonRect = buttonRef.current.getBoundingClientRect()
+			const buttonCenter = buttonRect.left + buttonRect.width / 2
+			const rightPosition = document.documentElement.clientWidth - buttonCenter - 5
+			setArrowPosition(rightPosition)
+			setMenuPosition(buttonRect.top + 1)
+		}
+	}, [showModelSelector, viewportWidth, viewportHeight])
 
-  useEffect(() => {
-    if (showModelSelector && buttonRef.current) {
-      const buttonRect = buttonRef.current.getBoundingClientRect()
-      const buttonCenter = buttonRect.left + buttonRect.width / 2
-      const rightPosition = document.documentElement.clientWidth - buttonCenter - 5
-      setArrowPosition(rightPosition)
-      setMenuPosition(buttonRect.top + 1)
-    }
-  }, [showModelSelector, viewportWidth, viewportHeight]);
+	useEffect(() => {
+		if (!showModelSelector) {
+			const button = buttonRef.current?.querySelector("a")
+			if (button) button.blur()
+		}
+	}, [showModelSelector])
 
-  useEffect(() => {
-    if (!showModelSelector) {
-      const button = buttonRef.current?.querySelector("a")
-      if (button) button.blur()
-    }
-  }, [showModelSelector]);
+	return (
+		<ModelContainer ref={modelSelectorRef}>
+			<ModelButtonWrapper ref={buttonRef}>
+				<ModelDisplayButton
+					role="button"
+					isActive={showModelSelector}
+					disabled={false} // Determine disabled state based on props/context if needed
+					onClick={handleModelButtonClick}
+					tabIndex={0}>
+					<ModelButtonContent>{modelDisplayName}</ModelButtonContent>
+				</ModelDisplayButton>
+			</ModelButtonWrapper>
+			{showModelSelector && (
+				<ModelSelectorTooltip
+					arrowPosition={arrowPosition}
+					menuPosition={menuPosition}
+					style={{
+						bottom: `calc(100vh - ${menuPosition}px + 6px)`,
+					}}>
+					<ApiOptions
+						showModelOptions={true}
+						apiErrorMessage={undefined} // Pass errors if needed
+						modelIdErrorMessage={undefined} // Pass errors if needed
+						isPopup={true}
+					/>
+				</ModelSelectorTooltip>
+			)}
+		</ModelContainer>
+	)
+}
 
-  return (
-    <ModelContainer ref={modelSelectorRef}>
-      <ModelButtonWrapper ref={buttonRef}>
-        <ModelDisplayButton
-          role="button"
-          isActive={showModelSelector}
-          disabled={false} // Determine disabled state based on props/context if needed
-          onClick={handleModelButtonClick}
-          tabIndex={0}>
-          <ModelButtonContent>{modelDisplayName}</ModelButtonContent>
-        </ModelDisplayButton>
-      </ModelButtonWrapper>
-      {showModelSelector && (
-        <ModelSelectorTooltip
-          arrowPosition={arrowPosition}
-          menuPosition={menuPosition}
-          style={{
-            bottom: `calc(100vh - ${menuPosition}px + 6px)`,
-          }}>
-          <ApiOptions
-            showModelOptions={true}
-            apiErrorMessage={undefined} // Pass errors if needed
-            modelIdErrorMessage={undefined} // Pass errors if needed
-            isPopup={true}
-          />
-        </ModelSelectorTooltip>
-      )}
-    </ModelContainer>
-  );
-};
-
-export default ModelSelector;
+export default ModelSelector

@@ -1,19 +1,19 @@
-import { useState, useEffect, useMemo } from 'react'; // Added useMemo
-import { useDeepCompareEffect } from 'react-use';
-import { ApexMessage, ApexAsk, ApexSayTool } from '../../../../../src/shared/ExtensionMessage'; // Added ApexSayTool
+import { useState, useEffect, useMemo } from "react" // Added useMemo
+import { useDeepCompareEffect } from "react-use"
+import { ApexMessage, ApexAsk, ApexSayTool } from "../../../../../src/shared/ExtensionMessage" // Added ApexSayTool
 
 export const useChatViewState = (messages: ApexMessage[]) => {
-  const [apexAsk, setApexAsk] = useState<ApexAsk | undefined>(undefined);
-  const [enableButtons, setEnableButtons] = useState<boolean>(false);
-  const [primaryButtonText, setPrimaryButtonText] = useState<string | undefined>("Approve");
-  const [secondaryButtonText, setSecondaryButtonText] = useState<string | undefined>("Reject");
-  const [didClickCancel, setDidClickCancel] = useState(false);
+	const [apexAsk, setApexAsk] = useState<ApexAsk | undefined>(undefined)
+	const [enableButtons, setEnableButtons] = useState<boolean>(false)
+	const [primaryButtonText, setPrimaryButtonText] = useState<string | undefined>("Approve")
+	const [secondaryButtonText, setSecondaryButtonText] = useState<string | undefined>("Reject")
+	const [didClickCancel, setDidClickCancel] = useState(false)
 
-  // Logic moved from ChatView.tsx
-  const lastMessage = useMemo(() => messages.at(-1), [messages]);
-  const secondLastMessage = useMemo(() => messages.at(-2), [messages]);
+	// Logic moved from ChatView.tsx
+	const lastMessage = useMemo(() => messages.at(-1), [messages])
+	const secondLastMessage = useMemo(() => messages.at(-2), [messages])
 
-  useDeepCompareEffect(() => {
+	useDeepCompareEffect(() => {
 		// if last message is an ask, show user ask UI
 		// if user finished a task, then start a new task with a new conversation history since in this moment that the extension is waiting for user response, the user could close the extension and the conversation history would be lost.
 		// basically as long as a task is active, the conversation history will be persisted
@@ -162,10 +162,10 @@ export const useChatViewState = (messages: ApexMessage[]) => {
 		} else {
 			// This case is handled by the useEffect below based on messages.length
 		}
-	}, [lastMessage, secondLastMessage]);
+	}, [lastMessage, secondLastMessage])
 
-  // Effect to reset state when messages are cleared (new task starts)
-  useEffect(() => {
+	// Effect to reset state when messages are cleared (new task starts)
+	useEffect(() => {
 		if (messages.length === 0) {
 			// setTextAreaDisabled(false) // Handled elsewhere
 			setApexAsk(undefined)
@@ -173,19 +173,18 @@ export const useChatViewState = (messages: ApexMessage[]) => {
 			setPrimaryButtonText("Approve")
 			setSecondaryButtonText("Reject")
 		}
-	}, [messages.length]);
+	}, [messages.length])
 
-
-  return {
-    apexAsk,
-    enableButtons,
-    primaryButtonText,
-    secondaryButtonText,
-    didClickCancel,
-    setApexAsk, // Expose setters if needed by other components/hooks
-    setEnableButtons,
-    setPrimaryButtonText,
-    setSecondaryButtonText,
-    setDidClickCancel,
-  };
-};
+	return {
+		apexAsk,
+		enableButtons,
+		primaryButtonText,
+		secondaryButtonText,
+		didClickCancel,
+		setApexAsk, // Expose setters if needed by other components/hooks
+		setEnableButtons,
+		setPrimaryButtonText,
+		setSecondaryButtonText,
+		setDidClickCancel,
+	}
+}

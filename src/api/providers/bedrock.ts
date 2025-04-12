@@ -27,7 +27,7 @@ export class AwsBedrockHandler implements ApiHandler {
 		// Bedrock itself doesn't standardize function calling across all models it hosts.
 		// While some models *might* support it (e.g., future Claude versions via Bedrock),
 		// this handler currently routes to models that expect XML or specific formats.
-		return false;
+		return false
 	}
 
 	@withRetry()

@@ -28,7 +28,7 @@ export class OpenRouterHandler implements ApiHandler {
 
 	// Implement the capability flag
 	supportsNativeFunctionCalling(): boolean {
-		return false; // OpenRouter itself doesn't dictate function calling; depends on the routed model. Default to false for the handler.
+		return false // OpenRouter itself doesn't dictate function calling; depends on the routed model. Default to false for the handler.
 	}
 
 	@withRetry()

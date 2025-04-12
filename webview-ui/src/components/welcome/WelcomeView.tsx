@@ -59,7 +59,8 @@ const WelcomeView = () => {
 						<li>Dynamic persona utilization for specialized task handling</li>
 						<li>Full autonomy modes for independent operation</li>
 					</ul>
-					I utilize a suite of tools for file manipulation, code execution, browsing, and can be extended via the Model Context Protocol (MCP).
+					I utilize a suite of tools for file manipulation, code execution, browsing, and can be extended via the Model
+					Context Protocol (MCP).
 				</p>
 
 				<p style={{ color: "var(--vscode-descriptionForeground)" }}>
@@ -69,7 +70,11 @@ const WelcomeView = () => {
 				{/* Show API Options by default */}
 				<div style={{ marginTop: "18px" }}>
 					<ApiOptions showModelOptions={false} />
-					<VSCodeButton onClick={handleSubmit} disabled={disableLetsGoButton} style={{ marginTop: "10px", width: "100%" }} appearance="primary">
+					<VSCodeButton
+						onClick={handleSubmit}
+						disabled={disableLetsGoButton}
+						style={{ marginTop: "10px", width: "100%" }}
+						appearance="primary">
 						Let's go!
 					</VSCodeButton>
 				</div>
@@ -82,7 +87,9 @@ const WelcomeView = () => {
 					<VSCodeLink href="#" onClick={handleLogin} style={{ display: "inline" }}>
 						sign up / log in
 					</VSCodeLink>
-					<span style={{ color: "var(--vscode-descriptionForeground)", marginLeft: "5px" }}>to get started for free.</span>
+					<span style={{ color: "var(--vscode-descriptionForeground)", marginLeft: "5px" }}>
+						to get started for free.
+					</span>
 				</div>
 			</div>
 		</div>

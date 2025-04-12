@@ -22,7 +22,7 @@ export class SambanovaHandler implements ApiHandler {
 	// Implement the capability flag
 	supportsNativeFunctionCalling(): boolean {
 		// Sambanova uses OpenAI format but hosts various models; assume no standardized native support via the router itself.
-		return false;
+		return false
 	}
 
 	@withRetry()

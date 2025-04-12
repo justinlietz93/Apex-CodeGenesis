@@ -20,7 +20,7 @@ export class XAIHandler implements ApiHandler {
 	// Implement the capability flag
 	supportsNativeFunctionCalling(): boolean {
 		// X.AI API (Grok) does not currently support function/tool calling.
-		return false;
+		return false
 	}
 
 	async *createMessage(systemPrompt: string, messages: Anthropic.Messages.MessageParam[]): ApiStream {

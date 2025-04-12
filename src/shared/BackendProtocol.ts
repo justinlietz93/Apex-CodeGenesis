@@ -41,7 +41,6 @@ export interface InitializeResult {
 	// Add other result fields as needed
 }
 
-
 // executeTask (Request Params)
 export interface ExecuteTaskParams {
 	taskId: string
@@ -150,7 +149,8 @@ export interface GeneratePlanResult {
 // reasoning/refineSteps (Request Params)
 export interface RefineStepsParams {
 	steps: BackendStep[] // Use the defined BackendStep type
-	context: { // Context needed for refinement
+	context: {
+		// Context needed for refinement
 		goal: string
 		phase_name?: string
 		phase_description?: string
@@ -227,7 +227,6 @@ export interface ReplanningResult {
 	// Allow other fields
 	[key: string]: any
 }
-
 
 // --- Knowledge Methods ---
 

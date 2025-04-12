@@ -32,7 +32,7 @@ import { secondsToMs } from "../../utils/time"
 import { GlobalFileNames } from "../../core/storage/disk"
 import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js"
 // Import necessary function from controller module
-import { postMessageToWebview } from "../../core/controller/modules/webview-handler";
+import { postMessageToWebview } from "../../core/controller/modules/webview-handler"
 
 // Default timeout for internal MCP data requests in milliseconds; is not the same as the user facing timeout stored as DEFAULT_MCP_TIMEOUT_SECONDS
 const DEFAULT_REQUEST_TIMEOUT_MS = 5000
@@ -106,10 +106,10 @@ export class McpHub {
 			throw new Error("Controller not available")
 		}
 		// Recreate logic: Ensure MCP servers directory exists in global storage
-		const globalStoragePath = provider.context.globalStorageUri.fsPath;
+		const globalStoragePath = provider.context.globalStorageUri.fsPath
 		// Define a subdirectory name, e.g., 'mcp_servers'
-		const mcpServersPath = path.join(globalStoragePath, 'mcp_servers');
-		await fs.mkdir(mcpServersPath, { recursive: true });
+		const mcpServersPath = path.join(globalStoragePath, "mcp_servers")
+		await fs.mkdir(mcpServersPath, { recursive: true })
 		return mcpServersPath
 	}
 
@@ -119,10 +119,10 @@ export class McpHub {
 			throw new Error("Controller not available")
 		}
 		// Recreate logic: Ensure settings directory exists in global storage
-		const globalStoragePath = provider.context.globalStorageUri.fsPath;
+		const globalStoragePath = provider.context.globalStorageUri.fsPath
 		// Define a subdirectory name, e.g., 'settings'
-		const settingsPath = path.join(globalStoragePath, 'settings');
-		await fs.mkdir(settingsPath, { recursive: true });
+		const settingsPath = path.join(globalStoragePath, "settings")
+		await fs.mkdir(settingsPath, { recursive: true })
 
 		const mcpSettingsFilePath = path.join(settingsPath, GlobalFileNames.mcpSettings)
 		const fileExists = await fileExistsAtPath(mcpSettingsFilePath)
@@ -502,9 +502,10 @@ export class McpHub {
 		const content = await fs.readFile(settingsPath, "utf-8")
 		const config = JSON.parse(content)
 		const serverOrder = Object.keys(config.mcpServers || {})
-		const controller = this.controllerRef.deref();
+		const controller = this.controllerRef.deref()
 		if (controller) {
-			await postMessageToWebview(controller.webviewProviderRef, { // Use imported function
+			await postMessageToWebview(controller.webviewProviderRef, {
+				// Use imported function
 				type: "mcpServers",
 				mcpServers: [...this.connections]
 					.sort((a, b) => {
@@ -513,7 +514,7 @@ export class McpHub {
 						return indexA - indexB
 					})
 					.map((connection) => connection.server),
-			});
+			})
 		}
 	}
 	// Removed duplicated code block that was here

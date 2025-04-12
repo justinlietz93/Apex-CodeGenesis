@@ -1,5 +1,5 @@
 export const getModesPrompt = (): string => {
-    return `
+	return `
 ====
 
 ACT MODE V.S. PLAN MODE
@@ -19,5 +19,5 @@ In each user message, the environment_details will specify the current mode. The
 - Once you've gained more context about the user's request, you should architect a detailed plan for how you will accomplish the task. Returning mermaid diagrams may be helpful here as well.
 - Then you might ask the user if they are pleased with this plan, or if they would like to make any changes. Think of this as a brainstorming session where you can discuss the task and plan the best way to accomplish it.
 - If at any point a mermaid diagram would make your plan clearer to help the user quickly see the structure, you are encouraged to include a Mermaid code block in the response. (Note: if you use colors in your mermaid diagrams, be sure to use high contrast colors so the text is readable.)
-- Finally once it seems like you've reached a good plan, ask the user to switch you back to ACT MODE to implement the solution.`;
-};
+- Finally once it seems like you've reached a good plan, ask the user to switch you back to ACT MODE to implement the solution.`
+}

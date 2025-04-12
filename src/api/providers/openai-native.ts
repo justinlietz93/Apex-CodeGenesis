@@ -29,7 +29,7 @@ export class OpenAiNativeHandler implements ApiHandler {
 	supportsNativeFunctionCalling(): boolean {
 		// Currently, this handler doesn't implement the tool_calls parameter or response handling.
 		// Return false for now, even if underlying models might support it via the API.
-		return false;
+		return false
 	}
 
 	private async *yieldUsage(info: ModelInfo, usage: OpenAI.Completions.CompletionUsage | undefined): ApiStream {
