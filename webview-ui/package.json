@@ -26,7 +26,9 @@
     "publish:marketplace": "vsce publish && ovsx publish",
     "publish:marketplace:prerelease": "vsce publish --pre-release && ovsx publish --pre-release",
     "prepare": "husky",
-    "changeset": "changeset"
+    "changeset": "changeset",
+    "build": "vite build",
+    "dev": "vite"
   },
   "dependencies": {
     "@floating-ui/react": "^0.27.4",
