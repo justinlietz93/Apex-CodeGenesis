@@ -20,6 +20,8 @@ If you're planning to work on a bigger feature, please create a [feature request
 
 ## Development Setup
 
+For a comprehensive guide on the developer workflow, tools, and processes, please refer to our [Developer Workflow Guide](docs/contributing/developer-workflow.md).
+
 1. **VS Code Extensions**
 
     - When opening the project, VS Code will prompt you to install recommended extensions

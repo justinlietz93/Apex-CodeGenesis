@@ -27,13 +27,13 @@ export class VertexHandler implements ApiHandler {
 
 	// Implement the capability flag
 	supportsNativeFunctionCalling(): boolean {
-		const modelId = this.getModel().id;
+		const modelId = this.getModel().id
 		// Check if the selected model is a Gemini model on Vertex
 		if (modelId.includes("gemini")) {
-			return true; // Gemini on Vertex supports native function calling
+			return true // Gemini on Vertex supports native function calling
 		}
 		// Otherwise (e.g., Claude on Vertex), assume no standardized native support
-		return false;
+		return false
 	}
 
 	@withRetry()

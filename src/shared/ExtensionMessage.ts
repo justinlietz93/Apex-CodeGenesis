@@ -1,43 +1,42 @@
 // type that represents json data that is sent from extension to webview, called ExtensionMessage and has 'type' enum which can be 'plusButtonClicked' or 'settingsButtonClicked' or 'hello'
-import * as vscode from 'vscode'; // Add vscode import
+import * as vscode from "vscode" // Add vscode import
 import { GitCommit } from "../utils/git"
 import { ApiConfiguration, ModelInfo, ApiProvider } from "./api" // Add ApiProvider import
 import { AutoApprovalSettings } from "./AutoApprovalSettings"
 import { BrowserSettings } from "./BrowserSettings"
 import { ChatSettings } from "./ChatSettings"
-import { HistoryItem } from "./HistoryItem";
+import { HistoryItem } from "./HistoryItem"
 // Explicitly re-export needed types from ./mcp
-export type { McpServer, McpMarketplaceCatalog, McpMarketplaceItem, McpDownloadResponse } from "./mcp";
-import { McpServer, McpMarketplaceCatalog, McpMarketplaceItem, McpDownloadResponse } from "./mcp"; // Keep the import for internal use
-import { TelemetrySetting } from "./TelemetrySetting";
-import { UserInfo } from "./UserInfo"; // Added UserInfo import
+export type { McpServer, McpMarketplaceCatalog, McpMarketplaceItem, McpDownloadResponse } from "./mcp"
+import { McpServer, McpMarketplaceCatalog, McpMarketplaceItem, McpDownloadResponse } from "./mcp" // Keep the import for internal use
+import { TelemetrySetting } from "./TelemetrySetting"
+import { UserInfo } from "./UserInfo" // Added UserInfo import
 // TODO: Rename ApexAccount related types/files later if necessary
 import type { BalanceResponse, UsageTransaction, PaymentTransaction } from "../shared/ApexAccount"
 
 // --- Local Profile & Custom Instruction Types ---
 
 export interface CustomInstructionItem {
-	id: string; // Unique ID (e.g., timestamp or UUID)
-	name: string; // User-defined name
-	content: string; // The actual instructions
-	lastModified: number; // Timestamp of last edit
+	id: string // Unique ID (e.g., timestamp or UUID)
+	name: string // User-defined name
+	content: string // The actual instructions
+	lastModified: number // Timestamp of last edit
 }
 
 export interface UserProfile {
-	profileId: string; // Unique ID
-	profileName: string; // User-defined name
-	apiConfiguration: ApiConfiguration;
+	profileId: string // Unique ID
+	profileName: string // User-defined name
+	apiConfiguration: ApiConfiguration
 	// Store the ID of the active custom instruction, not the content itself
-	activeCustomInstructionId: string | null;
-	chatSettings: ChatSettings;
-	autoApprovalSettings: AutoApprovalSettings;
-	browserSettings: BrowserSettings;
-	planActSeparateModelsSetting: boolean;
+	activeCustomInstructionId: string | null
+	chatSettings: ChatSettings
+	autoApprovalSettings: AutoApprovalSettings
+	browserSettings: BrowserSettings
+	planActSeparateModelsSetting: boolean
 	// Add other profile-specific settings here if needed in the future
 }
 
 // --- End Local Profile & Custom Instruction Types ---
-
 
 // webview will hold state
 export interface ExtensionMessage {
@@ -146,16 +145,16 @@ export interface ExtensionState {
 	version: string
 	vscMachineId: string
 	// Add new state properties for profiles
-	userProfiles?: UserProfile[];
-	activeProfileId?: string | null;
-	customInstructionLibrary?: CustomInstructionItem[];
+	userProfiles?: UserProfile[]
+	activeProfileId?: string | null
+	customInstructionLibrary?: CustomInstructionItem[]
 	// Add missing non-profile fields
-	lastShownAnnouncementId?: string;
-	previousModeApiProvider?: ApiProvider;
-	previousModeModelId?: string;
-	previousModeModelInfo?: ModelInfo;
-	previousModeVsCodeLmModelSelector?: vscode.LanguageModelChatSelector; // Need to import vscode if not already
-	previousModeThinkingBudgetTokens?: number;
+	lastShownAnnouncementId?: string
+	previousModeApiProvider?: ApiProvider
+	previousModeModelId?: string
+	previousModeModelInfo?: ModelInfo
+	previousModeVsCodeLmModelSelector?: vscode.LanguageModelChatSelector // Need to import vscode if not already
+	previousModeThinkingBudgetTokens?: number
 }
 
 // Renamed interface

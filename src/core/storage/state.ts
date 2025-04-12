@@ -12,8 +12,8 @@ import { TelemetrySetting } from "../../shared/TelemetrySetting"
 import { UserInfo } from "../../shared/UserInfo"
 // Import new types for Profiles and Library & other needed types
 import { UserProfile, CustomInstructionItem, ExtensionState } from "../../shared/ExtensionMessage"
-import * as os from 'os'; // Import os module for platform detection
-import { Platform, DEFAULT_PLATFORM } from "../../shared/ExtensionMessage"; // Import Platform types
+import * as os from "os" // Import os module for platform detection
+import { Platform, DEFAULT_PLATFORM } from "../../shared/ExtensionMessage" // Import Platform types
 // Ensure ApiProvider is imported if used in previousModeApiProvider etc. - Removed duplicate below
 /*
 	Storage
@@ -54,7 +54,7 @@ export async function getWorkspaceState(context: vscode.ExtensionContext, key: s
 // --- Profile and Library Management Helpers ---
 
 function generateUniqueId(): string {
-	return Date.now().toString();
+	return Date.now().toString()
 }
 
 const createDefaultProfile = (
@@ -63,10 +63,10 @@ const createDefaultProfile = (
 	chatSettings?: ChatSettings,
 	autoApprovalSettings?: AutoApprovalSettings,
 	browserSettings?: BrowserSettings,
-	planActSeparateModelsSetting?: boolean
-): { profile: UserProfile, instructionItem: CustomInstructionItem | null } => {
-	const instructionId = customInstructionsContent ? generateUniqueId() : null;
-	const profileId = generateUniqueId();
+	planActSeparateModelsSetting?: boolean,
+): { profile: UserProfile; instructionItem: CustomInstructionItem | null } => {
+	const instructionId = customInstructionsContent ? generateUniqueId() : null
+	const profileId = generateUniqueId()
 	const profile: UserProfile = {
 		profileId: profileId,
 		profileName: "Default",
@@ -76,43 +76,106 @@ const createDefaultProfile = (
 		autoApprovalSettings: autoApprovalSettings || DEFAULT_AUTO_APPROVAL_SETTINGS,
 		browserSettings: browserSettings || DEFAULT_BROWSER_SETTINGS,
 		planActSeparateModelsSetting: planActSeparateModelsSetting ?? false,
-	};
-	const instructionItem: CustomInstructionItem | null = instructionId && customInstructionsContent ? {
-		id: instructionId,
-		name: "Default Instructions",
-		content: customInstructionsContent,
-		lastModified: Date.now(),
-	} : null;
-	return { profile, instructionItem };
-};
+	}
+	const instructionItem: CustomInstructionItem | null =
+		instructionId && customInstructionsContent
+			? {
+					id: instructionId,
+					name: "Default Instructions",
+					content: customInstructionsContent,
+					lastModified: Date.now(),
+				}
+			: null
+	return { profile, instructionItem }
+}
 
 // --- State Loading and Migration ---
 
 export async function getAllExtensionState(context: vscode.ExtensionContext): Promise<ExtensionState> {
-
-	let userProfiles = await getGlobalState(context, "justinlietz93.apex.userProfiles") as UserProfile[] | undefined;
-	let activeProfileId = await getGlobalState(context, "justinlietz93.apex.activeProfileId") as string | undefined;
-	let customInstructionLibrary = await getGlobalState(context, "justinlietz93.apex.customInstructionLibrary") as CustomInstructionItem[] | undefined;
+	let userProfiles = (await getGlobalState(context, "justinlietz93.apex.userProfiles")) as UserProfile[] | undefined
+	let activeProfileId = (await getGlobalState(context, "justinlietz93.apex.activeProfileId")) as string | undefined
+	let customInstructionLibrary = (await getGlobalState(context, "justinlietz93.apex.customInstructionLibrary")) as
+		| CustomInstructionItem[]
+		| undefined
 
 	// Define variables for non-profile state fetched later
-	let lastShownAnnouncementId: string | undefined;
-	let taskHistory: HistoryItem[] | undefined;
-	let telemetrySetting: TelemetrySetting | undefined;
-	let userInfo: UserInfo | undefined;
-	let previousModeApiProvider: ApiProvider | undefined;
-	let previousModeModelId: string | undefined;
-	let previousModeModelInfo: ModelInfo | undefined;
-	let previousModeVsCodeLmModelSelector: vscode.LanguageModelChatSelector | undefined;
-	let previousModeThinkingBudgetTokens: number | undefined;
+	let lastShownAnnouncementId: string | undefined
+	let taskHistory: HistoryItem[] | undefined
+	let telemetrySetting: TelemetrySetting | undefined
+	let userInfo: UserInfo | undefined
+	let previousModeApiProvider: ApiProvider | undefined
+	let previousModeModelId: string | undefined
+	let previousModeModelInfo: ModelInfo | undefined
+	let previousModeVsCodeLmModelSelector: vscode.LanguageModelChatSelector | undefined
+	let previousModeThinkingBudgetTokens: number | undefined
 
 	// --- Migration Logic ---
 	if (!userProfiles || userProfiles.length === 0) {
-		console.log("[State Migration] No profiles found, attempting to migrate from old keys...");
+		console.log("[State Migration] No profiles found, attempting to migrate from old keys...")
 		const [
-			oldApiProvider, oldApiModelId, oldApiKey, oldOpenRouterApiKey, oldApexApiKey, oldAwsAccessKey, oldAwsSecretKey, oldAwsSessionToken, oldAwsRegion, oldAwsUseCrossRegionInference, oldAwsBedrockUsePromptCache, oldAwsBedrockEndpoint, oldAwsProfile, oldAwsUseProfile, oldVertexProjectId, oldVertexRegion, oldOpenAiBaseUrl, oldOpenAiApiKey, oldOpenAiModelId, oldOpenAiModelInfo, oldOllamaModelId, oldOllamaBaseUrl, oldOllamaApiOptionsCtxNum, oldLmStudioModelId, oldLmStudioBaseUrl, oldAnthropicBaseUrl, oldGeminiApiKey, oldOpenAiNativeApiKey, oldDeepSeekApiKey, oldRequestyApiKey, oldRequestyModelId, oldTogetherApiKey, oldTogetherModelId, oldQwenApiKey, oldMistralApiKey, oldAzureApiVersion, oldOpenRouterModelId, oldOpenRouterModelInfo, oldOpenRouterProviderSorting, oldVsCodeLmModelSelector, oldLiteLlmBaseUrl, oldLiteLlmModelId, oldLiteLlmApiKey, oldQwenApiLine, oldAsksageApiKey, oldAsksageApiUrl, oldXaiApiKey, oldThinkingBudgetTokens, oldSambanovaApiKey,
-			oldCustomInstructions, oldAutoApprovalSettings, oldBrowserSettings, oldChatSettings, oldPlanActSeparateModelsSetting,
-			fetchedLastShownAnnouncementId, fetchedTaskHistory, fetchedTelemetrySetting, fetchedUserInfo,
-			fetchedPreviousModeApiProvider, fetchedPreviousModeModelId, fetchedPreviousModeModelInfo, fetchedPreviousModeVsCodeLmModelSelector, fetchedPreviousModeThinkingBudgetTokens,
+			oldApiProvider,
+			oldApiModelId,
+			oldApiKey,
+			oldOpenRouterApiKey,
+			oldApexApiKey,
+			oldAwsAccessKey,
+			oldAwsSecretKey,
+			oldAwsSessionToken,
+			oldAwsRegion,
+			oldAwsUseCrossRegionInference,
+			oldAwsBedrockUsePromptCache,
+			oldAwsBedrockEndpoint,
+			oldAwsProfile,
+			oldAwsUseProfile,
+			oldVertexProjectId,
+			oldVertexRegion,
+			oldOpenAiBaseUrl,
+			oldOpenAiApiKey,
+			oldOpenAiModelId,
+			oldOpenAiModelInfo,
+			oldOllamaModelId,
+			oldOllamaBaseUrl,
+			oldOllamaApiOptionsCtxNum,
+			oldLmStudioModelId,
+			oldLmStudioBaseUrl,
+			oldAnthropicBaseUrl,
+			oldGeminiApiKey,
+			oldOpenAiNativeApiKey,
+			oldDeepSeekApiKey,
+			oldRequestyApiKey,
+			oldRequestyModelId,
+			oldTogetherApiKey,
+			oldTogetherModelId,
+			oldQwenApiKey,
+			oldMistralApiKey,
+			oldAzureApiVersion,
+			oldOpenRouterModelId,
+			oldOpenRouterModelInfo,
+			oldOpenRouterProviderSorting,
+			oldVsCodeLmModelSelector,
+			oldLiteLlmBaseUrl,
+			oldLiteLlmModelId,
+			oldLiteLlmApiKey,
+			oldQwenApiLine,
+			oldAsksageApiKey,
+			oldAsksageApiUrl,
+			oldXaiApiKey,
+			oldThinkingBudgetTokens,
+			oldSambanovaApiKey,
+			oldCustomInstructions,
+			oldAutoApprovalSettings,
+			oldBrowserSettings,
+			oldChatSettings,
+			oldPlanActSeparateModelsSetting,
+			fetchedLastShownAnnouncementId,
+			fetchedTaskHistory,
+			fetchedTelemetrySetting,
+			fetchedUserInfo,
+			fetchedPreviousModeApiProvider,
+			fetchedPreviousModeModelId,
+			fetchedPreviousModeModelInfo,
+			fetchedPreviousModeVsCodeLmModelSelector,
+			fetchedPreviousModeThinkingBudgetTokens,
 		] = await Promise.all([
 			getGlobalState(context, "justinlietz93.apex.apiProvider") as Promise<ApiProvider | undefined>,
 			getGlobalState(context, "justinlietz93.apex.apiModelId") as Promise<string | undefined>,
@@ -153,7 +216,9 @@ export async function getAllExtensionState(context: vscode.ExtensionContext): Pr
 			getGlobalState(context, "justinlietz93.apex.openRouterModelId") as Promise<string | undefined>,
 			getGlobalState(context, "justinlietz93.apex.openRouterModelInfo") as Promise<ModelInfo | undefined>,
 			getGlobalState(context, "justinlietz93.apex.openRouterProviderSorting") as Promise<string | undefined>,
-			getGlobalState(context, "justinlietz93.apex.vsCodeLmModelSelector") as Promise<vscode.LanguageModelChatSelector | undefined>,
+			getGlobalState(context, "justinlietz93.apex.vsCodeLmModelSelector") as Promise<
+				vscode.LanguageModelChatSelector | undefined
+			>,
 			getGlobalState(context, "justinlietz93.apex.liteLlmBaseUrl") as Promise<string | undefined>,
 			getGlobalState(context, "justinlietz93.apex.liteLlmModelId") as Promise<string | undefined>,
 			getSecret(context, "justinlietz93.apex.liteLlmApiKey") as Promise<string | undefined>,
@@ -175,42 +240,105 @@ export async function getAllExtensionState(context: vscode.ExtensionContext): Pr
 			getGlobalState(context, "justinlietz93.apex.previousModeApiProvider") as Promise<ApiProvider | undefined>,
 			getGlobalState(context, "justinlietz93.apex.previousModeModelId") as Promise<string | undefined>,
 			getGlobalState(context, "justinlietz93.apex.previousModeModelInfo") as Promise<ModelInfo | undefined>,
-			getGlobalState(context, "justinlietz93.apex.previousModeVsCodeLmModelSelector") as Promise<vscode.LanguageModelChatSelector | undefined>,
+			getGlobalState(context, "justinlietz93.apex.previousModeVsCodeLmModelSelector") as Promise<
+				vscode.LanguageModelChatSelector | undefined
+			>,
 			getGlobalState(context, "justinlietz93.apex.previousModeThinkingBudgetTokens") as Promise<number | undefined>,
-		]);
+		])
 
-		lastShownAnnouncementId = fetchedLastShownAnnouncementId;
-		taskHistory = fetchedTaskHistory;
-		telemetrySetting = fetchedTelemetrySetting;
-		userInfo = fetchedUserInfo;
-		previousModeApiProvider = fetchedPreviousModeApiProvider;
-		previousModeModelId = fetchedPreviousModeModelId;
-		previousModeModelInfo = fetchedPreviousModeModelInfo;
-		previousModeVsCodeLmModelSelector = fetchedPreviousModeVsCodeLmModelSelector;
-		previousModeThinkingBudgetTokens = fetchedPreviousModeThinkingBudgetTokens;
+		lastShownAnnouncementId = fetchedLastShownAnnouncementId
+		taskHistory = fetchedTaskHistory
+		telemetrySetting = fetchedTelemetrySetting
+		userInfo = fetchedUserInfo
+		previousModeApiProvider = fetchedPreviousModeApiProvider
+		previousModeModelId = fetchedPreviousModeModelId
+		previousModeModelInfo = fetchedPreviousModeModelInfo
+		previousModeVsCodeLmModelSelector = fetchedPreviousModeVsCodeLmModelSelector
+		previousModeThinkingBudgetTokens = fetchedPreviousModeThinkingBudgetTokens
 
 		const oldApiConfiguration: ApiConfiguration = {
-			apiProvider: oldApiProvider || 'openrouter',
-			apiModelId: oldApiModelId, apiKey: oldApiKey, openRouterApiKey: oldOpenRouterApiKey, apexApiKey: oldApexApiKey, awsAccessKey: oldAwsAccessKey, awsSecretKey: oldAwsSecretKey, awsSessionToken: oldAwsSessionToken, awsRegion: oldAwsRegion, awsUseCrossRegionInference: oldAwsUseCrossRegionInference, awsBedrockUsePromptCache: oldAwsBedrockUsePromptCache, awsBedrockEndpoint: oldAwsBedrockEndpoint, awsProfile: oldAwsProfile, awsUseProfile: oldAwsUseProfile, vertexProjectId: oldVertexProjectId, vertexRegion: oldVertexRegion, openAiBaseUrl: oldOpenAiBaseUrl, openAiApiKey: oldOpenAiApiKey, openAiModelId: oldOpenAiModelId, openAiModelInfo: oldOpenAiModelInfo, ollamaModelId: oldOllamaModelId, ollamaBaseUrl: oldOllamaBaseUrl, ollamaApiOptionsCtxNum: oldOllamaApiOptionsCtxNum, lmStudioModelId: oldLmStudioModelId, lmStudioBaseUrl: oldLmStudioBaseUrl, anthropicBaseUrl: oldAnthropicBaseUrl, geminiApiKey: oldGeminiApiKey, openAiNativeApiKey: oldOpenAiNativeApiKey, deepSeekApiKey: oldDeepSeekApiKey, requestyApiKey: oldRequestyApiKey, requestyModelId: oldRequestyModelId, togetherApiKey: oldTogetherApiKey, togetherModelId: oldTogetherModelId, qwenApiKey: oldQwenApiKey, qwenApiLine: oldQwenApiLine, mistralApiKey: oldMistralApiKey, azureApiVersion: oldAzureApiVersion, openRouterModelId: oldOpenRouterModelId, openRouterModelInfo: oldOpenRouterModelInfo, openRouterProviderSorting: oldOpenRouterProviderSorting, vsCodeLmModelSelector: oldVsCodeLmModelSelector, o3MiniReasoningEffort: vscode.workspace.getConfiguration("apex.modelSettings.o3Mini").get("reasoningEffort", "medium"), thinkingBudgetTokens: oldThinkingBudgetTokens, liteLlmBaseUrl: oldLiteLlmBaseUrl, liteLlmModelId: oldLiteLlmModelId, liteLlmApiKey: oldLiteLlmApiKey, asksageApiKey: oldAsksageApiKey, asksageApiUrl: oldAsksageApiUrl, xaiApiKey: oldXaiApiKey, sambanovaApiKey: oldSambanovaApiKey,
-		};
-		const defaultPlanAct = oldApiProvider ? true : false;
+			apiProvider: oldApiProvider || "openrouter",
+			apiModelId: oldApiModelId,
+			apiKey: oldApiKey,
+			openRouterApiKey: oldOpenRouterApiKey,
+			apexApiKey: oldApexApiKey,
+			awsAccessKey: oldAwsAccessKey,
+			awsSecretKey: oldAwsSecretKey,
+			awsSessionToken: oldAwsSessionToken,
+			awsRegion: oldAwsRegion,
+			awsUseCrossRegionInference: oldAwsUseCrossRegionInference,
+			awsBedrockUsePromptCache: oldAwsBedrockUsePromptCache,
+			awsBedrockEndpoint: oldAwsBedrockEndpoint,
+			awsProfile: oldAwsProfile,
+			awsUseProfile: oldAwsUseProfile,
+			vertexProjectId: oldVertexProjectId,
+			vertexRegion: oldVertexRegion,
+			openAiBaseUrl: oldOpenAiBaseUrl,
+			openAiApiKey: oldOpenAiApiKey,
+			openAiModelId: oldOpenAiModelId,
+			openAiModelInfo: oldOpenAiModelInfo,
+			ollamaModelId: oldOllamaModelId,
+			ollamaBaseUrl: oldOllamaBaseUrl,
+			ollamaApiOptionsCtxNum: oldOllamaApiOptionsCtxNum,
+			lmStudioModelId: oldLmStudioModelId,
+			lmStudioBaseUrl: oldLmStudioBaseUrl,
+			anthropicBaseUrl: oldAnthropicBaseUrl,
+			geminiApiKey: oldGeminiApiKey,
+			openAiNativeApiKey: oldOpenAiNativeApiKey,
+			deepSeekApiKey: oldDeepSeekApiKey,
+			requestyApiKey: oldRequestyApiKey,
+			requestyModelId: oldRequestyModelId,
+			togetherApiKey: oldTogetherApiKey,
+			togetherModelId: oldTogetherModelId,
+			qwenApiKey: oldQwenApiKey,
+			qwenApiLine: oldQwenApiLine,
+			mistralApiKey: oldMistralApiKey,
+			azureApiVersion: oldAzureApiVersion,
+			openRouterModelId: oldOpenRouterModelId,
+			openRouterModelInfo: oldOpenRouterModelInfo,
+			openRouterProviderSorting: oldOpenRouterProviderSorting,
+			vsCodeLmModelSelector: oldVsCodeLmModelSelector,
+			o3MiniReasoningEffort: vscode.workspace
+				.getConfiguration("apex.modelSettings.o3Mini")
+				.get("reasoningEffort", "medium"),
+			thinkingBudgetTokens: oldThinkingBudgetTokens,
+			liteLlmBaseUrl: oldLiteLlmBaseUrl,
+			liteLlmModelId: oldLiteLlmModelId,
+			liteLlmApiKey: oldLiteLlmApiKey,
+			asksageApiKey: oldAsksageApiKey,
+			asksageApiUrl: oldAsksageApiUrl,
+			xaiApiKey: oldXaiApiKey,
+			sambanovaApiKey: oldSambanovaApiKey,
+		}
+		const defaultPlanAct = oldApiProvider ? true : false
 		const { profile: defaultProfile, instructionItem: defaultInstruction } = createDefaultProfile(
-			oldApiConfiguration, oldCustomInstructions, oldChatSettings, oldAutoApprovalSettings, oldBrowserSettings, oldPlanActSeparateModelsSetting ?? defaultPlanAct
-		);
-		userProfiles = [defaultProfile];
-		activeProfileId = defaultProfile.profileId;
-		customInstructionLibrary = defaultInstruction ? [defaultInstruction] : [];
+			oldApiConfiguration,
+			oldCustomInstructions,
+			oldChatSettings,
+			oldAutoApprovalSettings,
+			oldBrowserSettings,
+			oldPlanActSeparateModelsSetting ?? defaultPlanAct,
+		)
+		userProfiles = [defaultProfile]
+		activeProfileId = defaultProfile.profileId
+		customInstructionLibrary = defaultInstruction ? [defaultInstruction] : []
 
-		await updateGlobalState(context, "justinlietz93.apex.userProfiles", userProfiles);
-		await updateGlobalState(context, "justinlietz93.apex.activeProfileId", activeProfileId);
-		await updateGlobalState(context, "justinlietz93.apex.customInstructionLibrary", customInstructionLibrary);
-		console.log("[State Migration] Created default profile and instruction library from old keys.");
-
+		await updateGlobalState(context, "justinlietz93.apex.userProfiles", userProfiles)
+		await updateGlobalState(context, "justinlietz93.apex.activeProfileId", activeProfileId)
+		await updateGlobalState(context, "justinlietz93.apex.customInstructionLibrary", customInstructionLibrary)
+		console.log("[State Migration] Created default profile and instruction library from old keys.")
 	} else {
-		console.log("[State Migration] Profiles found, skipping migration.");
+		console.log("[State Migration] Profiles found, skipping migration.")
 		const [
-			fetchedLastShownAnnouncementId, fetchedTaskHistory, fetchedTelemetrySetting, fetchedUserInfo,
-			fetchedPreviousModeApiProvider, fetchedPreviousModeModelId, fetchedPreviousModeModelInfo, fetchedPreviousModeVsCodeLmModelSelector, fetchedPreviousModeThinkingBudgetTokens,
+			fetchedLastShownAnnouncementId,
+			fetchedTaskHistory,
+			fetchedTelemetrySetting,
+			fetchedUserInfo,
+			fetchedPreviousModeApiProvider,
+			fetchedPreviousModeModelId,
+			fetchedPreviousModeModelInfo,
+			fetchedPreviousModeVsCodeLmModelSelector,
+			fetchedPreviousModeThinkingBudgetTokens,
 		] = await Promise.all([
 			getGlobalState(context, "justinlietz93.apex.lastShownAnnouncementId") as Promise<string | undefined>,
 			getGlobalState(context, "justinlietz93.apex.taskHistory") as Promise<HistoryItem[] | undefined>,
@@ -219,37 +347,39 @@ export async function getAllExtensionState(context: vscode.ExtensionContext): Pr
 			getGlobalState(context, "justinlietz93.apex.previousModeApiProvider") as Promise<ApiProvider | undefined>,
 			getGlobalState(context, "justinlietz93.apex.previousModeModelId") as Promise<string | undefined>,
 			getGlobalState(context, "justinlietz93.apex.previousModeModelInfo") as Promise<ModelInfo | undefined>,
-			getGlobalState(context, "justinlietz93.apex.previousModeVsCodeLmModelSelector") as Promise<vscode.LanguageModelChatSelector | undefined>,
+			getGlobalState(context, "justinlietz93.apex.previousModeVsCodeLmModelSelector") as Promise<
+				vscode.LanguageModelChatSelector | undefined
+			>,
 			getGlobalState(context, "justinlietz93.apex.previousModeThinkingBudgetTokens") as Promise<number | undefined>,
-		]);
-		lastShownAnnouncementId = fetchedLastShownAnnouncementId;
-		taskHistory = fetchedTaskHistory;
-		telemetrySetting = fetchedTelemetrySetting;
-		userInfo = fetchedUserInfo;
-		previousModeApiProvider = fetchedPreviousModeApiProvider;
-		previousModeModelId = fetchedPreviousModeModelId;
-		previousModeModelInfo = fetchedPreviousModeModelInfo;
-		previousModeVsCodeLmModelSelector = fetchedPreviousModeVsCodeLmModelSelector;
-		previousModeThinkingBudgetTokens = fetchedPreviousModeThinkingBudgetTokens;
+		])
+		lastShownAnnouncementId = fetchedLastShownAnnouncementId
+		taskHistory = fetchedTaskHistory
+		telemetrySetting = fetchedTelemetrySetting
+		userInfo = fetchedUserInfo
+		previousModeApiProvider = fetchedPreviousModeApiProvider
+		previousModeModelId = fetchedPreviousModeModelId
+		previousModeModelInfo = fetchedPreviousModeModelInfo
+		previousModeVsCodeLmModelSelector = fetchedPreviousModeVsCodeLmModelSelector
+		previousModeThinkingBudgetTokens = fetchedPreviousModeThinkingBudgetTokens
 	}
 	// --- End Migration Logic ---
 
-	const activeProfile = userProfiles?.find(p => p.profileId === activeProfileId);
+	const activeProfile = userProfiles?.find((p) => p.profileId === activeProfileId)
 	const activeCustomInstruction = activeProfile?.activeCustomInstructionId
-		? customInstructionLibrary?.find(item => item.id === activeProfile.activeCustomInstructionId)?.content
-		: undefined;
+		? customInstructionLibrary?.find((item) => item.id === activeProfile.activeCustomInstructionId)?.content
+		: undefined
 
-	const apiConfiguration = activeProfile?.apiConfiguration;
-	const autoApprovalSettings = activeProfile?.autoApprovalSettings ?? DEFAULT_AUTO_APPROVAL_SETTINGS;
-	const browserSettings = activeProfile?.browserSettings ?? DEFAULT_BROWSER_SETTINGS;
-	const chatSettings = activeProfile?.chatSettings ?? DEFAULT_CHAT_SETTINGS;
-	const planActSeparateModelsSetting = activeProfile?.planActSeparateModelsSetting ?? false;
+	const apiConfiguration = activeProfile?.apiConfiguration
+	const autoApprovalSettings = activeProfile?.autoApprovalSettings ?? DEFAULT_AUTO_APPROVAL_SETTINGS
+	const browserSettings = activeProfile?.browserSettings ?? DEFAULT_BROWSER_SETTINGS
+	const chatSettings = activeProfile?.chatSettings ?? DEFAULT_CHAT_SETTINGS
+	const planActSeparateModelsSetting = activeProfile?.planActSeparateModelsSetting ?? false
 
-	const mcpMarketplaceEnabled = vscode.workspace.getConfiguration("apex").get<boolean>("mcpMarketplace.enabled", true);
-	const o3MiniReasoningEffort = vscode.workspace.getConfiguration("apex.modelSettings.o3Mini").get("reasoningEffort", "medium");
+	const mcpMarketplaceEnabled = vscode.workspace.getConfiguration("apex").get<boolean>("mcpMarketplace.enabled", true)
+	const o3MiniReasoningEffort = vscode.workspace.getConfiguration("apex.modelSettings.o3Mini").get("reasoningEffort", "medium")
 
 	if (apiConfiguration) {
-		apiConfiguration.o3MiniReasoningEffort = o3MiniReasoningEffort;
+		apiConfiguration.o3MiniReasoningEffort = o3MiniReasoningEffort
 	}
 
 	return {
@@ -272,7 +402,7 @@ export async function getAllExtensionState(context: vscode.ExtensionContext): Pr
 		previousModeModelInfo,
 		previousModeVsCodeLmModelSelector,
 		previousModeThinkingBudgetTokens,
-		platform: os.platform() as Platform || DEFAULT_PLATFORM,
+		platform: (os.platform() as Platform) || DEFAULT_PLATFORM,
 		shouldShowAnnouncement: lastShownAnnouncementId !== vscode.workspace.getConfiguration("apex").get("latestAnnouncementId"),
 		version: vscode.extensions.getExtension("justinlietz93.apex-ide-codegenesis")?.packageJSON.version ?? "",
 		vscMachineId: vscode.env.machineId,
@@ -280,172 +410,187 @@ export async function getAllExtensionState(context: vscode.ExtensionContext): Pr
 		apexMessages: [],
 		currentTaskItem: undefined,
 		checkpointTrackerErrorMessage: undefined,
-	};
+	}
 }
 
 // --- Functions to manage User Profiles ---
 
 export async function createProfile(context: vscode.ExtensionContext, profileName: string): Promise<UserProfile> {
-	const profiles = await getGlobalState(context, "justinlietz93.apex.userProfiles") as UserProfile[] || [];
-	const defaultApiConfig: ApiConfiguration = { apiProvider: 'openrouter' };
-	const { profile: newProfile } = createDefaultProfile(defaultApiConfig);
-	newProfile.profileName = profileName || `Profile ${profiles.length + 1}`;
-	newProfile.profileId = generateUniqueId();
+	const profiles = ((await getGlobalState(context, "justinlietz93.apex.userProfiles")) as UserProfile[]) || []
+	const defaultApiConfig: ApiConfiguration = { apiProvider: "openrouter" }
+	const { profile: newProfile } = createDefaultProfile(defaultApiConfig)
+	newProfile.profileName = profileName || `Profile ${profiles.length + 1}`
+	newProfile.profileId = generateUniqueId()
 
-	const updatedProfiles = [...profiles, newProfile];
-	await updateGlobalState(context, "justinlietz93.apex.userProfiles", updatedProfiles);
-	console.log(`[State] Created profile: ${newProfile.profileName} (${newProfile.profileId})`);
-	return newProfile;
+	const updatedProfiles = [...profiles, newProfile]
+	await updateGlobalState(context, "justinlietz93.apex.userProfiles", updatedProfiles)
+	console.log(`[State] Created profile: ${newProfile.profileName} (${newProfile.profileId})`)
+	return newProfile
 }
 
 export async function deleteProfile(context: vscode.ExtensionContext, profileIdToDelete: string): Promise<void> {
-	const profiles = await getGlobalState(context, "justinlietz93.apex.userProfiles") as UserProfile[] || [];
-	const activeProfileId = await getGlobalState(context, "justinlietz93.apex.activeProfileId") as string | undefined;
-	const updatedProfiles = profiles.filter(p => p.profileId !== profileIdToDelete);
+	const profiles = ((await getGlobalState(context, "justinlietz93.apex.userProfiles")) as UserProfile[]) || []
+	const activeProfileId = (await getGlobalState(context, "justinlietz93.apex.activeProfileId")) as string | undefined
+	const updatedProfiles = profiles.filter((p) => p.profileId !== profileIdToDelete)
 
 	if (updatedProfiles.length === profiles.length) {
-		console.warn(`[State] deleteProfile: Profile ID ${profileIdToDelete} not found.`);
-		return;
+		console.warn(`[State] deleteProfile: Profile ID ${profileIdToDelete} not found.`)
+		return
 	}
 
-	await updateGlobalState(context, "justinlietz93.apex.userProfiles", updatedProfiles);
-	console.log(`[State] Deleted profile: ${profileIdToDelete}`);
+	await updateGlobalState(context, "justinlietz93.apex.userProfiles", updatedProfiles)
+	console.log(`[State] Deleted profile: ${profileIdToDelete}`)
 
 	if (activeProfileId === profileIdToDelete) {
-		const newActiveId = updatedProfiles.length > 0 ? updatedProfiles[0].profileId : null;
-		await setActiveProfileId(context, newActiveId);
+		const newActiveId = updatedProfiles.length > 0 ? updatedProfiles[0].profileId : null
+		await setActiveProfileId(context, newActiveId)
 	}
 }
 
 export async function setActiveProfileId(context: vscode.ExtensionContext, profileId: string | null): Promise<void> {
-	await updateGlobalState(context, "justinlietz93.apex.activeProfileId", profileId);
-	console.log(`[State] Active profile ID set to: ${profileId}`);
+	await updateGlobalState(context, "justinlietz93.apex.activeProfileId", profileId)
+	console.log(`[State] Active profile ID set to: ${profileId}`)
 }
 
 export async function updateProfile(context: vscode.ExtensionContext, updatedProfile: UserProfile): Promise<void> {
-	const profiles = await getGlobalState(context, "justinlietz93.apex.userProfiles") as UserProfile[] || [];
-	const profileIndex = profiles.findIndex(p => p.profileId === updatedProfile.profileId);
+	const profiles = ((await getGlobalState(context, "justinlietz93.apex.userProfiles")) as UserProfile[]) || []
+	const profileIndex = profiles.findIndex((p) => p.profileId === updatedProfile.profileId)
 
 	if (profileIndex === -1) {
-		console.error(`[State Update] Cannot update profile: Profile with ID ${updatedProfile.profileId} not found.`);
-		return;
+		console.error(`[State Update] Cannot update profile: Profile with ID ${updatedProfile.profileId} not found.`)
+		return
 	}
 
-	profiles[profileIndex] = updatedProfile;
-	await updateGlobalState(context, "justinlietz93.apex.userProfiles", profiles);
-	console.log(`[State Update] Updated profile: ${updatedProfile.profileName} (${updatedProfile.profileId})`);
+	profiles[profileIndex] = updatedProfile
+	await updateGlobalState(context, "justinlietz93.apex.userProfiles", profiles)
+	console.log(`[State Update] Updated profile: ${updatedProfile.profileName} (${updatedProfile.profileId})`)
 }
-
 
 // --- Functions to manage Custom Instruction Library ---
 
-export async function createCustomInstruction(context: vscode.ExtensionContext, name: string, content: string): Promise<CustomInstructionItem> {
-	const library = await getGlobalState(context, "justinlietz93.apex.customInstructionLibrary") as CustomInstructionItem[] || [];
+export async function createCustomInstruction(
+	context: vscode.ExtensionContext,
+	name: string,
+	content: string,
+): Promise<CustomInstructionItem> {
+	const library =
+		((await getGlobalState(context, "justinlietz93.apex.customInstructionLibrary")) as CustomInstructionItem[]) || []
 	const newItem: CustomInstructionItem = {
 		id: generateUniqueId(),
 		name: name || `Instruction ${library.length + 1}`,
 		content: content,
 		lastModified: Date.now(),
-	};
-	const updatedLibrary = [...library, newItem];
-	await updateGlobalState(context, "justinlietz93.apex.customInstructionLibrary", updatedLibrary);
-	console.log(`[State] Created custom instruction: ${newItem.name} (${newItem.id})`);
-	return newItem;
+	}
+	const updatedLibrary = [...library, newItem]
+	await updateGlobalState(context, "justinlietz93.apex.customInstructionLibrary", updatedLibrary)
+	console.log(`[State] Created custom instruction: ${newItem.name} (${newItem.id})`)
+	return newItem
 }
 
-export async function updateCustomInstruction(context: vscode.ExtensionContext, updatedItem: CustomInstructionItem): Promise<void> {
-	const library = await getGlobalState(context, "justinlietz93.apex.customInstructionLibrary") as CustomInstructionItem[] || [];
-	const itemIndex = library.findIndex(item => item.id === updatedItem.id);
+export async function updateCustomInstruction(
+	context: vscode.ExtensionContext,
+	updatedItem: CustomInstructionItem,
+): Promise<void> {
+	const library =
+		((await getGlobalState(context, "justinlietz93.apex.customInstructionLibrary")) as CustomInstructionItem[]) || []
+	const itemIndex = library.findIndex((item) => item.id === updatedItem.id)
 
 	if (itemIndex === -1) {
-		console.error(`[State Update] Cannot update custom instruction: Item with ID ${updatedItem.id} not found.`);
-		return;
+		console.error(`[State Update] Cannot update custom instruction: Item with ID ${updatedItem.id} not found.`)
+		return
 	}
 
-	library[itemIndex] = { ...updatedItem, lastModified: Date.now() };
-	await updateGlobalState(context, "justinlietz93.apex.customInstructionLibrary", library);
-	console.log(`[State Update] Updated custom instruction: ${updatedItem.name} (${updatedItem.id})`);
+	library[itemIndex] = { ...updatedItem, lastModified: Date.now() }
+	await updateGlobalState(context, "justinlietz93.apex.customInstructionLibrary", library)
+	console.log(`[State Update] Updated custom instruction: ${updatedItem.name} (${updatedItem.id})`)
 }
 
 export async function deleteCustomInstruction(context: vscode.ExtensionContext, instructionIdToDelete: string): Promise<void> {
-	const library = await getGlobalState(context, "justinlietz93.apex.customInstructionLibrary") as CustomInstructionItem[] || [];
-	const updatedLibrary = library.filter(item => item.id !== instructionIdToDelete);
+	const library =
+		((await getGlobalState(context, "justinlietz93.apex.customInstructionLibrary")) as CustomInstructionItem[]) || []
+	const updatedLibrary = library.filter((item) => item.id !== instructionIdToDelete)
 
 	if (updatedLibrary.length === library.length) {
-		console.warn(`[State] deleteCustomInstruction: Instruction ID ${instructionIdToDelete} not found.`);
-		return;
+		console.warn(`[State] deleteCustomInstruction: Instruction ID ${instructionIdToDelete} not found.`)
+		return
 	}
 
-	await updateGlobalState(context, "justinlietz93.apex.customInstructionLibrary", updatedLibrary);
-	console.log(`[State] Deleted custom instruction: ${instructionIdToDelete}`);
+	await updateGlobalState(context, "justinlietz93.apex.customInstructionLibrary", updatedLibrary)
+	console.log(`[State] Deleted custom instruction: ${instructionIdToDelete}`)
 
-	const profiles = await getGlobalState(context, "justinlietz93.apex.userProfiles") as UserProfile[] || [];
-	let profilesModified = false;
-	const updatedProfiles = profiles.map(profile => {
+	const profiles = ((await getGlobalState(context, "justinlietz93.apex.userProfiles")) as UserProfile[]) || []
+	let profilesModified = false
+	const updatedProfiles = profiles.map((profile) => {
 		if (profile.activeCustomInstructionId === instructionIdToDelete) {
-			profilesModified = true;
-			return { ...profile, activeCustomInstructionId: null };
+			profilesModified = true
+			return { ...profile, activeCustomInstructionId: null }
 		}
-		return profile;
-	});
+		return profile
+	})
 
 	if (profilesModified) {
-		await updateGlobalState(context, "justinlietz93.apex.userProfiles", updatedProfiles);
-		console.log(`[State] Cleared active instruction ID ${instructionIdToDelete} from relevant profiles.`);
+		await updateGlobalState(context, "justinlietz93.apex.userProfiles", updatedProfiles)
+		console.log(`[State] Cleared active instruction ID ${instructionIdToDelete} from relevant profiles.`)
 	}
 }
 
 // Function to update settings within the *active* profile
-export async function updateActiveProfileSettings(context: vscode.ExtensionContext, settingsToUpdate: Partial<Omit<UserProfile, 'profileId' | 'profileName' | 'apiConfiguration'>>) {
-	const activeProfileId = await getGlobalState(context, "justinlietz93.apex.activeProfileId") as string | undefined;
+export async function updateActiveProfileSettings(
+	context: vscode.ExtensionContext,
+	settingsToUpdate: Partial<Omit<UserProfile, "profileId" | "profileName" | "apiConfiguration">>,
+) {
+	const activeProfileId = (await getGlobalState(context, "justinlietz93.apex.activeProfileId")) as string | undefined
 	if (!activeProfileId) {
-		console.error("[State Update] Cannot update profile settings: No active profile ID found.");
-		return;
+		console.error("[State Update] Cannot update profile settings: No active profile ID found.")
+		return
 	}
-	const profiles = await getGlobalState(context, "justinlietz93.apex.userProfiles") as UserProfile[] || [];
-	const profileIndex = profiles.findIndex(p => p.profileId === activeProfileId);
+	const profiles = ((await getGlobalState(context, "justinlietz93.apex.userProfiles")) as UserProfile[]) || []
+	const profileIndex = profiles.findIndex((p) => p.profileId === activeProfileId)
 
 	if (profileIndex === -1) {
-		console.error(`[State Update] Cannot update profile settings: Active profile with ID ${activeProfileId} not found.`);
-		return;
+		console.error(`[State Update] Cannot update profile settings: Active profile with ID ${activeProfileId} not found.`)
+		return
 	}
 
-	profiles[profileIndex] = { ...profiles[profileIndex], ...settingsToUpdate };
-	await updateGlobalState(context, "justinlietz93.apex.userProfiles", profiles);
-	console.log(`[State Update] Updated settings for active profile: ${profiles[profileIndex].profileName} (${activeProfileId})`);
+	profiles[profileIndex] = { ...profiles[profileIndex], ...settingsToUpdate }
+	await updateGlobalState(context, "justinlietz93.apex.userProfiles", profiles)
+	console.log(`[State Update] Updated settings for active profile: ${profiles[profileIndex].profileName} (${activeProfileId})`)
 }
-
 
 // --- End Profile and Library Management ---
 
-
 export async function updateApiConfiguration(context: vscode.ExtensionContext, apiConfiguration: ApiConfiguration) {
-	const activeProfileId = await getGlobalState(context, "justinlietz93.apex.activeProfileId") as string | undefined;
+	const activeProfileId = (await getGlobalState(context, "justinlietz93.apex.activeProfileId")) as string | undefined
 	if (!activeProfileId) {
-		console.error("[State Update] Cannot update API configuration: No active profile ID found.");
-		return;
+		console.error("[State Update] Cannot update API configuration: No active profile ID found.")
+		return
 	}
 
-	const profiles = await getGlobalState(context, "justinlietz93.apex.userProfiles") as UserProfile[] || [];
-	const profileIndex = profiles.findIndex(p => p.profileId === activeProfileId);
+	const profiles = ((await getGlobalState(context, "justinlietz93.apex.userProfiles")) as UserProfile[]) || []
+	const profileIndex = profiles.findIndex((p) => p.profileId === activeProfileId)
 
 	if (profileIndex === -1) {
-		console.error(`[State Update] Cannot update API configuration: Active profile with ID ${activeProfileId} not found.`);
-		return;
+		console.error(`[State Update] Cannot update API configuration: Active profile with ID ${activeProfileId} not found.`)
+		return
 	}
 
-	profiles[profileIndex].apiConfiguration = apiConfiguration;
-	await updateGlobalState(context, "justinlietz93.apex.userProfiles", profiles);
-	console.log(`[State Update] Updated API configuration for profile: ${profiles[profileIndex].profileName} (${activeProfileId})`);
+	profiles[profileIndex].apiConfiguration = apiConfiguration
+	await updateGlobalState(context, "justinlietz93.apex.userProfiles", profiles)
+	console.log(
+		`[State Update] Updated API configuration for profile: ${profiles[profileIndex].profileName} (${activeProfileId})`,
+	)
 }
-
 
 export async function resetExtensionState(context: vscode.ExtensionContext) {
 	for (const key of context.globalState.keys()) {
-		if (key === "justinlietz93.apex.userProfiles" || key === "justinlietz93.apex.activeProfileId" || key === "justinlietz93.apex.customInstructionLibrary") {
-			await context.globalState.update(key, undefined);
+		if (
+			key === "justinlietz93.apex.userProfiles" ||
+			key === "justinlietz93.apex.activeProfileId" ||
+			key === "justinlietz93.apex.customInstructionLibrary"
+		) {
+			await context.globalState.update(key, undefined)
 		} else {
-			await context.globalState.update(key, undefined);
+			await context.globalState.update(key, undefined)
 		}
 	}
 	const secretKeys: SecretKey[] = [
@@ -472,5 +617,5 @@ export async function resetExtensionState(context: vscode.ExtensionContext) {
 	for (const key of secretKeys) {
 		await storeSecret(context, key, undefined)
 	}
-	console.log("[State] Extension state reset.");
+	console.log("[State] Extension state reset.")
 }

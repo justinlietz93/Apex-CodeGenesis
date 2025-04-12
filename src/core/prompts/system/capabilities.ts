@@ -1,7 +1,7 @@
-import { McpHub } from "../../../services/mcp/McpHub";
+import { McpHub } from "../../../services/mcp/McpHub"
 
 export const getCapabilitiesPrompt = (cwd: string, supportsComputerUse: boolean, mcpHub: McpHub): string => {
-    let capabilities = `
+	let capabilities = `
 ====
 
 CAPABILITIES
@@ -13,18 +13,18 @@ CAPABILITIES
 	- For example, when asked to make edits or improvements you might analyze the file structure in the initial environment_details to get an overview of the project, then use list_code_definition_names to get further insight using source code definitions for files located in relevant directories, then read_file to examine the contents of relevant files, analyze the code and suggest improvements or make necessary edits, then use the replace_in_file tool to implement changes. If you refactored code that could affect other parts of the codebase, you could use search_files to ensure you update other files as needed.
 - You can use the execute_command tool to run commands on the user's computer whenever you feel it can help accomplish the user's task. When you need to execute a CLI command, you must provide a clear explanation of what the command does. Prefer to execute complex CLI commands over creating executable scripts, since they are more flexible and easier to run. Interactive and long-running commands are allowed, since the commands are run in the user's VSCode terminal. The user may keep commands running in the background and you will be kept updated on their status along the way. Each command you execute is run in a new terminal instance.
 - You have access to a knowledge base containing information about the current workspace. Relevant context from this knowledge base will be automatically provided in the system prompt when applicable to the current task or query.
-- In autonomous modes, if you encounter an unexpected situation or error where you cannot proceed with the planned steps (e.g., producing text instead of a required tool call), a recovery mechanism will analyze the situation and may provide you with a revised instruction or suggest asking the user for clarification. Follow the recovery instructions provided.`;
+- In autonomous modes, if you encounter an unexpected situation or error where you cannot proceed with the planned steps (e.g., producing text instead of a required tool call), a recovery mechanism will analyze the situation and may provide you with a revised instruction or suggest asking the user for clarification. Follow the recovery instructions provided.`
 
-    if (supportsComputerUse) {
-        capabilities += `
+	if (supportsComputerUse) {
+		capabilities += `
 - You can use the browser_action tool to interact with websites (including html files and locally running development servers) through a Puppeteer-controlled browser when you feel it is necessary in accomplishing the user's task. This tool is particularly useful for web development tasks as it allows you to launch a browser, navigate to pages, interact with elements through clicks and keyboard input, and capture the results through screenshots and console logs. This tool may be useful at key stages of web development tasks-such as after implementing new features, making substantial changes, when troubleshooting issues, or to verify the result of your work. You can analyze the provided screenshots to ensure correct rendering or identify errors, and review console logs for runtime issues.
-	- For example, if asked to add a component to a react website, you might create the necessary files, use execute_command to run the site locally, then use browser_action to launch the browser, navigate to the local server, and verify the component renders & functions correctly before closing the browser.`;
-    }
+	- For example, if asked to add a component to a react website, you might create the necessary files, use execute_command to run the site locally, then use browser_action to launch the browser, navigate to the local server, and verify the component renders & functions correctly before closing the browser.`
+	}
 
-    if (mcpHub.getMode() !== "off") {
-        capabilities += `
-- You have access to MCP servers that may provide additional tools and resources. Each server may provide different capabilities that you can use to accomplish tasks more effectively.`;
-    }
+	if (mcpHub.getMode() !== "off") {
+		capabilities += `
+- You have access to MCP servers that may provide additional tools and resources. Each server may provide different capabilities that you can use to accomplish tasks more effectively.`
+	}
 
-    return capabilities;
-};
+	return capabilities
+}

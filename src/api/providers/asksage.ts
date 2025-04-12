@@ -48,7 +48,7 @@ export class AskSageHandler implements ApiHandler {
 	// Implement the capability flag
 	supportsNativeFunctionCalling(): boolean {
 		// AskSage has a custom API format and does not support standardized function calling.
-		return false;
+		return false
 	}
 
 	async *createMessage(systemPrompt: string, messages: Anthropic.Messages.MessageParam[]): ApiStream {

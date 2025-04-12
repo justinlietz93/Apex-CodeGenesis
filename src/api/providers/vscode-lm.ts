@@ -163,9 +163,8 @@ export class VsCodeLmHandler implements ApiHandler, SingleCompletionHandler {
 	// Implement the capability flag
 	supportsNativeFunctionCalling(): boolean {
 		// VSCode LM API has its own tool mechanism; this handler doesn't currently translate it to the standardized format.
-		return false;
+		return false
 	}
-
 
 	/**
 	 * Creates a language model chat client based on the provided selector.

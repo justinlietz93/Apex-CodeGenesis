@@ -1,8 +1,8 @@
 // Define ReasoningContent interface
 export interface ReasoningContent {
-    type: "reasoning";
-    reasoning: string;
-    partial: boolean;
+	type: "reasoning"
+	reasoning: string
+	partial: boolean
 }
 
 export type AssistantMessageContent = TextContent | ToolUse | ReasoningContent // Add ReasoningContent to the union
@@ -61,7 +61,7 @@ export type ToolParamName = (typeof toolParamNames)[number]
 
 export interface ToolUse {
 	type: "tool_use"
-	id?: string; // Optional ID to store Anthropic's tool_use_id
+	id?: string // Optional ID to store Anthropic's tool_use_id
 	name: ToolUseName
 	// params is a partial record, allowing only some or none of the possible parameters to be used
 	params: Partial<Record<ToolParamName, string>>

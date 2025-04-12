@@ -12,7 +12,9 @@ import {
 import { convertToOpenAiMessages } from "../transform/openai-format"
 import { calculateApiCostOpenAI } from "../../utils/cost"
 import { ApiStream } from "../transform/stream"
-import { ChatCompletionReasoningEffort } from "openai/resources/chat/completions.mjs"
+
+// Define type for ChatCompletionReasoningEffort as it's causing import issues
+type ChatCompletionReasoningEffort = "low" | "medium" | "high" | "auto"
 
 export class OpenAiNativeHandler implements ApiHandler {
 	private options: ApiHandlerOptions
@@ -29,7 +31,7 @@ export class OpenAiNativeHandler implements ApiHandler {
 	supportsNativeFunctionCalling(): boolean {
 		// Currently, this handler doesn't implement the tool_calls parameter or response handling.
 		// Return false for now, even if underlying models might support it via the API.
-		return false;
+		return false
 	}
 
 	private async *yieldUsage(info: ModelInfo, usage: OpenAI.Completions.CompletionUsage | undefined): ApiStream {
@@ -71,14 +73,23 @@ export class OpenAiNativeHandler implements ApiHandler {
 				break
 			}
 			case "o3-mini": {
-				const stream = await this.client.chat.completions.create({
+				const params: any = {
 					model: model.id,
 					messages: [{ role: "developer", content: systemPrompt }, ...convertToOpenAiMessages(messages)],
 					stream: true,
 					stream_options: { include_usage: true },
-					reasoning_effort: (this.options.o3MiniReasoningEffort as ChatCompletionReasoningEffort) || "medium",
-				})
-				for await (const chunk of stream) {
+				}
+
+				// Add reasoning_effort if available
+				if (this.options.o3MiniReasoningEffort) {
+					params.reasoning_effort = this.options.o3MiniReasoningEffort
+				} else {
+					params.reasoning_effort = "medium"
+				}
+
+				const stream = await this.client.chat.completions.create(params)
+
+				for await (const chunk of params.stream) {
 					const delta = chunk.choices[0]?.delta
 					if (delta?.content) {
 						yield {

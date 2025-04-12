@@ -22,10 +22,10 @@ const ImageThumbnails: React.FC<ImageThumbnailsProps> = ({
           onHeightChange={onHeightChange}
           style={{
             // Styles might need adjustment based on context
-            position: "absolute",
+            position: 'absolute',
             paddingTop: 4,
             bottom: 14, // Example style, adjust as needed
-            left: 22,  // Example style, adjust as needed
+            left: 22, // Example style, adjust as needed
             right: 47, // Example style, adjust as needed
             zIndex: 2,
           }}

@@ -62,16 +62,21 @@ const ChatInputArea: React.FC<ChatInputAreaProps> = ({
       {showScrollToBottom ? (
         <div
           style={{
-            display: "flex",
-            padding: "10px 15px 0px 15px",
-          }}>
+            display: 'flex',
+            padding: '10px 15px 0px 15px',
+          }}
+        >
           <ScrollToBottomButton
             onClick={() => {
-              scrollToBottomSmooth()
+              scrollToBottomSmooth();
               // Modification removed, should be handled in useChatScrollManager or parent
               // if (disableAutoScrollRef.current) disableAutoScrollRef.current = false;
-            }}>
-            <span className="codicon codicon-chevron-down" style={{ fontSize: "18px" }}></span>
+            }}
+          >
+            <span
+              className="codicon codicon-chevron-down"
+              style={{ fontSize: '18px' }}
+            ></span>
           </ScrollToBottomButton>
         </div>
       ) : (
@@ -83,18 +88,22 @@ const ChatInputArea: React.FC<ChatInputAreaProps> = ({
                   ? 1
                   : 0.5
                 : 0,
-            display: "flex",
-            padding: `${primaryButtonText || secondaryButtonText || isStreaming ? "10" : "0"}px 15px 0px 15px`,
-          }}>
+            display: 'flex',
+            padding: `${primaryButtonText || secondaryButtonText || isStreaming ? '10' : '0'}px 15px 0px 15px`,
+          }}
+        >
           {primaryButtonText && !isStreaming && (
             <VSCodeButton
               appearance="primary"
               disabled={!enableButtons}
               style={{
                 flex: secondaryButtonText ? 1 : 2,
-                marginRight: secondaryButtonText ? "6px" : "0",
+                marginRight: secondaryButtonText ? '6px' : '0',
               }}
-              onClick={() => handlePrimaryButtonClick(inputValue, selectedImages)}>
+              onClick={() =>
+                handlePrimaryButtonClick(inputValue, selectedImages)
+              }
+            >
               {primaryButtonText}
             </VSCodeButton>
           )}
@@ -104,10 +113,13 @@ const ChatInputArea: React.FC<ChatInputAreaProps> = ({
               disabled={!enableButtons && !(isStreaming && !didClickCancel)}
               style={{
                 flex: isStreaming ? 2 : 1,
-                marginLeft: isStreaming ? 0 : "6px",
+                marginLeft: isStreaming ? 0 : '6px',
               }}
-              onClick={() => handleSecondaryButtonClick(inputValue, selectedImages)}>
-              {isStreaming ? "Cancel" : secondaryButtonText}
+              onClick={() =>
+                handleSecondaryButtonClick(inputValue, selectedImages)
+              }
+            >
+              {isStreaming ? 'Cancel' : secondaryButtonText}
             </VSCodeButton>
           )}
         </div>
@@ -131,23 +143,35 @@ const ChatInputArea: React.FC<ChatInputAreaProps> = ({
 
 // Copied from ChatView.tsx
 const ScrollToBottomButton = styled.div`
-	background-color: color-mix(in srgb, var(--vscode-toolbar-hoverBackground) 55%, transparent);
-	border-radius: 3px;
-	overflow: hidden;
-	cursor: pointer;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	flex: 1;
-	height: 25px;
+  background-color: color-mix(
+    in srgb,
+    var(--vscode-toolbar-hoverBackground) 55%,
+    transparent
+  );
+  border-radius: 3px;
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  height: 25px;
 
-	&:hover {
-		background-color: color-mix(in srgb, var(--vscode-toolbar-hoverBackground) 90%, transparent);
-	}
+  &:hover {
+    background-color: color-mix(
+      in srgb,
+      var(--vscode-toolbar-hoverBackground) 90%,
+      transparent
+    );
+  }
 
-	&:active {
-		background-color: color-mix(in srgb, var(--vscode-toolbar-hoverBackground) 70%, transparent);
-	}
-`
+  &:active {
+    background-color: color-mix(
+      in srgb,
+      var(--vscode-toolbar-hoverBackground) 70%,
+      transparent
+    );
+  }
+`;
 
 export default ChatInputArea;

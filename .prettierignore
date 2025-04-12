@@ -3,3 +3,10 @@ node_modules
 webview-ui/build/
 *.md
 package-lock.json
+workbench/personas/
+workbench/prompts/
+python_backend/personas/
+python_backend/prompts/
+*_persona.json
+*_persona.yaml
+reports/dependency-report.html

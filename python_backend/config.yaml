@@ -2,67 +2,67 @@
 
 # LLM Settings (Ensure API key is set via .env or here)
 llm:
-  provider: "google"
-  model: "gemini-1.5-pro-latest" # Or specify another preferred model like gemini-1.5-pro-latest
-  temperature: 0.7
-  top_p: 0.95
-  top_k: 40
-  max_output_tokens: 8192
-  #host: http://127.0.0.1
-  #port: 11434
-  #api_key: YOUR_API_KEY_HERE # Alternatively, set GEMINI_API_KEY in .env
-  # safety_settings: # Optional safety settings if needed
-  #   - category: HARM_CATEGORY_HARASSMENT
-  #     threshold: BLOCK_MEDIUM_AND_ABOVE
-  #   - category: HARM_CATEGORY_HATE_SPEECH
-  #     threshold: BLOCK_MEDIUM_AND_ABOVE
+    provider: "google"
+    model: "gemini-1.5-pro-latest" # Or specify another preferred model like gemini-1.5-pro-latest
+    temperature: 0.7
+    top_p: 0.95
+    top_k: 40
+    max_output_tokens: 8192
+    #host: http://127.0.0.1
+    #port: 11434
+    #api_key: YOUR_API_KEY_HERE # Alternatively, set GEMINI_API_KEY in .env
+    # safety_settings: # Optional safety settings if needed
+    #   - category: HARM_CATEGORY_HARASSMENT
+    #     threshold: BLOCK_MEDIUM_AND_ABOVE
+    #   - category: HARM_CATEGORY_HATE_SPEECH
+    #     threshold: BLOCK_MEDIUM_AND_ABOVE
 
 # Decomposition Settings
 decomposition:
-  max_phases: 5 # Adjusted default
-  max_tasks_per_phase: 5 # Adjusted default
-  max_steps_per_task: 8 # Adjusted default
+    max_phases: 5 # Adjusted default
+    max_tasks_per_phase: 5 # Adjusted default
+    max_steps_per_task: 8 # Adjusted default
 
 # Reasoning Tree Settings (Controls alternative generation/evaluation)
 reasoning_tree:
-  enabled: true # Enable/disable the alternative generation/evaluation logic
-  alternatives_count: 2 # Number of alternative plans/task lists to generate
-  evaluation_criteria: ["clarity", "completeness", "logical_flow", "risks"] # Criteria for evaluating alternatives
+    enabled: true # Enable/disable the alternative generation/evaluation logic
+    alternatives_count: 2 # Number of alternative plans/task lists to generate
+    evaluation_criteria: ["clarity", "completeness", "logical_flow", "risks"] # Criteria for evaluating alternatives
 
 # Council Critique Settings
 council:
-  enabled: true # Enable/disable the step refinement logic
-  personas:
-    # Define personas based on prompts you will create in prompts/critique_*.txt
-    - name: "Logical_Validator" # Example: Checks logical consistency
-      enabled: true
-    - name: "Completeness_Checker" # Example: Checks if steps cover the task
-      enabled: true
-    - name: "Risk_Assessor" # Example: Identifies potential issues
-      enabled: true
-    - name: "Clarity_Reviewer" # Example: Checks for ambiguous steps
-      enabled: true
-  # LLM settings for council are inherited from top-level 'llm' section by default in copied code
+    enabled: true # Enable/disable the step refinement logic
+    personas:
+        # Define personas based on prompts you will create in prompts/critique_*.txt
+        - name: "Logical_Validator" # Example: Checks logical consistency
+          enabled: true
+        - name: "Completeness_Checker" # Example: Checks if steps cover the task
+          enabled: true
+        - name: "Risk_Assessor" # Example: Identifies potential issues
+          enabled: true
+        - name: "Clarity_Reviewer" # Example: Checks for ambiguous steps
+          enabled: true
+    # LLM settings for council are inherited from top-level 'llm' section by default in copied code
 
 # QA Validation Settings (Likely disabled for RPC use)
 qa_validation:
-  enabled: false
-  # model: "gemini-pro" # Specify if needed and enabled
-  # criteria: ["...", "..."]
-  # passing_score_threshold: 0.8
+    enabled: false
+    # model: "gemini-pro" # Specify if needed and enabled
+    # criteria: ["...", "..."]
+    # passing_score_threshold: 0.8
 
 # Checkpointing Settings (Likely disabled for RPC use)
 checkpointing:
-  enabled: false
-  # frequency: "manual" # Options: phase, task, step, manual
+    enabled: false
+    # frequency: "manual" # Options: phase, task, step, manual
 
 # Logging Settings
 logging:
-  level: "INFO" # Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
-  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-  # file: "logs/backend.log" # Optional: Log to a file
+    level: "INFO" # Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
+    format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    # file: "logs/backend.log" # Optional: Log to a file
 
 # Output Settings (Not used by RPC handlers, kept for compatibility)
 output:
-  format: "json"
-  file: "output/checklist.json"
+    format: "json"
+    file: "output/checklist.json"

@@ -34,3 +34,20 @@ updates:
                 - "version-update:semver-major"
                 - "version-update:semver-minor"
                 - "version-update:semver-patch"
+
+    # Python backend dependencies
+    - package-ecosystem: "pip"
+      directory: "/python_backend"
+      schedule:
+          interval: "daily"
+      groups:
+          all-dependencies:
+              patterns:
+                  - "*"
+      ignore:
+          # Ignore all non-security updates (security vulnerabilities bypass these ignore rules)
+          - dependency-name: "*"
+            update-types:
+                - "version-update:semver-major"
+                - "version-update:semver-minor"
+                - "version-update:semver-patch"

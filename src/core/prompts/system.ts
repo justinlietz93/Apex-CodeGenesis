@@ -1,8 +1,8 @@
-import { McpHub } from "../../services/mcp/McpHub";
-import { BrowserSettings } from "../../shared/BrowserSettings";
+import { McpHub } from "../../services/mcp/McpHub"
+import { BrowserSettings } from "../../shared/BrowserSettings"
 // Import the new assembler function
-import { assembleSystemPrompt } from "./system/index";
-import { formatResponse } from "./responses"; // Keep for addUserInstructions if needed elsewhere
+import { assembleSystemPrompt } from "./system/index"
+import { formatResponse } from "./responses" // Keep for addUserInstructions if needed elsewhere
 
 // Main export now calls the assembler
 export const SYSTEM_PROMPT = async (
@@ -10,27 +10,26 @@ export const SYSTEM_PROMPT = async (
 	supportsComputerUse: boolean,
 	mcpHub: McpHub,
 	browserSettings: BrowserSettings,
-    needsXmlToolInstructions?: boolean, // Pass this through
-    // Pass through custom instruction parts
-    settingsCustomInstructions?: string,
+	needsXmlToolInstructions?: boolean, // Pass this through
+	// Pass through custom instruction parts
+	settingsCustomInstructions?: string,
 	apexRulesFileInstructions?: string,
 	apexIgnoreInstructions?: string,
 	preferredLanguageInstructions?: string,
 ): Promise<string> => {
-    // Delegate to the assembler function
-    return assembleSystemPrompt(
-        cwd,
-        supportsComputerUse,
-        mcpHub,
-        browserSettings,
-        needsXmlToolInstructions,
-        settingsCustomInstructions,
-        apexRulesFileInstructions,
-        apexIgnoreInstructions,
-        preferredLanguageInstructions
-    );
-};
-
+	// Delegate to the assembler function
+	return assembleSystemPrompt(
+		cwd,
+		supportsComputerUse,
+		mcpHub,
+		browserSettings,
+		needsXmlToolInstructions,
+		settingsCustomInstructions,
+		apexRulesFileInstructions,
+		apexIgnoreInstructions,
+		preferredLanguageInstructions,
+	)
+}
 
 // Keep the original addUserInstructions function for potential external use or later removal
 // If confirmed unused after refactoring, this can be deleted.

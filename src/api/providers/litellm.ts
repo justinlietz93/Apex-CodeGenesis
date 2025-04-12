@@ -20,7 +20,7 @@ export class LiteLlmHandler implements ApiHandler {
 	// Implement the capability flag
 	supportsNativeFunctionCalling(): boolean {
 		// LiteLLM uses OpenAI format but routes to various models; assume no standardized native support via the router itself.
-		return false;
+		return false
 	}
 
 	async calculateCost(prompt_tokens: number, completion_tokens: number): Promise<number | undefined> {

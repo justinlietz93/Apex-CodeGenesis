@@ -349,11 +349,14 @@
 					"description": "Optional: Maximum estimated total tokens (input + output) allowed for a single task run before pausing. Set to null to disable. Helps prevent unexpected high costs during long autonomous runs."
 				},
 				"apex.backend.pythonPath": {
-					"type": ["string", "null"],
+					"type": [
+						"string",
+						"null"
+					],
 					"default": null,
 					"description": "Optional: Path to the Python executable to use for the Apex backend. If null or empty, uses 'python' from PATH.",
 					"scope": "machine-overridable"
-				  }
+				}
 			}
 		}
 	},
@@ -364,6 +367,7 @@
 		"watch:esbuild": "node esbuild.js --watch",
 		"watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
 		"package": "npm run build:webview && npm run check-types && npm run lint && node esbuild.js --production",
+		"build": "npm run build:webview && npm run compile",
 		"compile-tests": "tsc -p ./tsconfig.test.json --outDir out",
 		"watch-tests": "tsc -p . -w --outDir out",
 		"pretest": "npm run compile-tests && npm run compile && npm run lint",
@@ -392,7 +396,7 @@
 		"@types/get-folder-size": "^3.0.4",
 		"@types/jsdom": "^21.1.7",
 		"@types/mocha": "^10.0.7",
-		"@types/node": "20.x",
+		"@types/node": "22.13.4",
 		"@types/pdf-parse": "^1.1.4",
 		"@types/react": "^19.1.0",
 		"@types/should": "^11.2.0",
@@ -405,7 +409,7 @@
 		"@vscode/test-electron": "^2.4.0",
 		"chai": "^4.3.10",
 		"esbuild": "^0.25.0",
-		"eslint": "^8.57.0",
+		"eslint": "^9.17.0",
 		"husky": "^9.1.7",
 		"jsdom": "^26.0.0",
 		"npm-run-all": "^4.1.5",
@@ -413,7 +417,7 @@
 		"sharp": "^0.34.0",
 		"should": "^13.2.3",
 		"sinon": "^19.0.2",
-		"typescript": "^5.4.5"
+		"typescript": "^5.7.3"
 	},
 	"dependencies": {
 		"@anthropic-ai/bedrock-sdk": "^0.12.4",
@@ -439,7 +443,7 @@
 		"diff": "^5.2.0",
 		"execa": "^9.5.2",
 		"fast-deep-equal": "^3.1.3",
-		"firebase": "^11.2.0",
+		"firebase": "^11.3.0",
 		"get-folder-size": "^5.0.0",
 		"globby": "^14.0.2",
 		"ignore": "^7.0.3",

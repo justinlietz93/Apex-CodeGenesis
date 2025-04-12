@@ -19,7 +19,7 @@ export class AnthropicHandler implements ApiHandler {
 
 	// Implement the capability flag
 	supportsNativeFunctionCalling(): boolean {
-		return false;
+		return false
 	}
 
 	@withRetry()

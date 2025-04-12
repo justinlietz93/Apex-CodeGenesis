@@ -28,8 +28,9 @@ Welcome to the Apex documentation - your comprehensive guide to using and extend
 ## Contributing to Apex
 
 -   **Interested in contributing?** We welcome your input:
-    -   Feel free to submit a pull request
+    -   [Developer Workflow Guide](contributing/developer-workflow.md)
     -   [Contribution Guidelines](../CONTRIBUTING.md)
+    -   [Project Architecture](architecture/README.md)
 
 ## Additional Resources
 

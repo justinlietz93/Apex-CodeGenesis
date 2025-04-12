@@ -22,31 +22,30 @@ interface ChatControlsProps {
 
 // Copied styled components from ChatTextArea.tsx
 const ControlsContainer = styled.div`
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	margin-top: -5px;
-	padding: 0px 15px 5px 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: -5px;
+  padding: 0px 15px 5px 15px;
 `;
 
 const ButtonGroup = styled.div`
-	display: flex;
-	align-items: center;
-	gap: 4px;
-	flex: 1;
-	min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
 `;
 
 const ButtonContainer = styled.div`
-	display: flex;
-	align-items: center;
-	gap: 3px;
-	font-size: 10px;
-	white-space: nowrap;
-	min-width: 0;
-	width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  white-space: nowrap;
+  min-width: 0;
+  width: 100%;
 `;
-
 
 const ChatControls: React.FC<ChatControlsProps> = ({
   textAreaDisabled,
@@ -67,9 +66,10 @@ const ChatControls: React.FC<ChatControlsProps> = ({
           aria-label="Add Context"
           disabled={textAreaDisabled}
           onClick={handleContextButtonClick}
-          style={{ padding: "0px 0px", height: "20px" }}>
+          style={{ padding: '0px 0px', height: '20px' }}
+        >
           <ButtonContainer>
-            <span style={{ fontSize: "13px", marginBottom: 1 }}>@</span>
+            <span style={{ fontSize: '13px', marginBottom: 1 }}>@</span>
             {/* {showButtonText && <span style={{ fontSize: "10px" }}>Context</span>} */}
           </ButtonContainer>
         </VSCodeButton>
@@ -81,12 +81,16 @@ const ChatControls: React.FC<ChatControlsProps> = ({
           disabled={shouldDisableImages}
           onClick={() => {
             if (!shouldDisableImages) {
-              onSelectImages()
+              onSelectImages();
             }
           }}
-          style={{ padding: "0px 0px", height: "20px" }}>
+          style={{ padding: '0px 0px', height: '20px' }}
+        >
           <ButtonContainer>
-            <span className="codicon codicon-device-camera" style={{ fontSize: "14px", marginBottom: -3 }} />
+            <span
+              className="codicon codicon-device-camera"
+              style={{ fontSize: '14px', marginBottom: -3 }}
+            />
             {/* {showButtonText && <span style={{ fontSize: "10px" }}>Images</span>} */}
           </ButtonContainer>
         </VSCodeButton>

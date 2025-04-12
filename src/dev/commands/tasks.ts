@@ -5,8 +5,8 @@ import { Controller } from "../../core/controller"
 import { HistoryItem } from "../../shared/HistoryItem"
 import { ApexMessage } from "../../shared/ExtensionMessage"
 // Import necessary functions from controller modules
-import { updateTaskHistory } from "../../core/controller/modules/history-manager";
-import { postStateToWebview } from "../../core/controller/modules/state-updater";
+import { updateTaskHistory } from "../../core/controller/modules/history-manager"
+import { postStateToWebview } from "../../core/controller/modules/state-updater"
 
 /**
  * Registers development-only commands for task manipulation.
@@ -91,13 +91,13 @@ export function registerTaskCommands(context: vscode.ExtensionContext, controlle
 						}
 
 						// Update task history in global state
-						await updateTaskHistory(controller, historyItem); // Use imported function
+						await updateTaskHistory(controller, historyItem) // Use imported function
 
 						progress.report({ increment: 100 / tasksCount })
 					}
 
 					// Update the UI to show the new tasks
-					await postStateToWebview(controller); // Use imported function
+					await postStateToWebview(controller) // Use imported function
 
 					vscode.window.showInformationMessage(`Created ${tasksCount} test tasks`)
 				},

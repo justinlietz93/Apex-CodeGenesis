@@ -25,7 +25,7 @@ export class RequestyHandler implements ApiHandler {
 	// Implement the capability flag
 	supportsNativeFunctionCalling(): boolean {
 		// Requesty uses OpenAI format but routes to various models; assume no standardized native support via the router itself.
-		return false;
+		return false
 	}
 
 	@withRetry()

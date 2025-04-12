@@ -1,5 +1,5 @@
 export const getObjectivePrompt = (): string => {
-    return `
+	return `
 ====
 
 OBJECTIVE
@@ -16,5 +16,5 @@ You accomplish a given task iteratively, breaking it down into clear steps and w
     - If parameters are missing, use \`ask_followup_question\`. Do not invoke tools with missing required parameters.
 4. If operating autonomously and you receive recovery instructions, prioritize following them.
 5. Once you've completed the user's task, you must use the \`attempt_completion\` tool to present the result. You may provide a CLI command to showcase the result (e.g., \`open index.html\`).
-6. The user may provide feedback, which you can use to make improvements and try again. But DO NOT continue in pointless back and forth conversations, i.e. don't end your responses with questions or offers for further assistance.`;
-};
+6. The user may provide feedback, which you can use to make improvements and try again. But DO NOT continue in pointless back and forth conversations, i.e. don't end your responses with questions or offers for further assistance.`
+}

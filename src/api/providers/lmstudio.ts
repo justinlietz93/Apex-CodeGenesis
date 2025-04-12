@@ -19,7 +19,7 @@ export class LmStudioHandler implements ApiHandler {
 
 	// Implement the capability flag
 	supportsNativeFunctionCalling(): boolean {
-		return false; // LM Studio uses OpenAI format but doesn't guarantee tool support for all loaded models.
+		return false // LM Studio uses OpenAI format but doesn't guarantee tool support for all loaded models.
 	}
 
 	async *createMessage(systemPrompt: string, messages: Anthropic.Messages.MessageParam[]): ApiStream {
