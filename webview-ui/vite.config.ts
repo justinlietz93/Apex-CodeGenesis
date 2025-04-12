@@ -17,15 +17,28 @@ export default defineConfig({
   },
   build: {
     outDir: 'build',
+    // Optimize for memory usage in CI/Codespace environments
+    minify: 'esbuild',
+    sourcemap: false,
+    // Split chunks more aggressively to reduce memory pressure
     rollupOptions: {
       output: {
-        inlineDynamicImports: true,
+        manualChunks: {
+          react: ['react', 'react-dom'],
+          'react-libs': ['react-use', 'react-virtuoso', 'react-remark'],
+          'ui-toolkit': ['@vscode/webview-ui-toolkit'],
+          mermaid: ['mermaid'],
+          vendor: ['fast-deep-equal', 'firebase', 'fuse.js', 'dompurify'],
+        },
         entryFileNames: `assets/[name].js`,
-        chunkFileNames: `assets/[name].js`,
-        assetFileNames: `assets/[name].[ext]`,
+        chunkFileNames: `assets/[name].[hash].js`,
+        assetFileNames: `assets/[name].[hash].[ext]`,
       },
     },
     chunkSizeWarningLimit: 100000,
+    // Reduce memory usage during build
+    emptyOutDir: true,
+    target: 'es2020',
   },
   server: {
     port: 25463,

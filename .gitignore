@@ -20,7 +20,8 @@ coverage
 !.github/scripts/coverage/
 dev/*
 logs/*
-dependency-report.html
+
+# Reports
 reports/dependency-report.html
-reports/dependency-report.html
-reports/dependency-report.html
+
+workbench/*
