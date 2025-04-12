@@ -6,11 +6,11 @@ NOTE: This might be less relevant in the integrated backend context.
 import json
 import logging # Import logging
 from typing import Dict, List, Any
-import google.generativeai as genai
+from llm_client import LLMClient
 
 # Adjust import paths
-from ..exceptions import QAValidationError, LLMError
-from ..utils.prompt_manager import PromptManager
+from exceptions import QAValidationError, LLMError
+from utils.prompt_manager import PromptManager
 
 
 class QAValidator:
@@ -26,12 +26,11 @@ class QAValidator:
         Args:
             config (dict): QA validation configuration (should include LLM settings).
             prompt_manager (PromptManager): Prompt manager instance.
-            llm_client: LLM client instance (Note: Redundant if genai configured globally).
+            llm_client: LLM client instance (Note: Redundant if client configured globally).
             logger (logging.Logger, optional): Logger instance.
         """
         self.config = config
         self.prompt_manager = prompt_manager
-        # self.llm_client = llm_client or genai # Rely on global genai
         self.logger = logger or logging.getLogger(self.__class__.__name__) # Get logger
         # Default to disabled in the integrated context unless explicitly enabled
         self.enabled = config.get("enabled", False)
@@ -40,26 +39,9 @@ class QAValidator:
         ])
 
         if self.enabled:
-            # Initialize LLM model only if enabled
-            model_name = self.config.get("model")
-            if not model_name:
-                 raise QAValidationError("LLM model name not found in QA configuration.")
-
-            self.logger.info("Initializing QAValidator LLM with model: %s", model_name)
-            try:
-                 # Assumes genai is configured globally
-                self.model = genai.GenerativeModel(
-                    model_name=model_name,
-                    generation_config={
-                        "temperature": self.config.get("temperature", 0.7),
-                        "top_p": self.config.get("top_p", 0.95),
-                        "top_k": self.config.get("top_k", 40), # Use config or default
-                        "max_output_tokens": self.config.get("max_output_tokens", 8192), # Use config or default
-                    }
-                )
-            except Exception as e:
-                 self.logger.error("Failed to initialize GenerativeModel for QAValidator: %s", e, exc_info=True)
-                 raise QAValidationError(f"Failed to initialize LLM model '{model_name}' for QAValidator: {e}")
+            self.logger.info("Initializing QAValidator")
+            if llm_client == None:
+                self.llm_client = LLMClient()
         else:
              self.model = None
              self.logger.info("QA validation is disabled by configuration.")
@@ -132,25 +114,9 @@ class QAValidator:
         """
         Call the LLM with the given prompt using the class's model instance.
         """
-        if not self.model:
+        if not self.llm_client:
              raise LLMError("QAValidator LLM model is not initialized.")
-        try:
-            self.logger.debug("Calling LLM (QAValidator)...")
-            # Add safety settings if needed from config
-            safety_settings = self.config.get("safety_settings", None)
-            response = await self.model.generate_content_async(
-                 prompt,
-                 safety_settings=safety_settings
-            )
-            self.logger.debug("LLM call successful (QAValidator).")
-            if not response.text:
-                 block_reason = response.prompt_feedback.block_reason if response.prompt_feedback else 'Unknown'
-                 self.logger.warning(f"LLM response (QAValidator) was empty or blocked. Reason: {block_reason}")
-                 raise LLMError(f"LLM response (QAValidator) was empty or blocked (Reason: {block_reason}). Prompt: {prompt[:100]}...")
-            return response.text
-        except Exception as e:
-            self.logger.error("LLM call failed (QAValidator): %s", str(e), exc_info=True)
-            raise LLMError(f"LLM call failed (QAValidator): {str(e)}")
+        return await self.llm_client.generate(prompt)
 
     def _parse_validation_results(self, response):
         """

@@ -4,7 +4,7 @@ Utility for loading and managing prompts.
 
 import os
 # Adjust import path for the new location
-from ..exceptions import PromptError
+from exceptions import PromptError
 
 
 class PromptManager:

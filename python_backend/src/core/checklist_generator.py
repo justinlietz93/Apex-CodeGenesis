@@ -6,13 +6,13 @@ import asyncio
 import json
 import logging # Import logging
 from typing import List, Dict, Any
-import google.generativeai as genai
+from llm_client import LLMClient
 
 # Adjust import paths for the new location
-from ..exceptions import ChecklistGeneratorError, LLMError
-from ..utils.prompt_manager import PromptManager
-from .reasoning_tree import ReasoningTree
-from .checkpoint_manager import CheckpointManager
+from exceptions import ChecklistGeneratorError, LLMError
+from utils.prompt_manager import PromptManager
+from core.reasoning_tree import ReasoningTree
+from core.checkpoint_manager import CheckpointManager
 
 
 class ChecklistGenerator:
@@ -39,30 +39,7 @@ class ChecklistGenerator:
         self.logger = logger or logging.getLogger(self.__class__.__name__) # Get logger
 
         # Initialize LLM client
-        # Ensure API key is configured before this point (e.g., in main backend setup)
-        # genai.configure(api_key=config.get("api_key")) # Configuration should happen globally once
-        model_name = config.get("model")
-        if not model_name:
-            # Use a default or raise error if model is critical
-            # For now, let's assume a default model might be set elsewhere or raise
-             raise ChecklistGeneratorError("LLM model name not found in configuration for ChecklistGenerator.")
-            # model_name = "gemini-pro" # Example default
-            # self.logger.warning("LLM model name not found, using default: %s", model_name)
-
-        self.logger.info("Initializing ChecklistGenerator LLM with model: %s", model_name)
-        try:
-            self.model = genai.GenerativeModel(
-                model_name=model_name,
-                generation_config={
-                    "temperature": config.get("temperature", 0.7),
-                    "top_p": config.get("top_p", 0.95),
-                    "top_k": config.get("top_k", 40),
-                    "max_output_tokens": config.get("max_output_tokens", 8192),
-                }
-            )
-        except Exception as e:
-             self.logger.error("Failed to initialize GenerativeModel: %s", e, exc_info=True)
-             raise ChecklistGeneratorError(f"Failed to initialize LLM model '{model_name}': {e}")
+        self.llm_client = LLMClient()
 
         # Set decomposition limits
         self.max_phases = config.get("max_phases", 7)
@@ -277,31 +254,7 @@ class ChecklistGenerator:
         """
         Call the LLM with the given prompt.
         """
-        if not hasattr(self, 'model') or not self.model:
-             raise LLMError("LLM model is not initialized.")
-        try:
-            self.logger.debug("Calling LLM...")
-            # Add safety settings if needed
-            safety_settings = self.config.get("safety_settings", None)
-            response = await self.model.generate_content_async(
-                 prompt,
-                 safety_settings=safety_settings
-            )
-            self.logger.debug("LLM call successful.")
-            # Add basic check for response content
-            if not response.text:
-                 # Handle cases where the response might be blocked or empty
-                 block_reason = response.prompt_feedback.block_reason if response.prompt_feedback else 'Unknown'
-                 self.logger.warning(f"LLM response was empty or blocked. Reason: {block_reason}")
-                 # Depending on severity, either return empty or raise error
-                 # For now, let's raise an error to indicate failure clearly
-                 raise LLMError(f"LLM response was empty or blocked (Reason: {block_reason}). Prompt: {prompt[:100]}...")
-
-            return response.text
-        except Exception as e:
-            self.logger.error("LLM call failed: %s", str(e), exc_info=True)
-            # Re-raise as LLMError for specific handling upstream
-            raise LLMError(f"LLM call failed: {str(e)}")
+        return await self.llm_client.generate(prompt)
 
     def _parse_json_response(self, response, expected_key):
         """

@@ -45,3 +45,8 @@ class CouncilCritiqueError(ChecklistGeneratorError):
 class QAValidationError(ChecklistGeneratorError):
     """Exception raised for errors in QA validation operations."""
     pass
+
+class LLMClientError(Exception):
+    """Base exception for all llm client errors."""
+    pass
+

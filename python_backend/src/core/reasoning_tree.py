@@ -6,11 +6,11 @@ import asyncio
 import json
 import logging # Import logging
 from typing import List, Dict, Any
-import google.generativeai as genai
+from llm_client import LLMClient
 
 # Adjust import paths
-from ..exceptions import ReasoningTreeError, LLMError
-from ..utils.prompt_manager import PromptManager
+from exceptions import ReasoningTreeError, LLMError
+from utils.prompt_manager import PromptManager
 
 
 class ReasoningTree:
@@ -25,42 +25,25 @@ class ReasoningTree:
         Args:
             config (dict): Reasoning tree configuration.
             prompt_manager (PromptManager): Prompt manager instance.
-            llm_client: LLM client instance (Note: This might be redundant if genai is configured globally).
+            llm_client: LLM client instance (Note: This might be redundant if client is configured globally).
             logger (logging.Logger, optional): Logger instance.
         """
         self.config = config
         self.prompt_manager = prompt_manager
-        # self.llm_client = llm_client or genai # genai is configured globally, use directly
         self.logger = logger or logging.getLogger(self.__class__.__name__) # Get logger
+        
+        if llm_client == None:
+            self.llm_client = LLMClient()
+        
         self.alternatives_count = config.get("alternatives_count", 3)
         self.evaluation_criteria = config.get("evaluation_criteria", [
             "risks", "coherence", "completeness", "clarity"
         ])
         self.enabled = config.get("enabled", True) # Control if reasoning tree logic is active
+        
         # Store decomposition limits from the merged config
         self.max_phases = config.get("max_phases", 7)
         self.max_tasks_per_phase = config.get("max_tasks_per_phase", 7)
-
-        # Initialize LLM model instance specific to this class if needed, or rely on global config
-        model_name = config.get("model")
-        if not model_name:
-             raise ReasoningTreeError("LLM model name not found in reasoning tree configuration.")
-        self.logger.info("Initializing ReasoningTree LLM with model: %s", model_name)
-        try:
-            # This assumes genai is already configured with API key
-            self.model = genai.GenerativeModel(
-                model_name=model_name,
-                generation_config={
-                    "temperature": config.get("temperature", 0.7),
-                    "top_p": config.get("top_p", 0.95),
-                    "top_k": config.get("top_k", 40),
-                    "max_output_tokens": config.get("max_output_tokens", 8192),
-                }
-            )
-        except Exception as e:
-             self.logger.error("Failed to initialize GenerativeModel for ReasoningTree: %s", e, exc_info=True)
-             raise ReasoningTreeError(f"Failed to initialize LLM model '{model_name}' for ReasoningTree: {e}")
-
 
     async def generate_alternatives(self, goal, context, node_type):
         """
@@ -348,26 +331,8 @@ class ReasoningTree:
         """
         Call the LLM with the given prompt using the class's model instance.
         """
-        if not hasattr(self, 'model') or not self.model:
-             raise LLMError("ReasoningTree LLM model is not initialized.")
-        try:
-            self.logger.debug("Calling LLM (ReasoningTree)...")
-            # Add safety settings if needed from config
-            safety_settings = self.config.get("safety_settings", None)
-            response = await self.model.generate_content_async(
-                 prompt,
-                 safety_settings=safety_settings
-            )
-            self.logger.debug("LLM call successful (ReasoningTree).")
-            if not response.text:
-                 block_reason = response.prompt_feedback.block_reason if response.prompt_feedback else 'Unknown'
-                 self.logger.warning(f"LLM response (ReasoningTree) was empty or blocked. Reason: {block_reason}")
-                 raise LLMError(f"LLM response (ReasoningTree) was empty or blocked (Reason: {block_reason}). Prompt: {prompt[:100]}...")
-            return response.text
-        except Exception as e:
-            self.logger.error("LLM call failed (ReasoningTree): %s", str(e), exc_info=True)
-            raise LLMError(f"LLM call failed (ReasoningTree): {str(e)}")
-
+        return await self.llm_client.generate(prompt)
+    
     def _parse_alternatives(self, response, node_type):
         """
         Parse the LLM response to extract alternatives (expecting a list of lists).
