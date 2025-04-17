@@ -1,3 +1,5 @@
+import * as crypto from 'crypto';
+
 /**
  * Local Authentication Service
  * This service mimics Firebase Auth's interface using localStorage for persistence.
@@ -203,7 +205,9 @@ export function createDefaultLocalUser(
  * @returns A unique ID string
  */
 function generateUniqueId(): string {
-  return Date.now().toString(36) + Math.random().toString(36).substring(2);
+  const randomPart1 = crypto.randomBytes(8).toString('hex'); // Generate the first secure random string
+  const randomPart2 = crypto.randomBytes(8).toString('hex'); // Generate the second secure random string
+  return randomPart1 + randomPart2; // Concatenate the two random strings
 }
 
 /**
