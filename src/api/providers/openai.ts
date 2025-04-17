@@ -1,4 +1,5 @@
 import { Anthropic } from "@anthropic-ai/sdk"
+import { URL } from "url";
 import OpenAI, { AzureOpenAI } from "openai"
 // Import necessary types for OpenAI tool calling
 import { ChatCompletionTool, ChatCompletionMessageToolCall } from "openai/resources/chat/completions"
@@ -220,7 +221,8 @@ export class OpenAiHandler implements ApiHandler {
 		this.options = options
 		// Azure API shape slightly differs from the core API shape: https://github.com/openai/openai-node?tab=readme-ov-file#microsoft-azure-openai
 		// Use azureApiVersion to determine if this is an Azure endpoint, since the URL may not always contain 'azure.com'
-		if (this.options.azureApiVersion || this.options.openAiBaseUrl?.toLowerCase().includes("azure.com")) {
+		const url = new URL(this.options.openAiBaseUrl);
+		if (this.options.azureApiVersion || url.host.endsWith('azure.com')) {
 			this.client = new AzureOpenAI({
 				baseURL: this.options.openAiBaseUrl,
 				apiKey: this.options.openAiApiKey,
