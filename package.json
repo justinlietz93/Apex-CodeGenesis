@@ -17,7 +17,9 @@
 	"version": "1.0.0",
 	"icon": "assets/icons/icon.png",
 	"engines": {
-		"vscode": "^1.99.0"
+		"vscode": "^1.99.0",
+		"node": ">=18.17.1 <19",
+		"npm": ">=9"
 	},
 	"author": "Justin Lietz",
 	"license": "Apache-2.0",
