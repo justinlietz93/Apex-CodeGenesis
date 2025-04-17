@@ -33,6 +33,8 @@
 > [!NOTE]
 > **Status:** First release is ~96% ready to launch! Actively seeking feedback and testers.
 
+Check out the AI generated audio overview: https://notebooklm.google.com/notebook/f4fc054b-a882-4edd-979a-3e3112c71adb/audio
+
 ---
 
 **Table of Contents**
