@@ -32,8 +32,8 @@
 
 > [!NOTE]
 > **Status:** First release is ~97% ready to launch! Actively seeking feedback and testers.
-
-Check out the AI generated audio overview: https://notebooklm.google.com/notebook/f4fc054b-a882-4edd-979a-3e3112c71adb/audio
+> <br><br><em>Check out the AI generated audio overview explaining the upcoming integration with</em> <a href="https://github.com/Modern-Prometheus-AI/Neuroca" target="_blank"><strong>Neuroca</strong></a>:
+> <br>https://notebooklm.google.com/notebook/f4fc054b-a882-4edd-979a-3e3112c71adb/audio
 
 ---
 
