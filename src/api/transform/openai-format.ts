@@ -50,8 +50,12 @@ export function convertToOpenAiMessages(
 							toolMessage.content
 								?.map((part) => {
 									if (part.type === "image") {
-										toolResultImages.push(part)
-										return "(see following user message for image)"
+										// Add type guard check for image properties
+										if ("media_type" in part.source && "data" in part.source) {
+											toolResultImages.push(part)
+											return "(see following user message for image)"
+										}
+										return "(image could not be processed: missing required properties)"
 									}
 									return part.text
 								})
@@ -86,11 +90,19 @@ export function convertToOpenAiMessages(
 						role: "user",
 						content: nonToolMessages.map((part) => {
 							if (part.type === "image") {
+								// Add type guard check for image properties
+								if ("media_type" in part.source && "data" in part.source) {
+									return {
+										type: "image_url",
+										image_url: {
+											url: `data:${part.source.media_type};base64,${part.source.data}`,
+										},
+									}
+								}
+								// Return a text element as fallback
 								return {
-									type: "image_url",
-									image_url: {
-										url: `data:${part.source.media_type};base64,${part.source.data}`,
-									},
+									type: "text",
+									text: "[ERROR: Image source missing required properties]",
 								}
 							}
 							return { type: "text", text: part.text }

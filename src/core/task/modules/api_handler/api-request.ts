@@ -338,8 +338,12 @@ export async function* attemptApiRequest(
 					task.stateManager.conversationHistoryDeletedRange,
 				)
 				if (truncatedConversationHistory.length > 3) {
-					error = new Error("Context window exceeded. Click retry to truncate the conversation and try again.")
+					const contextWindowError = new Error(
+						"Context window exceeded. Click retry to truncate the conversation and try again.",
+					)
 					setDidAutomaticallyRetryFailedApiRequest(false) // Reset on non-retryable error
+					// Instead of reassigning the error parameter, throw the new error
+					throw contextWindowError
 				}
 			}
 

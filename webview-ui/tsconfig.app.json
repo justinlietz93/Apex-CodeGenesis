@@ -19,10 +19,7 @@
     "strict": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
-    "types": [
-      "vitest/globals",
-      "testing-library__jest-dom" // Add this to include Jest-DOM types
-    ]
+    "types": ["vitest/globals"]
   },
   "include": ["src"]
 }

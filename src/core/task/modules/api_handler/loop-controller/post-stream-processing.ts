@@ -114,12 +114,23 @@ export async function handlePostStreamProcessing(
 													return { type: "text", text: resBlock.text ?? "", citations: null }
 												}
 												if (resBlock.type === "image" && resBlock.source) {
-													const source: Anthropic.ImageBlockParam.Source = {
-														type: resBlock.source.type,
-														media_type: resBlock.source.media_type,
-														data: resBlock.source.data,
+													// Check if source has both required properties
+													if ("media_type" in resBlock.source && "data" in resBlock.source) {
+														return {
+															type: "image",
+															source: {
+																type: resBlock.source.type,
+																media_type: resBlock.source.media_type,
+																data: resBlock.source.data,
+															},
+														}
 													}
-													return { type: "image", source: source }
+													// Fallback text block if image source is missing required properties
+													return {
+														type: "text",
+														text: "[ERROR: Image source missing required properties]",
+														citations: null,
+													}
 												}
 												return {
 													type: "text",

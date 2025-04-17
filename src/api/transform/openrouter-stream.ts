@@ -40,7 +40,7 @@ export async function createOpenRouterStream(
 		case "anthropic/claude-3-haiku":
 		case "anthropic/claude-3-haiku:beta":
 		case "anthropic/claude-3-opus":
-		case "anthropic/claude-3-opus:beta":
+		case "anthropic/claude-3-opus:beta": {
 			openAiMessages[0] = {
 				role: "system",
 				content: [
@@ -72,6 +72,7 @@ export async function createOpenRouterStream(
 				}
 			})
 			break
+		}
 		default:
 			break
 	}
@@ -117,7 +118,7 @@ export async function createOpenRouterStream(
 		case "anthropic/claude-3.7-sonnet:beta":
 		case "anthropic/claude-3.7-sonnet:thinking":
 		case "anthropic/claude-3-7-sonnet":
-		case "anthropic/claude-3-7-sonnet:beta":
+		case "anthropic/claude-3-7-sonnet:beta": {
 			let budget_tokens = thinkingBudgetTokens || 0
 			const reasoningOn = budget_tokens !== 0 ? true : false
 			if (reasoningOn) {
@@ -125,6 +126,7 @@ export async function createOpenRouterStream(
 				reasoning = { max_tokens: budget_tokens }
 			}
 			break
+		}
 	}
 
 	// Removes messages in the middle when close to context window limit. Should not be applied to models that support prompt caching since it would continuously break the cache.

@@ -5,6 +5,10 @@ import { postStateToWebview } from "./state-updater" // Import for state updates
 import { telemetryService } from "../../../services/telemetry/TelemetryService" // Adjust path
 import { UserInfo } from "../../../shared/UserInfo" // Adjust path
 
+// Constants for local storage keys
+const API_KEY_SECRET_KEY = "justinlietz93.apex.apexApiKey"
+const USER_INFO_STATE_KEY = "justinlietz93.apex.userInfo"
+
 /**
  * Handles the user sign-out process.
  * @param controller The main controller instance.
@@ -12,11 +16,10 @@ import { UserInfo } from "../../../shared/UserInfo" // Adjust path
 export async function handleSignOut(controller: Controller): Promise<void> {
 	console.log("[AuthHandler] Handling sign out...")
 	try {
-		// await controller.accountService?.signOut(); // Method does not exist on ApexAccountService
-		await storeSecret(controller.context, "justinlietz93.apex.apexApiKey", undefined) // Use correct SecretKey "apexApiKey"
-		await storeSecret(controller.context, "justinlietz93.apex.authNonce", undefined) // Clear nonce
-		await updateGlobalState(controller.context, "justinlietz93.apex.userInfo", undefined) // Clear user info
-		telemetryService.capture({ event: "Logout" }) // Correct telemetry call
+		// Clear all authentication-related data
+		await storeSecret(controller.context, API_KEY_SECRET_KEY, undefined) // Clear API key
+		await updateGlobalState(controller.context, USER_INFO_STATE_KEY, undefined) // Clear user info
+		telemetryService.capture({ event: "Logout" }) // Track the logout event
 		await postStateToWebview(controller) // Update UI
 		vscode.window.showInformationMessage("Successfully signed out.")
 	} catch (error) {
@@ -38,97 +41,115 @@ export async function setUserInfo(controller: Controller, userInfo: UserInfo | u
 
 /**
  * Validates the current authentication state (e.g., on startup).
- * Placeholder implementation - Actual validation might involve checking token expiry etc.
+ * With local storage auth, we simply check if API key and/or user info exists.
  * @param controller The main controller instance.
  */
 export async function validateAuthState(controller: Controller): Promise<void> {
 	console.log("[AuthHandler] Validating auth state...")
 	try {
-		const token = await getSecret(controller.context, "justinlietz93.apex.apexApiKey") // Use correct SecretKey "apexApiKey"
-		if (token) {
-			// Potentially add token validation logic here using accountService
+		const apiKey = await getSecret(controller.context, API_KEY_SECRET_KEY)
+		const userInfo = (await getGlobalState(controller.context, USER_INFO_STATE_KEY)) as UserInfo | undefined
+
+		if (apiKey) {
 			console.log("[AuthHandler] Apex API Key found.")
-			// Fetch user info if token exists but user info is missing?
-			if (!(await getGlobalState(controller.context, "justinlietz93.apex.userInfo"))) {
-				// Use imported getGlobalState
-				console.log("[AuthHandler] API Key found but user info missing, attempting to fetch...")
-				// await controller.accountService?.fetchUserInfo(); // Method does not exist on ApexAccountService
-				// Consider alternative ways to get user info if needed, or remove this block
-				// await postStateToWebview(controller); // Update UI if user info was fetched
+
+			// If API key exists but user info is missing, create a default user info
+			if (!userInfo) {
+				console.log("[AuthHandler] API Key found but user info missing, creating default...")
+				const defaultUserInfo: UserInfo = {
+					displayName: "Local User",
+					email: "local@example.com",
+					photoURL: null,
+				}
+				await updateGlobalState(controller.context, USER_INFO_STATE_KEY, defaultUserInfo)
 			}
 		} else {
 			console.log("[AuthHandler] No auth token found.")
 			// Ensure user info is cleared if no token
-			await updateGlobalState(controller.context, "justinlietz93.apex.userInfo", undefined)
-			await postStateToWebview(controller)
+			await updateGlobalState(controller.context, USER_INFO_STATE_KEY, undefined)
 		}
+
+		// Always update webview with current state
+		await postStateToWebview(controller)
 	} catch (error) {
 		console.error("[AuthHandler] Error validating auth state:", error)
 	}
 }
 
 /**
- * Handles the authentication callback URI.
+ * Handles local authentication with direct token or user info.
+ * This replaces the previous callback-based authentication.
+ *
+ * @param controller The main controller instance.
+ * @param token The authentication token or API key.
+ * @param userInfo Optional user information.
+ */
+export async function handleLocalAuth(controller: Controller, token: string, userInfo?: UserInfo): Promise<void> {
+	console.log("[AuthHandler] Handling local authentication")
+
+	try {
+		// Store the API key
+		await storeSecret(controller.context, API_KEY_SECRET_KEY, token)
+
+		// Store user info if provided, otherwise create default
+		if (userInfo) {
+			await updateGlobalState(controller.context, USER_INFO_STATE_KEY, userInfo)
+		} else {
+			const defaultUserInfo: UserInfo = {
+				displayName: "Local User",
+				email: "local@example.com",
+				photoURL: null,
+			}
+			await updateGlobalState(controller.context, USER_INFO_STATE_KEY, defaultUserInfo)
+		}
+
+		// Log success
+		telemetryService.capture({ event: "Login Success" })
+		vscode.window.showInformationMessage("Local authentication successful!")
+
+		// Update UI
+		await postStateToWebview(controller)
+	} catch (error) {
+		console.error("[AuthHandler] Error during local authentication:", error)
+
+		telemetryService.capture({
+			event: "Login Failed",
+			properties: { error: error instanceof Error ? error.message : String(error) },
+		})
+
+		vscode.window.showErrorMessage(`Authentication failed: ${error instanceof Error ? error.message : "Unknown error"}`)
+		await postStateToWebview(controller)
+	}
+}
+
+/**
+ * Legacy method for backward compatibility.
+ * Now simplified to just extract a token and user info from the URI and pass it to handleLocalAuth.
+ *
  * @param controller The main controller instance.
  * @param uri The callback URI.
  */
 export async function handleAuthCallback(controller: Controller, uri: vscode.Uri): Promise<void> {
 	console.log("[AuthHandler] Handling auth callback URI:", uri.toString())
 	const query = new URLSearchParams(uri.query)
-	const code = query.get("code")
-	const state = query.get("state")
-	const storedNonce = await getSecret(controller.context, "justinlietz93.apex.authNonce")
+	const token = query.get("token") || "local-token-" + Date.now()
 
-	if (!code || !state) {
-		vscode.window.showErrorMessage("Authentication failed: Invalid callback parameters.")
-		console.error("[AuthHandler] Invalid callback parameters received.")
-		return
-	}
+	// Extract user info if available in the query
+	const displayName = query.get("displayName") || "Local User"
+	const email = query.get("email") || "local@example.com"
+	const photoURL = query.get("photoURL") || null
 
-	if (state !== storedNonce) {
-		vscode.window.showErrorMessage("Authentication failed: State mismatch (potential CSRF attack).")
-		console.error("[AuthHandler] State mismatch during auth callback.")
-		await storeSecret(controller.context, "justinlietz93.apex.authNonce", undefined) // Clear nonce
-		return
-	}
+	const userInfo: UserInfo = { displayName, email, photoURL }
 
-	// Nonce verified, clear it
-	await storeSecret(controller.context, "justinlietz93.apex.authNonce", undefined)
-
-	try {
-		vscode.window.showInformationMessage("Authenticating...")
-		// const token = await controller.accountService?.exchangeCodeForToken(code); // Method does not exist on ApexAccountService
-		// Simulate success for now, assuming token is handled elsewhere or flow is different
-		const token = "simulated-token-from-code-" + code // Placeholder
-		if (token) {
-			await storeSecret(controller.context, "justinlietz93.apex.apexApiKey", token) // Use correct SecretKey "apexApiKey"
-			// await controller.accountService?.fetchUserInfo(); // Method does not exist on ApexAccountService
-			telemetryService.capture({ event: "Login Success" }) // Correct telemetry call
-			vscode.window.showInformationMessage("Authentication successful! (Simulated)")
-			await postStateToWebview(controller) // Update UI with user info
-		} else {
-			throw new Error("Failed to exchange code for token (Simulated).")
-		}
-	} catch (error) {
-		console.error("[AuthHandler] Error exchanging code for token:", error)
-		// Correct telemetry call
-		telemetryService.capture({
-			event: "Login Failed",
-			properties: { error: error instanceof Error ? error.message : String(error) },
-		})
-		vscode.window.showErrorMessage(`Authentication failed: ${error instanceof Error ? error.message : "Unknown error"}`)
-		await postStateToWebview(controller) // Ensure UI reflects failed login
-	}
+	// Hand off to the local auth handler
+	await handleLocalAuth(controller, token, userInfo)
 }
 
 /**
- * Handles a specific callback for OpenRouter (if needed).
- * Placeholder - Implement if OpenRouter has a distinct auth flow.
- * @param controller The main controller instance.
- * @param uri The callback URI.
+ * This function is no longer needed with local authentication.
+ * Kept as a stub for backward compatibility.
  */
 export async function handleOpenRouterCallback(controller: Controller, uri: vscode.Uri): Promise<void> {
-	console.warn("[AuthHandler] handleOpenRouterCallback not implemented.", uri.toString())
-	// Implementation depends on OpenRouter's specific OAuth or callback mechanism, if any.
-	// Typically, API keys are handled via settings, not callbacks.
+	console.warn("[AuthHandler] External authentication callbacks no longer supported with local auth.", uri.toString())
+	vscode.window.showInformationMessage("External authentication is disabled. Using local authentication instead.")
 }

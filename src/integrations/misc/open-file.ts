@@ -39,7 +39,11 @@ export async function openFile(absolutePath: string) {
 					break
 				}
 			}
-		} catch {} // not essential, sometimes tab operations fail
+		} catch (error) {
+			// Intentionally ignoring errors from tab operations as they're not critical
+			// This allows the file to be opened even if tab management fails
+			console.debug("Tab management operation failed:", error)
+		}
 
 		const document = await vscode.workspace.openTextDocument(uri)
 		await vscode.window.showTextDocument(document, { preview: false })

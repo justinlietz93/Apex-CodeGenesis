@@ -28,7 +28,7 @@ export default defineConfig({
           'react-libs': ['react-use', 'react-virtuoso', 'react-remark'],
           'ui-toolkit': ['@vscode/webview-ui-toolkit'],
           mermaid: ['mermaid'],
-          vendor: ['fast-deep-equal', 'firebase', 'fuse.js', 'dompurify'],
+          vendor: ['fast-deep-equal', 'fuse.js', 'dompurify'],
         },
         entryFileNames: `assets/[name].js`,
         chunkFileNames: `assets/[name].[hash].js`,

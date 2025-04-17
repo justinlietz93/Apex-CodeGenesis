@@ -5,9 +5,18 @@
  * to ensure consistency across the project.
  */
 
-const fs = require("fs")
-const path = require("path")
-const { parseVersion, getHigherVersion } = require("./dependency-checker")
+import fs from "fs"
+import path from "path"
+import { fileURLToPath } from "url"
+// Import directly from dependency-checker.cjs
+import { createRequire } from "module"
+const require = createRequire(import.meta.url)
+const dependencyChecker = require("./dependency-checker.cjs")
+const { parseVersion, getHigherVersion } = dependencyChecker
+
+// Get __dirname equivalent in ESM
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 // Configuration paths are relative to repo root
 const ROOT_DIR = path.resolve(__dirname, "../..")
@@ -17,7 +26,7 @@ const WEBVIEW_PACKAGE_JSON = path.join(ROOT_DIR, "webview-ui", "package.json")
 /**
  * Harmonize dependency versions between main and webview packages
  */
-function harmonizeDependencies(options, utils) {
+export function harmonizeDependencies(options, utils) {
 	const { log, heading, colors } = utils
 
 	heading("Harmonizing Dependencies")
@@ -105,9 +114,4 @@ function harmonizeDependencies(options, utils) {
 		log(`Error: ${error.message}`, "error")
 		process.exit(1)
 	}
-}
-
-// Export module functions
-module.exports = {
-	harmonizeDependencies,
 }

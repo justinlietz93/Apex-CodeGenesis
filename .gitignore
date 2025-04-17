@@ -25,3 +25,4 @@ logs/*
 reports/dependency-report.html
 
 workbench/*
+.dev/

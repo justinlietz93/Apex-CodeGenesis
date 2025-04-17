@@ -142,7 +142,12 @@ suite("attemptApiRequest Test Suite", () => {
 		const apiError = new Error("Simulated API Error")
 		task.api.createMessage.onFirstCall().returns(
 			(async function* () {
-				throw apiError
+				const throwError = () => {
+					throw apiError
+				}
+				throwError()
+				// This yield is technically unreachable but satisfies the require-yield rule
+				yield { type: "text", text: "unreachable" }
 			})(),
 		)
 		// Simulate successful call on retry
@@ -172,7 +177,12 @@ suite("attemptApiRequest Test Suite", () => {
 		const apiError = new Error("Simulated API Error")
 		task.api.createMessage.onFirstCall().returns(
 			(async function* () {
-				throw apiError
+				const throwError = () => {
+					throw apiError
+				}
+				throwError()
+				// This yield is technically unreachable but satisfies the require-yield rule
+				yield { type: "text", text: "unreachable" }
 			})(),
 		)
 		task.webviewCommunicator.ask.resolves({ response: "noButtonClicked" }) // User cancels retry

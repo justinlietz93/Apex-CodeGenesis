@@ -8,8 +8,8 @@ export function fixModelHtmlEscaping(text: string): string {
 		.replace(/&gt;/g, ">")
 		.replace(/&lt;/g, "<")
 		.replace(/&quot;/g, '"')
-		.replace(/&amp;/g, "&")
 		.replace(/&apos;/g, "'")
+		.replace(/&amp;/g, "&")
 }
 
 /**

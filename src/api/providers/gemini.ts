@@ -150,7 +150,11 @@ const functionDeclarations: FunctionDeclaration[] = [
 			properties: {
 				server_name: { type: SchemaType.STRING, description: "The name of the MCP server." },
 				tool_name: { type: SchemaType.STRING, description: "The name of the tool to execute." },
-				arguments: { type: SchemaType.OBJECT, description: "JSON object containing the tool's input parameters." }, // Note: Gemini might require a more specific schema here if possible, but OBJECT is a fallback.
+				arguments: {
+					type: SchemaType.OBJECT,
+					description: "JSON object containing the tool's input parameters.",
+					properties: {}, // Empty properties object to satisfy the type requirement
+				},
 			},
 			required: ["server_name", "tool_name", "arguments"],
 		},

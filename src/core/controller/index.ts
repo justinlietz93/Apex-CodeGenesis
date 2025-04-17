@@ -202,10 +202,11 @@ export class Controller {
 				case "optionsResponse":
 					await postMessage({ type: "invoke", invoke: "sendMessage", text: message.text })
 					break
-				case "selectImages":
+				case "selectImages": {
 					const images = await selectImages()
 					await postMessage({ type: "selectedImages", images })
 					break
+				}
 				case "taskFeedback":
 					if (message.feedbackType && this.task?.taskId) {
 						telemetryService.captureTaskFeedback(this.task.taskId, message.feedbackType)
@@ -259,7 +260,8 @@ export class Controller {
 					}
 					await postStateToWebview(this) // Use imported function
 					break
-				case "updateSettings": // This message type might need adjustment for profiles
+				case "updateSettings": {
+					// This message type might need adjustment for profiles
 					// API config is handled by "apiConfiguration" message
 					// Custom instructions are handled by "setActiveCustomInstruction" or library management messages
 					// Telemetry is global ("telemetrySetting" message)
@@ -297,13 +299,15 @@ export class Controller {
 					await postStateToWebview(this) // Use imported function
 					await postMessage({ type: "didUpdateSettings" })
 					break
-				case "openExtensionSettings":
+				}
+				case "openExtensionSettings": {
 					const settingsFilter = message.text || ""
 					await vscode.commands.executeCommand(
 						"workbench.action.openSettings",
 						`@ext:justinlietz93.apex-ide-codegenesis ${settingsFilter}`.trim(),
 					)
 					break
+				}
 				case "openSettings": // Likely intended to open the webview settings view
 					await postMessage({ type: "action", action: "settingsButtonClicked" })
 					break
@@ -396,7 +400,8 @@ export class Controller {
 						await postStateToWebview(this) // Update UI
 					}
 					break
-				case "setActiveCustomInstruction": // Sets the active instruction for the *current* profile
+				case "setActiveCustomInstruction": {
+					// Sets the active instruction for the *current* profile
 					const instructionId = message.text || null // Use null if text is empty/undefined
 					await updateActiveProfileSettings(this.context, { activeCustomInstructionId: instructionId })
 					// Update active task if necessary
@@ -409,13 +414,14 @@ export class Controller {
 					}
 					await postStateToWebview(this)
 					break
+				}
 
 				// Authentication
 				case "authStateChanged":
 					await setUserInfo(this, message.user || undefined) // Use imported function from auth-handler
 					await postStateToWebview(this) // Use imported function
 					break
-				case "accountLoginClicked":
+				case "accountLoginClicked": {
 					const nonce = crypto.randomBytes(32).toString("hex") // Now crypto is defined
 					await storeSecret(this.context, "justinlietz93.apex.authNonce", nonce)
 					const uriScheme = vscode.env.uriScheme
@@ -424,6 +430,7 @@ export class Controller {
 					)
 					vscode.env.openExternal(authUrl)
 					break
+				}
 				case "accountLogoutClicked":
 					await handleSignOut(this) // Use imported auth-handler
 					break
@@ -440,22 +447,25 @@ export class Controller {
 					break
 
 				// API Model Fetching (Delegated to api-helpers)
-				case "requestOllamaModels":
+				case "requestOllamaModels": {
 					const ollamaModels = await getOllamaModels(message.text) // Use imported api-helper
 					await postMessage({ type: "ollamaModels", ollamaModels })
 					break
-				case "requestLmStudioModels":
+				}
+				case "requestLmStudioModels": {
 					const lmStudioModels = await getLmStudioModels(message.text) // Use imported api-helper
 					await postMessage({ type: "lmStudioModels", lmStudioModels })
 					break
-				case "requestVsCodeLmModels":
+				}
+				case "requestVsCodeLmModels": {
 					const vsCodeLmModels = await getVsCodeLmModels() // Use imported api-helper
 					await postMessage({ type: "vsCodeLmModels", vsCodeLmModels })
 					break
+				}
 				case "refreshOpenRouterModels":
 					await refreshOpenRouterModels(this) // Use imported api-helper
 					break
-				case "refreshOpenAiModels":
+				case "refreshOpenAiModels": {
 					const { apiConfiguration: currentApiConfig } = await getAllExtensionState(this.context)
 					// Ensure currentApiConfig is not undefined before accessing properties
 					if (currentApiConfig) {
@@ -465,6 +475,7 @@ export class Controller {
 						console.warn("[Controller] Cannot refresh OpenAI models: No active API configuration found.")
 					}
 					break
+				}
 
 				// File/Resource Opening & Interaction (Delegated to misc-helpers and integrations/misc/open-file)
 				case "openImage":
@@ -521,15 +532,17 @@ export class Controller {
 						})
 					}
 					break
-				case "showMcpView":
+				case "showMcpView": {
 					await postMessage({ type: "action", action: "mcpButtonClicked" })
 					break
-				case "openMcpSettings":
+				}
+				case "openMcpSettings": {
 					const mcpSettingsFilePath = await this.mcpHub?.getMcpSettingsFilePath()
 					if (mcpSettingsFilePath) {
 						openFile(mcpSettingsFilePath)
 					}
 					break
+				}
 				case "fetchMcpMarketplace":
 					await fetchMcpMarketplace(this, message.bool) // Use imported mcp-handler
 					break
@@ -579,7 +592,7 @@ export class Controller {
 				case "checkIsImageUrl":
 					await checkIsImageUrl(this, message.text!) // Use imported misc-helper
 					break
-				case "searchCommits":
+				case "searchCommits": {
 					const cwd = vscode.workspace.workspaceFolders?.map((folder) => folder.uri.fsPath).at(0)
 					if (cwd) {
 						try {
@@ -590,11 +603,14 @@ export class Controller {
 						}
 					}
 					break
-				case "invoke": // Generic invoke for UI actions
+				}
+				case "invoke": {
+					// Generic invoke for UI actions
 					if (message.text) {
 						await postMessage({ type: "invoke", invoke: message.text as Invoke })
 					}
 					break
+				}
 				case "resetState": // Developer action
 					await this.resetState() // Keep resetState method on Controller for now
 					break

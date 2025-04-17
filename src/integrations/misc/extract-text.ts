@@ -20,7 +20,7 @@ export async function extractTextFromFile(filePath: string): Promise<string> {
 			return extractTextFromDOCX(filePath)
 		case ".ipynb":
 			return extractTextFromIPYNB(filePath)
-		default:
+		default: {
 			const isBinary = await isBinaryFile(filePath).catch(() => false)
 			if (!isBinary) {
 				// If file is over 300KB, throw an error
@@ -32,6 +32,7 @@ export async function extractTextFromFile(filePath: string): Promise<string> {
 			} else {
 				throw new Error(`Cannot read text for file type: ${fileExtension}`)
 			}
+		}
 	}
 }
 
