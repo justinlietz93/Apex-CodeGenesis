@@ -4,10 +4,10 @@
  * Provides common utility functions used across all Plutonium tools.
  */
 
-const { execSync } = require("child_process")
+import { execSync } from "child_process"
 
 // ANSI color codes for terminal output
-const colors = {
+export const colors = {
 	reset: "\x1b[0m",
 	bright: "\x1b[1m",
 	dim: "\x1b[2m",
@@ -38,7 +38,7 @@ const colors = {
 /**
  * Log formatted message to console
  */
-function log(message, level = "info") {
+export function log(message, level = "info") {
 	const prefix = {
 		info: `${colors.blue}ℹ${colors.reset}`,
 		success: `${colors.green}✓${colors.reset}`,
@@ -53,14 +53,14 @@ function log(message, level = "info") {
 /**
  * Display a heading
  */
-function heading(title) {
+export function heading(title) {
 	log(`\n${colors.bright}${colors.magenta}${title}${colors.reset}`, "heading")
 }
 
 /**
  * Run a command and return the output
  */
-function runCommand(command, options = {}) {
+export function runCommand(command, options = {}) {
 	const { silent = false } = options
 
 	try {
@@ -84,11 +84,4 @@ function runCommand(command, options = {}) {
 			return { success: false }
 		}
 	}
-}
-
-module.exports = {
-	colors,
-	log,
-	heading,
-	runCommand,
 }

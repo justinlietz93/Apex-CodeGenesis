@@ -132,7 +132,7 @@ async function parseFile(
 
 		// Apply the query to the AST and get the captures
 		// Captures are specific parts of the AST that match our query patterns, each capture represents a node in the AST that we're interested in.
-		const captures = query.captures(tree.rootNode)
+		const captures = query.captures(tree!.rootNode)
 
 		// Sort captures by their start position
 		captures.sort((a, b) => a.node.startPosition.row - b.node.startPosition.row)

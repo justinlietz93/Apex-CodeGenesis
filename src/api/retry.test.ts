@@ -56,6 +56,7 @@ describe("Retry Decorator", () => {
 				async *failMethod() {
 					callCount++
 					throw new Error("Regular error")
+					yield "unreachable" // Satisfy require-yield rule
 				}
 			}
 
@@ -198,6 +199,7 @@ describe("Retry Decorator", () => {
 					const error: any = new Error("Rate limit exceeded")
 					error.status = 429
 					throw error
+					yield "unreachable" // Satisfy require-yield rule
 				}
 			}
 

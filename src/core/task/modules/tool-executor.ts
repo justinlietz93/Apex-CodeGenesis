@@ -121,10 +121,11 @@ export class ToolExecutor {
 					// This tool signals the end of the task loop.
 					return await executeAttemptCompletionTool(this.task, params)
 
-				default:
+				default: {
 					// Handle unknown tool names gracefully
 					const exhaustiveCheck: never = toolName
 					return formatResponse.toolError(`Unknown tool name: ${exhaustiveCheck}`)
+				}
 			}
 		} catch (error: any) {
 			console.error(`Error executing tool ${toolName}:`, error)

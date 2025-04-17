@@ -164,7 +164,7 @@ export class CheckpointManager {
 		if (!didWorkspaceRestoreFail) {
 			switch (restoreType) {
 				case "task":
-				case "taskAndWorkspace":
+				case "taskAndWorkspace": {
 					// Use stateManager to update history
 					await this.task.stateManager.restoreHistoryToMessage(messageIndex, message)
 
@@ -184,6 +184,7 @@ export class CheckpointManager {
 						} satisfies ApexApiReqInfo),
 					)
 					break
+				}
 				case "workspace":
 					break
 			}

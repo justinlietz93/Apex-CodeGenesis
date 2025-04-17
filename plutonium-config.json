@@ -1,0 +1,48 @@
+{
+	"paths": {
+		"javascript": {
+			"main": "package.json",
+			"webview": "webview-ui/package.json"
+		},
+		"python": {
+			"requirements": "python_backend/requirements.txt"
+		}
+	},
+	"crossLanguageMappings": {
+		"anthropic": {
+			"jsPackage": "@anthropic-ai/sdk",
+			"pythonPackage": "anthropic",
+			"versionMap": {
+				"0.39.0": "0.39.0"
+			}
+		},
+		"google-genai": {
+			"jsPackage": "@google/generative-ai",
+			"pythonPackage": "google-genai",
+			"versionMap": {
+				"0.24.0": "1.11.0"
+			}
+		},
+		"openai": {
+			"jsPackage": "openai",
+			"pythonPackage": "openai",
+			"versionMap": {
+				"4.95.0": "1.75.0"
+			}
+		},
+		"ollama": {
+			"jsPackage": "ollama",
+			"pythonPackage": "ollama",
+			"versionMap": {
+				"0.5.15": "0.4.8"
+			}
+		}
+	},
+	"scriptFixer": {
+		"maxLineLength": 500,
+		"autoFix": {
+			"eslintConfig": true,
+			"testDirConflicts": true
+		}
+	}
+}

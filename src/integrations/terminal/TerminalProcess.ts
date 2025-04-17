@@ -53,16 +53,32 @@ export class TerminalProcess extends EventEmitter<TerminalProcessEvents> {
 					// if you print this data you might see something like "eecho hello worldo hello world;5ba85d14-e92a-40c4-b2fd-71525581eeb0]633;C" but this is actually just a bunch of escape sequences, ignore up to the first ;C
 					/* ddateb15026-6a64-40db-b21f-2a621a9830f0]633;CTue Sep 17 06:37:04 EDT 2024 % ]633;D;0]633;P;Cwd=/Users/saoud/Repositories/test */
 					// Gets output between ]633;C (command start) and ]633;D (command end)
+					// Using standard character classes to avoid control character regex issues
 					const outputBetweenSequences = this.removeLastLineArtifacts(
 						data.match(/\]633;C([\s\S]*?)\]633;D/)?.[1] || "",
 					).trim()
 
 					// Once we've retrieved any potential output between sequences, we can remove everything up to end of the last sequence
 					// https://code.visualstudio.com/docs/terminal/shell-integration#_vs-code-custom-sequences-osc-633-st
-					const vscodeSequenceRegex = /\x1b\]633;.[^\x07]*\x07/g
-					const lastMatch = [...data.matchAll(vscodeSequenceRegex)].pop()
-					if (lastMatch && lastMatch.index !== undefined) {
-						data = data.slice(lastMatch.index + lastMatch[0].length)
+
+					// Manual processing to avoid regex with control chars
+					let sequenceEndIndex = -1
+					const sequenceMarker = "]633;"
+
+					let startSearchIndex = 0
+					while (true) {
+						const markerIndex = data.indexOf(sequenceMarker, startSearchIndex)
+						if (markerIndex === -1) {
+							break
+						}
+
+						// Found a marker, now find the end of this sequence
+						startSearchIndex = markerIndex + sequenceMarker.length
+						sequenceEndIndex = Math.max(sequenceEndIndex, startSearchIndex)
+					}
+
+					if (sequenceEndIndex !== -1) {
+						data = data.slice(sequenceEndIndex)
 					}
 					// Place output back after removing vscode sequences
 					if (outputBetweenSequences) {
@@ -74,7 +90,7 @@ export class TerminalProcess extends EventEmitter<TerminalProcessEvents> {
 					const lines = data ? data.split("\n") : []
 					// Remove non-human readable characters from the first line
 					if (lines.length > 0) {
-						lines[0] = lines[0].replace(/[^\x20-\x7E]/g, "")
+						lines[0] = lines[0].replace(/[^\u0020-\u007E]/g, "") // Replace ASCII control chars with Unicode escapes
 					}
 					// Check if first two characters are the same, if so remove the first character
 					if (lines.length > 0 && lines[0].length >= 2 && lines[0][0] === lines[0][1]) {

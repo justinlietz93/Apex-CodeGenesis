@@ -275,23 +275,34 @@ export class ApiToolProcessor {
 		if (typeof result === "string") {
 			return [{ type: "text", text: result || "(No output)" }]
 		} else {
-			// Add type annotation for the parameter 'b' in the filter callback
-			return result
-				.map((resBlock) => {
-					if (resBlock.type === "text") {
-						return { type: "text", text: resBlock.text }
-					} else if (resBlock.type === "image" && resBlock.source) {
-						// Use Anthropic.Messages.ImageBlockParam.Source type explicitly
-						const source: Anthropic.Messages.ImageBlockParam.Source = {
-							type: resBlock.source.type,
-							media_type: resBlock.source.media_type,
-							data: resBlock.source.data,
-						}
-						return { type: "image", source: source }
+			// Create properly typed array with no nulls
+			const contentBlocks: Array<Anthropic.TextBlockParam | Anthropic.ImageBlockParam> = []
+
+			for (const resBlock of result) {
+				if (resBlock.type === "text") {
+					contentBlocks.push({ type: "text", text: resBlock.text })
+				} else if (resBlock.type === "image" && resBlock.source) {
+					// Check if source has required properties
+					if ("media_type" in resBlock.source && "data" in resBlock.source) {
+						contentBlocks.push({
+							type: "image",
+							source: {
+								type: resBlock.source.type,
+								media_type: resBlock.source.media_type,
+								data: resBlock.source.data,
+							},
+						})
+					} else {
+						// Add a fallback text block for invalid image sources
+						contentBlocks.push({
+							type: "text",
+							text: "[ERROR: Image source missing required properties]",
+						})
 					}
-					return null // Should filter out nulls
-				})
-				.filter((b): b is Anthropic.TextBlockParam | Anthropic.ImageBlockParam => b !== null)
+				}
+			}
+
+			return contentBlocks
 		}
 	}
 }

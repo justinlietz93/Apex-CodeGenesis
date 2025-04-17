@@ -52,10 +52,11 @@ export async function executeBrowserActionTool(
 			case "close":
 				result = await task.browserSession.closeBrowser()
 				break
-			default:
+			default: {
 				// Ensure exhaustive check for BrowserAction type
 				const exhaustiveCheck: never = action
 				return formatResponse.toolError(`Unhandled browser action: ${exhaustiveCheck}`)
+			}
 		}
 		// Use the placeholder formatter from responses.ts
 		return formatResponse.formatBrowserActionResult(result)

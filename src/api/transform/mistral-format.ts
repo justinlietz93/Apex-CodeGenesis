@@ -30,11 +30,19 @@ export function convertToMistralMessages(anthropicMessages: Anthropic.Messages.M
 						role: "user",
 						content: textAndImageBlocks.map((part) => {
 							if (part.type === "image") {
+								// Use type guards to safely access properties
+								if ("media_type" in part.source && "data" in part.source) {
+									return {
+										type: "image_url",
+										imageUrl: {
+											url: `data:${part.source.media_type};base64,${part.source.data}`,
+										},
+									}
+								}
+								// Fallback in case properties are missing
 								return {
-									type: "image_url",
-									imageUrl: {
-										url: `data:${part.source.media_type};base64,${part.source.data}`,
-									},
+									type: "text",
+									text: "[ERROR: Image source missing required properties]",
 								}
 							}
 							return { type: "text", text: part.text }

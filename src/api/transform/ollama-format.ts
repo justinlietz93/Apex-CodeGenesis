@@ -40,8 +40,12 @@ export function convertToOllamaMessages(anthropicMessages: Anthropic.Messages.Me
 							toolMessage.content
 								?.map((part) => {
 									if (part.type === "image") {
-										toolResultImages.push(`data:${part.source.media_type};base64,${part.source.data}`)
-										return "(see following user message for image)"
+										// Add type guard for media_type and data properties
+										if ("media_type" in part.source && "data" in part.source) {
+											toolResultImages.push(`data:${part.source.media_type};base64,${part.source.data}`)
+											return "(see following user message for image)"
+										}
+										return "(image could not be processed: missing required properties)"
 									}
 									return part.text
 								})
@@ -61,7 +65,11 @@ export function convertToOllamaMessages(anthropicMessages: Anthropic.Messages.Me
 						content: nonToolMessages
 							.map((part) => {
 								if (part.type === "image") {
-									return `data:${part.source.media_type};base64,${part.source.data}`
+									// Add type guard for media_type and data properties
+									if ("media_type" in part.source && "data" in part.source) {
+										return `data:${part.source.media_type};base64,${part.source.data}`
+									}
+									return "(image could not be processed: missing required properties)"
 								}
 								return part.text
 							})

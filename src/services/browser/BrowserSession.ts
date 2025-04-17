@@ -1,7 +1,7 @@
 import * as vscode from "vscode"
 import * as fs from "fs/promises"
 import * as path from "path"
-import { Browser, Page, ScreenshotOptions, TimeoutError, launch } from "puppeteer-core"
+import puppeteerCore, { Browser, Page, ScreenshotOptions, TimeoutError, launch } from "puppeteer-core"
 // @ts-ignore
 import PCR from "puppeteer-chromium-resolver"
 import pWaitFor from "p-wait-for"
@@ -47,7 +47,7 @@ export class BrowserSession {
 			throw new Error(`Chrome executable not found at path: ${chromeExecutablePath}`)
 		}
 		const stats: PCRStats = chromeExecutablePath
-			? { puppeteer: require("puppeteer-core"), executablePath: chromeExecutablePath }
+			? { puppeteer: puppeteerCore, executablePath: chromeExecutablePath }
 			: // if chromium doesn't exist, this will download it to path.join(puppeteerDir, ".chromium-browser-snapshots")
 				// if it does exist it will return the path to existing chromium
 				await PCR({ downloadPath: puppeteerDir })

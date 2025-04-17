@@ -162,7 +162,8 @@ const extensionConfig = {
 			name: "alias-plugin",
 			setup(build) {
 				build.onResolve({ filter: /^pkce-challenge$/ }, (args) => {
-					return { path: require.resolve("pkce-challenge/dist/index.browser.js") }
+					// Use index.js file to avoid the exports map issue
+					return { path: require.resolve("pkce-challenge") }
 				})
 			},
 		},

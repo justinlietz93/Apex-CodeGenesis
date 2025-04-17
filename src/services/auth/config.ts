@@ -1,10 +1,13 @@
-// Public Firebase config (safe for open source)
-export const firebaseConfig = {
-	apiKey: "AIzaSyDcXAaanNgR2_T0dq2oOl5XyKPksYHppVo",
-	authDomain: "apex-bot.firebaseapp.com",
-	projectId: "apex-bot",
-	storageBucket: "apex-bot.firebasestorage.app",
-	messagingSenderId: "364369702101",
-	appId: "1:364369702101:web:0013885dcf20b43799c65c",
-	measurementId: "G-MDPRELSCD1",
+// Local auth configuration
+export const localAuthConfig = {
+	// Storage keys used for local authentication
+	USER_STORAGE_KEY: "justinlietz93.apex.localUser",
+	AUTH_STATE_KEY: "justinlietz93.apex.authState",
+
+	// Default profile settings (used when creating a new profile)
+	defaultProfile: {
+		displayName: "Local User",
+		email: "local@example.com",
+		photoURL: null,
+	},
 }

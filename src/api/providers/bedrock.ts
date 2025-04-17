@@ -108,7 +108,7 @@ export class AwsBedrockHandler implements ApiHandler {
 
 		for await (const chunk of stream) {
 			switch (chunk.type) {
-				case "message_start":
+				case "message_start": {
 					const usage = chunk.message.usage
 					yield {
 						type: "usage",
@@ -118,6 +118,7 @@ export class AwsBedrockHandler implements ApiHandler {
 						cacheReadTokens: usage.cache_read_input_tokens || undefined,
 					}
 					break
+				}
 				case "message_delta":
 					yield {
 						type: "usage",
@@ -125,15 +126,16 @@ export class AwsBedrockHandler implements ApiHandler {
 						outputTokens: chunk.usage.output_tokens || 0,
 					}
 					break
-				case "content_block_start":
+				case "content_block_start": {
 					switch (chunk.content_block.type) {
-						case "thinking":
+						case "thinking": {
 							yield {
 								type: "reasoning",
 								reasoning: chunk.content_block.thinking || "",
 							}
 							break
-						case "redacted_thinking":
+						}
+						case "redacted_thinking": {
 							// Handle redacted thinking blocks - we still mark it as reasoning
 							// but note that the content is encrypted
 							yield {
@@ -141,7 +143,8 @@ export class AwsBedrockHandler implements ApiHandler {
 								reasoning: "[Redacted thinking block]",
 							}
 							break
-						case "text":
+						}
+						case "text": {
 							if (chunk.index > 0) {
 								yield {
 									type: "text",
@@ -153,24 +156,29 @@ export class AwsBedrockHandler implements ApiHandler {
 								text: chunk.content_block.text,
 							}
 							break
+						}
 					}
 					break
-				case "content_block_delta":
+				}
+				case "content_block_delta": {
 					switch (chunk.delta.type) {
-						case "thinking_delta":
+						case "thinking_delta": {
 							yield {
 								type: "reasoning",
 								reasoning: chunk.delta.thinking,
 							}
 							break
-						case "text_delta":
+						}
+						case "text_delta": {
 							yield {
 								type: "text",
 								text: chunk.delta.text,
 							}
 							break
+						}
 					}
 					break
+				}
 			}
 		}
 	}
@@ -260,15 +268,19 @@ export class AwsBedrockHandler implements ApiHandler {
 		if (this.options.awsUseCrossRegionInference) {
 			const regionPrefix = this.getRegion().slice(0, 3)
 			switch (regionPrefix) {
-				case "us-":
+				case "us-": {
 					return `us.${this.getModel().id}`
-				case "eu-":
+				}
+				case "eu-": {
 					return `eu.${this.getModel().id}`
-				case "ap-":
+				}
+				case "ap-": {
 					return `apac.${this.getModel().id}`
-				default:
+				}
+				default: {
 					// cross region inference is not supported in this region, falling back to default model
 					return this.getModel().id
+				}
 			}
 		}
 		return this.getModel().id
@@ -616,7 +628,8 @@ export class AwsBedrockHandler implements ApiHandler {
 							let format = "jpeg" // default format
 
 							// Extract format from media_type if available
-							if (item.source.media_type) {
+							// Check for media_type property with type guard
+							if ("media_type" in item.source && item.source.media_type) {
 								// Extract format from media_type (e.g., "image/jpeg" -> "jpeg")
 								const formatMatch = item.source.media_type.match(/image\/(\w+)/)
 								if (formatMatch && formatMatch[1]) {
@@ -630,11 +643,11 @@ export class AwsBedrockHandler implements ApiHandler {
 
 							// Get image data
 							try {
-								if (typeof item.source.data === "string") {
+								if ("data" in item.source && typeof item.source.data === "string") {
 									// Handle base64 encoded data
 									const base64Data = item.source.data.replace(/^data:image\/\w+;base64,/, "")
 									imageData = new Uint8Array(Buffer.from(base64Data, "base64"))
-								} else if (item.source.data && typeof item.source.data === "object") {
+								} else if ("data" in item.source && item.source.data && typeof item.source.data === "object") {
 									// Try to convert to Uint8Array
 									imageData = new Uint8Array(Buffer.from(item.source.data as any))
 								} else {

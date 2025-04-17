@@ -30,16 +30,16 @@ function asObjectSafe(value: any): object {
 
 export function convertToVsCodeLmMessages(
 	anthropicMessages: Anthropic.Messages.MessageParam[],
-): vscode.LanguageModelChatMessage[] {
-	const vsCodeLmMessages: vscode.LanguageModelChatMessage[] = []
+): vscode.ApexLanguageModelChatMessage[] {
+	const vsCodeLmMessages: vscode.ApexLanguageModelChatMessage[] = []
 
 	for (const anthropicMessage of anthropicMessages) {
 		// Handle simple string messages
 		if (typeof anthropicMessage.content === "string") {
 			vsCodeLmMessages.push(
 				anthropicMessage.role === "assistant"
-					? vscode.LanguageModelChatMessage.Assistant(anthropicMessage.content)
-					: vscode.LanguageModelChatMessage.User(anthropicMessage.content),
+					? vscode.ApexLanguageModelChatMessage.Assistant(anthropicMessage.content)
+					: vscode.ApexLanguageModelChatMessage.User(anthropicMessage.content),
 			)
 			continue
 		}
@@ -67,34 +67,48 @@ export function convertToVsCodeLmMessages(
 					// Convert tool messages to ToolResultParts
 					...toolMessages.map((toolMessage) => {
 						// Process tool result content into TextParts
-						const toolContentParts: vscode.LanguageModelTextPart[] =
+						const toolContentParts: vscode.ApexLanguageModelTextPart[] =
 							typeof toolMessage.content === "string"
-								? [new vscode.LanguageModelTextPart(toolMessage.content)]
+								? [new vscode.ApexLanguageModelTextPart(toolMessage.content)]
 								: (toolMessage.content?.map((part) => {
 										if (part.type === "image") {
-											return new vscode.LanguageModelTextPart(
-												`[Image (${part.source?.type || "Unknown source-type"}): ${part.source?.media_type || "unknown media-type"} not supported by VSCode LM API]`,
+											// Add type guard for media_type property
+											const mediaType =
+												part.source && "media_type" in part.source
+													? part.source.media_type
+													: "unknown media-type"
+
+											return new vscode.ApexLanguageModelTextPart(
+												`[Image (${part.source?.type || "Unknown source-type"}): ${mediaType} not supported by VSCode LM API]`,
 											)
 										}
-										return new vscode.LanguageModelTextPart(part.text)
-									}) ?? [new vscode.LanguageModelTextPart("")])
+										return new vscode.ApexLanguageModelTextPart(part.text)
+									}) ?? [new vscode.ApexLanguageModelTextPart("")])
 
-						return new vscode.LanguageModelToolResultPart(toolMessage.tool_use_id, toolContentParts)
+						// We need to add a wrapper for the toolResult case
+						return {
+							callId: toolMessage.tool_use_id,
+							content: toolContentParts,
+						}
 					}),
 
 					// Convert non-tool messages to TextParts after tool messages
 					...nonToolMessages.map((part) => {
 						if (part.type === "image") {
-							return new vscode.LanguageModelTextPart(
-								`[Image (${part.source?.type || "Unknown source-type"}): ${part.source?.media_type || "unknown media-type"} not supported by VSCode LM API]`,
+							// Add type guard for media_type property
+							const mediaType =
+								part.source && "media_type" in part.source ? part.source.media_type : "unknown media-type"
+
+							return new vscode.ApexLanguageModelTextPart(
+								`[Image (${part.source?.type || "Unknown source-type"}): ${mediaType} not supported by VSCode LM API]`,
 							)
 						}
-						return new vscode.LanguageModelTextPart(part.text)
+						return new vscode.ApexLanguageModelTextPart(part.text)
 					}),
 				]
 
 				// Add single user message with all content parts
-				vsCodeLmMessages.push(vscode.LanguageModelChatMessage.User(contentParts))
+				vsCodeLmMessages.push(vscode.ApexLanguageModelChatMessage.User(contentParts))
 				break
 			}
 
@@ -119,7 +133,7 @@ export function convertToVsCodeLmMessages(
 					// Convert tool messages to ToolCallParts first
 					...toolMessages.map(
 						(toolMessage) =>
-							new vscode.LanguageModelToolCallPart(
+							new vscode.ApexLanguageModelToolCallPart(
 								toolMessage.id,
 								toolMessage.name,
 								asObjectSafe(toolMessage.input),
@@ -129,14 +143,14 @@ export function convertToVsCodeLmMessages(
 					// Convert non-tool messages to TextParts after tool messages
 					...nonToolMessages.map((part) => {
 						if (part.type === "image") {
-							return new vscode.LanguageModelTextPart("[Image generation not supported by VSCode LM API]")
+							return new vscode.ApexLanguageModelTextPart("[Image generation not supported by VSCode LM API]")
 						}
-						return new vscode.LanguageModelTextPart(part.text)
+						return new vscode.ApexLanguageModelTextPart(part.text)
 					}),
 				]
 
 				// Add the assistant message to the list of messages
-				vsCodeLmMessages.push(vscode.LanguageModelChatMessage.Assistant(contentParts))
+				vsCodeLmMessages.push(vscode.ApexLanguageModelChatMessage.Assistant(contentParts))
 				break
 			}
 		}
@@ -145,11 +159,12 @@ export function convertToVsCodeLmMessages(
 	return vsCodeLmMessages
 }
 
-export function convertToAnthropicRole(vsCodeLmMessageRole: vscode.LanguageModelChatMessageRole): string | null {
+// Convert vscode role (1 or 2) to Anthropic role string
+export function convertToAnthropicRole(vsCodeLmMessageRole: 1 | 2): string | null {
 	switch (vsCodeLmMessageRole) {
-		case vscode.LanguageModelChatMessageRole.Assistant:
+		case 2: // Assistant
 			return "assistant"
-		case vscode.LanguageModelChatMessageRole.User:
+		case 1: // User
 			return "user"
 		default:
 			return null
@@ -157,7 +172,7 @@ export function convertToAnthropicRole(vsCodeLmMessageRole: vscode.LanguageModel
 }
 
 export async function convertToAnthropicMessage(
-	vsCodeLmMessage: vscode.LanguageModelChatMessage,
+	vsCodeLmMessage: vscode.ApexLanguageModelChatMessage,
 ): Promise<Anthropic.Messages.Message> {
 	const anthropicRole: string | null = convertToAnthropicRole(vsCodeLmMessage.role)
 	if (anthropicRole !== "assistant") {
@@ -171,7 +186,7 @@ export async function convertToAnthropicMessage(
 		role: anthropicRole,
 		content: vsCodeLmMessage.content
 			.map((part): Anthropic.ContentBlock | null => {
-				if (part instanceof vscode.LanguageModelTextPart) {
+				if (part instanceof vscode.ApexLanguageModelTextPart) {
 					return {
 						type: "text",
 						text: part.value,
@@ -179,7 +194,7 @@ export async function convertToAnthropicMessage(
 					}
 				}
 
-				if (part instanceof vscode.LanguageModelToolCallPart) {
+				if (part instanceof vscode.ApexLanguageModelToolCallPart) {
 					return {
 						type: "tool_use",
 						id: part.callId || crypto.randomUUID(),

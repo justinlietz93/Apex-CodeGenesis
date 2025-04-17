@@ -7,50 +7,17 @@ import { convertToVsCodeLmMessages } from "../transform/vscode-lm-format"
 import { SELECTOR_SEPARATOR, stringifyVsCodeLmModelSelector } from "../../shared/vsCodeSelectorUtils"
 import { ApiHandlerOptions, ModelInfo, openAiModelInfoSaneDefaults } from "../../shared/api"
 
-// Apex does not update VSCode type definitions or engine requirements to maintain compatibility.
-// This declaration (as seen in src/integrations/TerminalManager.ts) provides types for the Language Model API in newer versions of VSCode.
-// Extracted from https://github.com/microsoft/vscode/blob/131ee0ef660d600cd0a7e6058375b281553abe20/src/vscode-dts/vscode.d.ts
+// Add extension to the vscode namespace with prefixed types to avoid conflicts
 declare module "vscode" {
-	enum LanguageModelChatMessageRole {
-		User = 1,
-		Assistant = 2,
-	}
-	enum LanguageModelChatToolMode {
-		Auto = 1,
-		Required = 2,
-	}
-	interface LanguageModelChatSelector {
+	// These interfaces are meant to be used with the vscode.lm module
+	interface ApexLanguageModelChatSelector {
 		vendor?: string
 		family?: string
 		version?: string
 		id?: string
 	}
-	interface LanguageModelChatTool {
-		name: string
-		description: string
-		inputSchema?: object
-	}
-	interface LanguageModelChatRequestOptions {
-		justification?: string
-		modelOptions?: { [name: string]: any }
-		tools?: LanguageModelChatTool[]
-		toolMode?: LanguageModelChatToolMode
-	}
-	class LanguageModelTextPart {
-		value: string
-		constructor(value: string)
-	}
-	class LanguageModelToolCallPart {
-		callId: string
-		name: string
-		input: object
-		constructor(callId: string, name: string, input: object)
-	}
-	interface LanguageModelChatResponse {
-		stream: AsyncIterable<LanguageModelTextPart | LanguageModelToolCallPart | unknown>
-		text: AsyncIterable<string>
-	}
-	interface LanguageModelChat {
+
+	interface ApexLanguageModelChat {
 		readonly name: string
 		readonly id: string
 		readonly vendor: string
@@ -59,43 +26,48 @@ declare module "vscode" {
 		readonly maxInputTokens: number
 
 		sendRequest(
-			messages: LanguageModelChatMessage[],
-			options?: LanguageModelChatRequestOptions,
+			messages: ApexLanguageModelChatMessage[],
+			options?: {
+				justification?: string
+				modelOptions?: { [name: string]: any }
+				tools?: { name: string; description: string; inputSchema?: object }[]
+				toolMode?: 1 | 2 // 1 = Auto, 2 = Required
+			},
 			token?: CancellationToken,
-		): Thenable<LanguageModelChatResponse>
-		countTokens(text: string | LanguageModelChatMessage, token?: CancellationToken): Thenable<number>
+		): Thenable<{
+			stream: AsyncIterable<any> // Will handle type checking in the usage code
+			text: AsyncIterable<string>
+		}>
+
+		countTokens(text: string | ApexLanguageModelChatMessage, token?: CancellationToken): Thenable<number>
 	}
-	class LanguageModelPromptTsxPart {
-		value: unknown
-		constructor(value: unknown)
+
+	class ApexLanguageModelChatMessage {
+		static User(content: string | any[], name?: string): ApexLanguageModelChatMessage
+		static Assistant(content: string | any[], name?: string): ApexLanguageModelChatMessage
+
+		role: 1 | 2 // 1 = User, 2 = Assistant
+		content: any[] // Will handle type checking in the usage code
+		name?: string
+
+		constructor(role: 1 | 2, content: string | any[], name?: string)
 	}
-	class LanguageModelToolResultPart {
+
+	class ApexLanguageModelTextPart {
+		value: string
+		constructor(value: string)
+	}
+
+	class ApexLanguageModelToolCallPart {
 		callId: string
-		content: Array<LanguageModelTextPart | LanguageModelPromptTsxPart | unknown>
-		constructor(callId: string, content: Array<LanguageModelTextPart | LanguageModelPromptTsxPart | unknown>)
+		name: string
+		input: object
+		constructor(callId: string, name: string, input: object)
 	}
-	class LanguageModelChatMessage {
-		static User(
-			content: string | Array<LanguageModelTextPart | LanguageModelToolResultPart>,
-			name?: string,
-		): LanguageModelChatMessage
-		static Assistant(
-			content: string | Array<LanguageModelTextPart | LanguageModelToolCallPart>,
-			name?: string,
-		): LanguageModelChatMessage
 
-		role: LanguageModelChatMessageRole
-		content: Array<LanguageModelTextPart | LanguageModelToolResultPart | LanguageModelToolCallPart>
-		name: string | undefined
-
-		constructor(
-			role: LanguageModelChatMessageRole,
-			content: string | Array<LanguageModelTextPart | LanguageModelToolResultPart | LanguageModelToolCallPart>,
-			name?: string,
-		)
-	}
+	// Namespace for language model functionality
 	namespace lm {
-		function selectChatModels(selector?: LanguageModelChatSelector): Thenable<LanguageModelChat[]>
+		function selectChatModels(selector?: ApexLanguageModelChatSelector): Thenable<ApexLanguageModelChat[]>
 	}
 }
 
@@ -128,7 +100,7 @@ declare module "vscode" {
  */
 export class VsCodeLmHandler implements ApiHandler, SingleCompletionHandler {
 	private options: ApiHandlerOptions
-	private client: vscode.LanguageModelChat | null
+	private client: vscode.ApexLanguageModelChat | null
 	private disposable: vscode.Disposable | null
 	private currentRequestCancellation: vscode.CancellationTokenSource | null
 
@@ -177,7 +149,7 @@ export class VsCodeLmHandler implements ApiHandler, SingleCompletionHandler {
 	 * const selector = { vendor: "copilot", family: "gpt-4o" };
 	 * const chatClient = await createClient(selector);
 	 */
-	async createClient(selector: vscode.LanguageModelChatSelector): Promise<vscode.LanguageModelChat> {
+	async createClient(selector: vscode.ApexLanguageModelChatSelector): Promise<vscode.ApexLanguageModelChat> {
 		try {
 			const models = await vscode.lm.selectChatModels(selector)
 
@@ -198,7 +170,7 @@ export class VsCodeLmHandler implements ApiHandler, SingleCompletionHandler {
 					// Provide a minimal implementation
 					return {
 						stream: (async function* () {
-							yield new vscode.LanguageModelTextPart(
+							yield new vscode.ApexLanguageModelTextPart(
 								"Language model functionality is limited. Please check VS Code configuration.",
 							)
 						})(),
@@ -242,7 +214,7 @@ export class VsCodeLmHandler implements ApiHandler, SingleCompletionHandler {
 		}
 	}
 
-	private async countTokens(text: string | vscode.LanguageModelChatMessage): Promise<number> {
+	private async countTokens(text: string | vscode.ApexLanguageModelChatMessage): Promise<number> {
 		// Check for required dependencies
 		if (!this.client) {
 			console.warn("Apex <Language Model API>: No client available for token counting")
@@ -266,7 +238,7 @@ export class VsCodeLmHandler implements ApiHandler, SingleCompletionHandler {
 
 			if (typeof text === "string") {
 				tokenCount = await this.client.countTokens(text, this.currentRequestCancellation.token)
-			} else if (text instanceof vscode.LanguageModelChatMessage) {
+			} else if (text instanceof vscode.ApexLanguageModelChatMessage) {
 				// For chat messages, ensure we have content
 				if (!text.content || (Array.isArray(text.content) && text.content.length === 0)) {
 					console.debug("Apex <Language Model API>: Empty chat message content")
@@ -311,7 +283,7 @@ export class VsCodeLmHandler implements ApiHandler, SingleCompletionHandler {
 
 	private async calculateTotalInputTokens(
 		systemPrompt: string,
-		vsCodeLmMessages: vscode.LanguageModelChatMessage[],
+		vsCodeLmMessages: vscode.ApexLanguageModelChatMessage[],
 	): Promise<number> {
 		const systemTokens: number = await this.countTokens(systemPrompt)
 
@@ -328,7 +300,7 @@ export class VsCodeLmHandler implements ApiHandler, SingleCompletionHandler {
 		}
 	}
 
-	private async getClient(): Promise<vscode.LanguageModelChat> {
+	private async getClient(): Promise<vscode.ApexLanguageModelChat> {
 		if (!this.client) {
 			console.debug("Apex <Language Model API>: Getting client with options:", {
 				vsCodeLmModelSelector: this.options.vsCodeLmModelSelector,
@@ -362,27 +334,27 @@ export class VsCodeLmHandler implements ApiHandler, SingleCompletionHandler {
 				.replace(/\r\n/g, "\n")
 				.replace(/\r/g, "\n")
 
-				// Remove ANSI escape sequences
-				.replace(/\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])/g, "") // Full set of ANSI sequences
+				// Remove ANSI escape sequences (using escaped representation to avoid control character in regex)
+				.replace(/\\u001b(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])/g, "") // Full set of ANSI sequences
 				.replace(/\x9B[0-?]*[ -/]*[@-~]/g, "") // CSI sequences
 
 				// Remove terminal title setting sequences and other OSC sequences
-				.replace(/\x1B\][0-9;]*(?:\x07|\x1B\\)/g, "")
+				.replace(/\\u001b\][0-9;]*(?:\\u0007|\\u001b\\)/g, "")
 
-				// Remove control characters
-				.replace(/[\x00-\x09\x0B-\x0C\x0E-\x1F\x7F]/g, "")
+				// Only keep printable ASCII characters and spaces
+				.replace(/[^\x20-\x7E ]/g, "") // Avoid using control character escape sequences
 
 				// Remove VS Code escape sequences
-				.replace(/\x1B[PD].*?\x1B\\/g, "") // DCS sequences
-				.replace(/\x1B_.*?\x1B\\/g, "") // APC sequences
-				.replace(/\x1B\^.*?\x1B\\/g, "") // PM sequences
-				.replace(/\x1B\[[\d;]*[HfABCDEFGJKST]/g, "") // Cursor movement and clear screen
+				.replace(/\\u001b[PD].*?\\u001b\\/g, "") // DCS sequences
+				.replace(/\\u001b_.*?\\u001b\\/g, "") // APC sequences
+				.replace(/\\u001b\^.*?\\u001b\\/g, "") // PM sequences
+				.replace(/\\u001b\[[\d;]*[HfABCDEFGJKST]/g, "") // Cursor movement and clear screen
 
 				// Remove Windows paths and service information
 				.replace(/^(?:PS )?[A-Z]:\\[^\n]*$/gm, "")
 				.replace(/^;?Cwd=.*$/gm, "")
 
-				// Clean escaped sequences
+				// Clean escaped sequences - using string literals instead of regex with control chars
 				.replace(/\\x[0-9a-fA-F]{2}/g, "")
 				.replace(/\\u[0-9a-fA-F]{4}/g, "")
 
@@ -419,7 +391,7 @@ export class VsCodeLmHandler implements ApiHandler, SingleCompletionHandler {
 	async *createMessage(systemPrompt: string, messages: Anthropic.Messages.MessageParam[]): ApiStream {
 		// Ensure clean state before starting a new request
 		this.ensureCleanState()
-		const client: vscode.LanguageModelChat = await this.getClient()
+		const client: vscode.ApexLanguageModelChat = await this.getClient()
 
 		// Clean system prompt and messages
 		const cleanedSystemPrompt = this.cleanTerminalOutput(systemPrompt)
@@ -429,8 +401,8 @@ export class VsCodeLmHandler implements ApiHandler, SingleCompletionHandler {
 		}))
 
 		// Convert Anthropic messages to VS Code LM messages
-		const vsCodeLmMessages: vscode.LanguageModelChatMessage[] = [
-			vscode.LanguageModelChatMessage.Assistant(cleanedSystemPrompt),
+		const vsCodeLmMessages: vscode.ApexLanguageModelChatMessage[] = [
+			vscode.ApexLanguageModelChatMessage.Assistant(cleanedSystemPrompt),
 			...convertToVsCodeLmMessages(cleanedMessages),
 		]
 
@@ -445,22 +417,18 @@ export class VsCodeLmHandler implements ApiHandler, SingleCompletionHandler {
 
 		try {
 			// Create the response stream with minimal required options
-			const requestOptions: vscode.LanguageModelChatRequestOptions = {
+			const requestOptions = {
 				justification: `Apex would like to use '${client.name}' from '${client.vendor}', Click 'Allow' to proceed.`,
 			}
 
 			// Note: Tool support is currently provided by the VSCode Language Model API directly
 			// Extensions can register tools using vscode.lm.registerTool()
 
-			const response: vscode.LanguageModelChatResponse = await client.sendRequest(
-				vsCodeLmMessages,
-				requestOptions,
-				this.currentRequestCancellation.token,
-			)
+			const response = await client.sendRequest(vsCodeLmMessages, requestOptions, this.currentRequestCancellation.token)
 
 			// Consume the stream and handle both text and tool call chunks
 			for await (const chunk of response.stream) {
-				if (chunk instanceof vscode.LanguageModelTextPart) {
+				if (chunk instanceof vscode.ApexLanguageModelTextPart) {
 					// Validate text part value
 					if (typeof chunk.value !== "string") {
 						console.warn("Apex <Language Model API>: Invalid text part value received:", chunk.value)
@@ -472,7 +440,7 @@ export class VsCodeLmHandler implements ApiHandler, SingleCompletionHandler {
 						type: "text",
 						text: chunk.value,
 					}
-				} else if (chunk instanceof vscode.LanguageModelToolCallPart) {
+				} else if (chunk instanceof vscode.ApexLanguageModelToolCallPart) {
 					try {
 						// Validate tool call parameters
 						if (!chunk.name || typeof chunk.name !== "string") {
@@ -624,13 +592,13 @@ export class VsCodeLmHandler implements ApiHandler, SingleCompletionHandler {
 		try {
 			const client = await this.getClient()
 			const response = await client.sendRequest(
-				[vscode.LanguageModelChatMessage.User(prompt)],
+				[vscode.ApexLanguageModelChatMessage.User(prompt)],
 				{},
 				new vscode.CancellationTokenSource().token,
 			)
 			let result = ""
 			for await (const chunk of response.stream) {
-				if (chunk instanceof vscode.LanguageModelTextPart) {
+				if (chunk instanceof vscode.ApexLanguageModelTextPart) {
 					result += chunk.value
 				}
 			}

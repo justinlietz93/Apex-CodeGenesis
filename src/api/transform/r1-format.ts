@@ -26,10 +26,16 @@ export function convertToR1Format(messages: Anthropic.Messages.MessageParam[]): 
 				}
 				if (part.type === "image") {
 					hasImages = true
-					imageParts.push({
-						type: "image_url",
-						image_url: { url: `data:${part.source.media_type};base64,${part.source.data}` },
-					})
+					// Add type guard for media_type and data properties
+					if ("media_type" in part.source && "data" in part.source) {
+						imageParts.push({
+							type: "image_url",
+							image_url: { url: `data:${part.source.media_type};base64,${part.source.data}` },
+						})
+					} else {
+						// Fallback for missing properties - add placeholder text
+						textParts.push("[ERROR: Image source missing required properties]")
+					}
 				}
 			})
 

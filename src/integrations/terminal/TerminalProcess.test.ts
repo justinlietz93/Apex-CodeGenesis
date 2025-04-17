@@ -7,14 +7,23 @@ import { TerminalRegistry } from "./TerminalRegistry"
 import { EventEmitter } from "events"
 
 declare module "vscode" {
-	// https://github.com/microsoft/vscode/blob/f0417069c62e20f3667506f4b7e53ca0004b4e3e/src/vscode-dts/vscode.d.ts#L7442
-	interface Terminal {
-		shellIntegration?: {
-			cwd?: vscode.Uri
-			executeCommand?: (command: string) => {
-				read: () => AsyncIterable<string>
-			}
+	// Define the TerminalShellExecution interface
+	interface TerminalShellExecution {
+		read: () => AsyncIterable<string>
+	}
+
+	// Define the TerminalShellIntegration interface
+	interface TerminalShellIntegration {
+		readonly cwd: vscode.Uri | undefined
+		executeCommand: {
+			(commandLine: string): TerminalShellExecution
+			(executable: string, args: string[]): TerminalShellExecution
 		}
+	}
+
+	// Use the interface in Terminal
+	interface Terminal {
+		readonly shellIntegration: TerminalShellIntegration | undefined
 	}
 }
 

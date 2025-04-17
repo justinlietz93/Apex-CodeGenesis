@@ -1,5 +1,5 @@
 import { describe, it } from "mocha"
-import "should"
+import should from "should"
 import { findLastIndex, findLast } from "./array"
 
 describe("Array Utilities", () => {

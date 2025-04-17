@@ -2,6 +2,7 @@ import {
   VSCodeButton,
   VSCodeDivider,
   VSCodeLink,
+  VSCodeTextField,
 } from '@vscode/webview-ui-toolkit/react';
 import { memo, useEffect, useState } from 'react';
 import { useFirebaseAuth } from '../../context/FirebaseAuthContext';
@@ -15,6 +16,7 @@ import {
   PaymentTransaction,
 } from '../../../../src/shared/ApexAccount';
 import { useExtensionState } from '../../context/ExtensionStateContext';
+import { createProfile, updateProfile } from '../../services/local-auth';
 
 type AccountViewProps = {
   onDone: () => void;
@@ -82,65 +84,169 @@ export const ApexAccountView = () => {
     };
   }, [user]);
 
+  // Local profile management
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [profileName, setProfileName] = useState(user?.displayName || '');
+  const [profileEmail, setProfileEmail] = useState(user?.email || '');
+
   const handleLogin = () => {
-    vscode.postMessage({ type: 'accountLoginClicked' });
+    // Create a new local profile
+    const token = `local-token-${Date.now()}`;
+    vscode.postMessage({
+      type: 'accountLoginClicked',
+      data: { localAuth: true },
+      customToken: token, // Use existing customToken property
+    });
   };
 
   const handleLogout = () => {
     // First notify extension to clear API keys and state
     vscode.postMessage({ type: 'accountLogoutClicked' });
-    // Then sign out of Firebase
+    // Then sign out of local auth
     handleSignOut();
+  };
+
+  const handleCreateProfile = () => {
+    // Save the new profile
+    createProfile(
+      profileName || 'Local User',
+      profileEmail || 'local@example.com'
+    );
+
+    // Update the extension state
+    vscode.postMessage({
+      type: 'authStateChanged',
+      user: {
+        displayName: profileName || 'Local User',
+        email: profileEmail || 'local@example.com',
+        photoURL: null,
+      },
+    });
+
+    setIsEditingProfile(false);
+  };
+
+  const handleUpdateProfile = () => {
+    if (user) {
+      // Update the profile
+      updateProfile({
+        ...user,
+        displayName: profileName || user.displayName,
+        email: profileEmail || user.email,
+      });
+
+      // Update the extension state
+      vscode.postMessage({
+        type: 'authStateChanged',
+        user: {
+          displayName: profileName || user.displayName,
+          email: profileEmail || user.email,
+          photoURL: user.photoURL,
+        },
+      });
+    }
+
+    setIsEditingProfile(false);
   };
   return (
     <div className="h-full flex flex-col">
       {user ? (
         <div className="flex flex-col pr-3 h-full">
           <div className="flex flex-col w-full">
-            <div className="flex items-center mb-6 flex-wrap gap-y-4">
-              {user.photoURL ? (
-                <img
-                  src={user.photoURL}
-                  alt="Profile"
-                  className="size-16 rounded-full mr-4"
-                />
+            <div className="flex flex-col w-full">
+              {isEditingProfile ? (
+                <div className="mb-6">
+                  <h2 className="text-[var(--vscode-foreground)] m-0 mb-4 text-lg font-medium">
+                    {user ? 'Edit Profile' : 'Create Profile'}
+                  </h2>
+                  <div className="flex flex-col gap-4">
+                    <VSCodeTextField
+                      value={profileName}
+                      onChange={(e) =>
+                        setProfileName((e.target as HTMLInputElement).value)
+                      }
+                      placeholder="Display Name"
+                    >
+                      Display Name
+                    </VSCodeTextField>
+                    <VSCodeTextField
+                      value={profileEmail}
+                      onChange={(e) =>
+                        setProfileEmail((e.target as HTMLInputElement).value)
+                      }
+                      placeholder="Email"
+                    >
+                      Email
+                    </VSCodeTextField>
+                    <div className="flex gap-2">
+                      <VSCodeButton
+                        onClick={
+                          user ? handleUpdateProfile : handleCreateProfile
+                        }
+                      >
+                        {user ? 'Update Profile' : 'Create Profile'}
+                      </VSCodeButton>
+                      <VSCodeButton
+                        appearance="secondary"
+                        onClick={() => setIsEditingProfile(false)}
+                      >
+                        Cancel
+                      </VSCodeButton>
+                    </div>
+                  </div>
+                </div>
               ) : (
-                <div className="size-16 rounded-full bg-[var(--vscode-button-background)] flex items-center justify-center text-2xl text-[var(--vscode-button-foreground)] mr-4">
-                  {user.displayName?.[0] || user.email?.[0] || '?'}
+                <div className="flex items-center mb-6 flex-wrap gap-y-4">
+                  {user.photoURL ? (
+                    <img
+                      src={user.photoURL}
+                      alt="Profile"
+                      className="size-16 rounded-full mr-4"
+                    />
+                  ) : (
+                    <div className="size-16 rounded-full bg-[var(--vscode-button-background)] flex items-center justify-center text-2xl text-[var(--vscode-button-foreground)] mr-4">
+                      {user.displayName?.[0] || user.email?.[0] || '?'}
+                    </div>
+                  )}
+
+                  <div className="flex flex-col">
+                    {user.displayName && (
+                      <h2 className="text-[var(--vscode-foreground)] m-0 mb-1 text-lg font-medium">
+                        {user.displayName}
+                      </h2>
+                    )}
+
+                    {user.email && (
+                      <div className="text-sm text-[var(--vscode-descriptionForeground)]">
+                        {user.email}
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
-
-              <div className="flex flex-col">
-                {user.displayName && (
-                  <h2 className="text-[var(--vscode-foreground)] m-0 mb-1 text-lg font-medium">
-                    {user.displayName}
-                  </h2>
-                )}
-
-                {user.email && (
-                  <div className="text-sm text-[var(--vscode-descriptionForeground)]">
-                    {user.email}
-                  </div>
-                )}
-              </div>
             </div>
           </div>
 
           {/* TODO: Verify Dashboard link functionality */}
           <div className="w-full flex gap-2 flex-col min-[225px]:flex-row">
-            {/* <div className="w-full min-[225px]:w-1/2">
-							<VSCodeButtonLink href="https://app.apex.bot/credits" appearance="primary" className="w-full">
-								Dashboard
-							</VSCodeButtonLink>
-						</div> */}
-            {/* Keep Logout button */}
+            {!isEditingProfile && (
+              <VSCodeButton
+                onClick={() => {
+                  setProfileName(user?.displayName || '');
+                  setProfileEmail(user?.email || '');
+                  setIsEditingProfile(true);
+                }}
+                className="w-full"
+              >
+                Edit Profile
+              </VSCodeButton>
+            )}
+            {/* Logout button */}
             <VSCodeButton
               appearance="secondary"
               onClick={handleLogout}
               className="w-full"
             >
-              {' '}
-              {/* Make logout full width for now */}
               Log out
             </VSCodeButton>
           </div>
