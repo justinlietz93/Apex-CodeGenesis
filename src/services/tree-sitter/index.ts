@@ -133,7 +133,7 @@ async function parseFile(
 		// Apply the query to the AST and get the captures
 		// Captures are specific parts of the AST that match our query patterns, each capture represents a node in the AST that we're interested in.
 		if (!tree) {
-			throw new Error(`Failed to parse the file: ${filePath}`);
+			throw new Error(`Failed to parse the file: ${filePath}`)
 		}
 		const captures = query.captures(tree.rootNode)
 

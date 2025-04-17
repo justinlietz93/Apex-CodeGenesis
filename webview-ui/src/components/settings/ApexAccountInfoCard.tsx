@@ -8,6 +8,7 @@ import { vscode } from '../../utils/vscode';
 import { useExtensionState } from '../../context/ExtensionStateContext';
 import { createProfile, updateProfile } from '../../services/local-auth';
 
+// Firebaseuser is actually for local auth for now
 export const ApexAccountInfoCard = () => {
   const { user: firebaseUser, handleSignOut } = useFirebaseAuth();
   const { userInfo, apiConfiguration } = useExtensionState();
