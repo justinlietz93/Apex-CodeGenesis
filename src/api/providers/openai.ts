@@ -222,8 +222,7 @@ export class OpenAiHandler implements ApiHandler {
 		// Azure API shape slightly differs from the core API shape: https://github.com/openai/openai-node?tab=readme-ov-file#microsoft-azure-openai
 		// Use azureApiVersion to determine if this is an Azure endpoint, since the URL may not always contain 'azure.com'
 		const url = new URL(this.options.openAiBaseUrl);
-		const allowedHosts = ["azure.com"];
-		if (this.options.azureApiVersion || allowedHosts.includes(url.host)) {
+		if (this.options.azureApiVersion || url.host.endsWith('azure.com')) {
 			this.client = new AzureOpenAI({
 				baseURL: this.options.openAiBaseUrl,
 				apiKey: this.options.openAiApiKey,
