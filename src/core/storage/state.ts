@@ -14,6 +14,7 @@ import { UserInfo } from "../../shared/UserInfo"
 import { UserProfile, CustomInstructionItem, ExtensionState } from "../../shared/ExtensionMessage"
 import * as os from "os" // Import os module for platform detection
 import { Platform, DEFAULT_PLATFORM } from "../../shared/ExtensionMessage" // Import Platform types
+import * as crypto from "crypto"
 // Ensure ApiProvider is imported if used in previousModeApiProvider etc. - Removed duplicate below
 /*
 	Storage
@@ -56,7 +57,7 @@ export async function getWorkspaceState(context: vscode.ExtensionContext, key: s
 import { randomUUID } from "crypto"
 
 function generateUniqueId(): string {
-	return randomUUID()
+	return typeof randomUUID === "function" ? randomUUID() : crypto.randomBytes(16).toString("hex")
 }
 
 const createDefaultProfile = (
