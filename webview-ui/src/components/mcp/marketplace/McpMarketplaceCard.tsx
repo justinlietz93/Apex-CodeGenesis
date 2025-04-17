@@ -5,6 +5,16 @@ import { vscode } from '../../../utils/vscode';
 import { useEvent } from 'react-use';
 import DOMPurify from 'dompurify';
 
+const isValidUrl = (url: string): boolean => {
+  try {
+    const parsedUrl = new URL(url);
+    const trustedDomains = ['github.com', 'raw.githubusercontent.com'];
+    return trustedDomains.includes(parsedUrl.hostname);
+  } catch {
+    return false;
+  }
+};
+
 interface McpMarketplaceCardProps {
   item: McpMarketplaceItem;
   installedServers: McpServer[];
@@ -88,7 +98,11 @@ const McpMarketplaceCard = ({
           {/* Logo */}
           {item.logoUrl && (
             <img
-              src={DOMPurify.sanitize(item.logoUrl)}
+              src={
+                isValidUrl(item.logoUrl)
+                  ? DOMPurify.sanitize(item.logoUrl)
+                  : 'https://example.com/placeholder-logo.png'
+              }
               alt={`${item.name} logo`}
               style={{
                 width: 42,
