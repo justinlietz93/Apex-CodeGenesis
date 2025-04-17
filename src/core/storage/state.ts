@@ -53,8 +53,10 @@ export async function getWorkspaceState(context: vscode.ExtensionContext, key: s
 
 // --- Profile and Library Management Helpers ---
 
+import { randomUUID } from "crypto"
+
 function generateUniqueId(): string {
-	return Date.now().toString()
+	return randomUUID()
 }
 
 const createDefaultProfile = (

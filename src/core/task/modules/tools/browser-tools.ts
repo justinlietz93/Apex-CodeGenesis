@@ -55,6 +55,7 @@ export async function executeBrowserActionTool(
 			default: {
 				// Ensure exhaustive check for BrowserAction type
 				const exhaustiveCheck: never = action
+				console.error(`Unexpected browser action encountered: ${exhaustiveCheck}`)
 				return formatResponse.toolError(`Unhandled browser action: ${exhaustiveCheck}`)
 			}
 		}
