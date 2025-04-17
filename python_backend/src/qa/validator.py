@@ -5,12 +5,11 @@ NOTE: This might be less relevant in the integrated backend context.
 
 import json
 import logging # Import logging
-from typing import Dict, List, Any
+from typing import Dict
 from llm_client import LLMClient
 
 # Adjust import paths
 from exceptions import QAValidationError, LLMError
-from utils.prompt_manager import PromptManager
 
 
 class QAValidator:
@@ -40,7 +39,7 @@ class QAValidator:
 
         if self.enabled:
             self.logger.info("Initializing QAValidator")
-            if llm_client == None:
+            if llm_client is None:
                 self.llm_client = LLMClient()
         else:
              self.model = None
