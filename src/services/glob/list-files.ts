@@ -85,7 +85,7 @@ async function globbyLevelByLevel(limit: number, options?: Options) {
 					// Escape parentheses in the path to prevent glob pattern interpretation
 					// This is crucial for NextJS folder naming conventions which use parentheses like (auth), (dashboard)
 					// Without escaping, glob treats parentheses as special pattern grouping characters
-					const escapedFile = file.replace(/\(/g, "\\(").replace(/\)/g, "\\)")
+					const escapedFile = file.replace(/\\/g, "\\\\").replace(/\(/g, "\\(").replace(/\)/g, "\\)")
 					queue.push(`${escapedFile}*`)
 				}
 			}
