@@ -205,8 +205,9 @@ export function createDefaultLocalUser(
  * @returns A unique ID string
  */
 function generateUniqueId(): string {
-  const randomPart = crypto.randomBytes(8).toString('hex'); // Generate a secure random string
-  return Date.now().toString(36) + randomPart;
+  const randomPart1 = crypto.randomBytes(8).toString('hex'); // Generate the first secure random string
+  const randomPart2 = crypto.randomBytes(8).toString('hex'); // Generate the second secure random string
+  return randomPart1 + randomPart2; // Concatenate the two random strings
 }
 
 /**
