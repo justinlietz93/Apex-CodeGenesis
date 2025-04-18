@@ -1,8 +1,8 @@
-import js from "@eslint/js"
-import tseslint from "typescript-eslint"
-import globals from "globals"
+const js = require("@eslint/js")
+const tseslint = require("typescript-eslint")
+const globals = require("globals")
 
-export default tseslint.config(
+module.exports = tseslint.config(
 	{ ignores: ["out", "dist", "**/*.d.ts"] },
 	{
 		files: ["**/*.{ts,tsx}"],
@@ -20,7 +20,6 @@ export default tseslint.config(
 			"@typescript-eslint": tseslint.plugin,
 		},
 		rules: {
-			// From .eslintrc.json
 			"@typescript-eslint/naming-convention": [
 				"warn",
 				{
@@ -33,8 +32,6 @@ export default tseslint.config(
 			eqeqeq: "warn",
 			"no-throw-literal": "warn",
 			semi: "off",
-
-			// Disabled rules to minimize impact while migrating
 			"@typescript-eslint/no-explicit-any": "off",
 			"@typescript-eslint/no-unused-vars": "off",
 			"@typescript-eslint/no-namespace": "off",
