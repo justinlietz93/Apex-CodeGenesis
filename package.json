@@ -1,7 +1,7 @@
 {
 	"name": "apex-ide-codegenesis",
 	"displayName": "Apex",
-	"type": "module",
+	"type": "commonjs",
 	"main": "./dist/extension.js",
 	"exports": {
 		".": {
@@ -420,6 +420,7 @@
 		"@typescript-eslint/parser": "^8.30.1",
 		"@vscode/test-cli": "^0.0.10",
 		"@vscode/test-electron": "^2.5.2",
+		"@vscode/vsce": "^3.3.2",
 		"chai": "^5.2.0",
 		"esbuild": "^0.25.2",
 		"eslint": "^9.24.0",

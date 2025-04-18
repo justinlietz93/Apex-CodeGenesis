@@ -1,64 +1,64 @@
 name: "CodeQL Daily"
 
 on:
-  push:
-    branches: ["main"]
-  pull_request:
-    branches: ["main"]
-  schedule:
-    - cron: '0 0 * * *'    # Daily scan at 00:00 UTC
+    push:
+        branches: ["main"]
+    pull_request:
+        branches: ["main"]
+    schedule:
+        - cron: "0 0 * * *" # Daily scan at 00:00 UTC
 
 jobs:
-  analyze:
-    name: Analyze (${{ matrix.language }})
-    runs-on: ${{ matrix.language == 'swift' && 'macos-latest' || 'ubuntu-latest' }}
-    permissions:
-      security-events: write
-      packages:       read
-      actions:        read
-      contents:       read
+    analyze:
+        name: Analyze (${{ matrix.language }})
+        runs-on: ${{ matrix.language == 'swift' && 'macos-latest' || 'ubuntu-latest' }}
+        permissions:
+            security-events: write
+            packages: read
+            actions: read
+            contents: read
 
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - language: actions
-            build-mode: none
-          - language: javascript-typescript
-            build-mode: none
-          - language: python
-            build-mode: none
-        # Other supported languages: c-cpp, csharp, go, java-kotlin, ruby, swift
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - language: actions
+                      build-mode: none
+                    - language: javascript-typescript
+                      build-mode: none
+                    - language: python
+                      build-mode: none
+                # Other supported languages: c-cpp, csharp, go, java-kotlin, ruby, swift
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
 
-      # ───── Optional: install runtimes or compilers ──────────────────────────────
-      # - name: Setup Node.js
-      #   uses: actions/setup-node@v3
-      #   with: node-version: '18'
-      # - name: npm ci & build
-      #   run: |
-      #     npm ci
-      #     npm run build
+            # ───── Optional: install runtimes or compilers ──────────────────────────────
+            # - name: Setup Node.js
+            #   uses: actions/setup-node@v3
+            #   with: node-version: '18'
+            # - name: npm ci & build
+            #   run: |
+            #     npm ci
+            #     npm run build
 
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
-        with:
-          languages:   ${{ matrix.language }}
-          build-mode:  ${{ matrix.build-mode }}
-          # To add extra query packs:
-          # queries: "+security-extended,security-and-quality"
+            - name: Initialize CodeQL
+              uses: github/codeql-action/init@v3
+              with:
+                  languages: ${{ matrix.language }}
+                  build-mode: ${{ matrix.build-mode }}
+                  # To add extra query packs:
+                  # queries: "+security-extended,security-and-quality"
 
-      - name: Manual build (if needed)
-        if: ${{ matrix.build-mode == 'manual' }}
-        shell: bash
-        run: |
-          echo "Manual build mode – replace this with your actual build commands"
-          exit 1
+            - name: Manual build (if needed)
+              if: ${{ matrix.build-mode == 'manual' }}
+              shell: bash
+              run: |
+                  echo "Manual build mode – replace this with your actual build commands"
+                  exit 1
 
-      - name: Perform CodeQL analysis
-        uses: github/codeql-action/analyze@v3
-        with:
-          category: "/language:${{ matrix.language }}"
+            - name: Perform CodeQL analysis
+              uses: github/codeql-action/analyze@v3
+              with:
+                  category: "/language:${{ matrix.language }}"
