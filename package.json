@@ -462,7 +462,7 @@
 		"globby": "^14.1.0",
 		"ignore": "^7.0.3",
 		"isbinaryfile": "^5.0.4",
-		"mammoth": "^1.9.0",
+		"mammoth": "^1.11.0",
 		"monaco-vscode-textmate-theme-converter": "^0.1.7",
 		"ollama": "^0.5.15",
 		"open-graph-scraper": "^6.9.0",
