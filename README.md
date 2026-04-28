@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/justinlietz93-apex-codegenesis-badge.png)](https://mseep.ai/app/justinlietz93-apex-codegenesis)
+
 <div align="center">
   <img src="./assets/icons/icon-black.png" alt="Apex IDE Logo" width="250"/>
 </div>
